@@ -1,0 +1,13 @@
+I put the dll and assets in their own directories to be more organized.
+
+Configuration Properties > Debugging
+	Working Directory	$(ProjectDir)..\Assets
+	Environment		PATH=%PATH%;$(ProjectDir)..\dll
+
+C/C++ 
+	Additional Include Directories	C:\SDL2\include;C:\SDL2_image\include;C:\SDL2_mixer\include
+
+Linker > General
+	Additional Library Directories	C:\SDL2\lib\x86;C:\SDL2_image\lib\x86;C:\SDL2_mixer\lib\x86;%(AdditionalLibraryDirectories)
+Linker > Input
+	Additional Library Directories	SDL2.lib;SDL2main.lib;SDL2_image.lib;OpenGL32.lib;SDL2_mixer.lib	
