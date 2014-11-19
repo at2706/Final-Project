@@ -4,11 +4,8 @@ int main(int argc, char *argv[])
 {
 	GameApp game;
 
-	while (game.ProcessEvents()) {
+	while (!game.updateAndRender()) {
 
-		game.Update();
-
-		game.Render();
 	}
 
 	return 0;
