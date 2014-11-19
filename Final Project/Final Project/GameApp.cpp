@@ -1,9 +1,9 @@
 #include "GameApp.h"
 
 
-GameApp::GameApp()
-{
+GameApp::GameApp(){
 	init();
+
 }
 
 void GameApp::init() {
@@ -16,8 +16,6 @@ void GameApp::init() {
 	glMatrixMode(GL_PROJECTION);
 	glOrtho(-2.66, 2.66, -2.0, 2.0, -2.0, 2.0);
 	glMatrixMode(GL_MODELVIEW);
-
-	keys = SDL_GetKeyboardState(NULL);
 }
 
 GameApp::~GameApp()
@@ -39,6 +37,24 @@ GLboolean GameApp::updateAndRender() {
 	return false;
 }
 GLvoid GameApp::Update() {
+	time();
+}
+
+GLvoid GameApp::time(){
+	ticks = (GLfloat)SDL_GetTicks() / 1000.0f;
+	elapsed = ticks - lastFrameTicks;
+	lastFrameTicks = ticks;
+
+	GLfloat fixedElapsed = elapsed + timeLeftOver;
+	if (fixedElapsed > FIXED_TIMESTEP * MAX_TIMESTEPS) {
+		fixedElapsed = FIXED_TIMESTEP * MAX_TIMESTEPS;
+	}
+
+	while (fixedElapsed >= FIXED_TIMESTEP) {
+		fixedElapsed -= FIXED_TIMESTEP;
+		//Entity::fixedUpdateAll(this);
+	}
+	timeLeftOver = fixedElapsed;
 
 }
 
