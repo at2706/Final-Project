@@ -1,9 +1,12 @@
 #include "GameApp.h"
 
-
 GameApp::GameApp(){
 	init();
 
+	Sprite *s;
+	s = new Sprite(tileSheet, 1024, 1024, 112, 866, 112, 75);
+	Entity *e;
+	e = new Entity(s);
 }
 
 void GameApp::init() {
@@ -52,7 +55,7 @@ GLvoid GameApp::time(){
 
 	while (fixedElapsed >= FIXED_TIMESTEP) {
 		fixedElapsed -= FIXED_TIMESTEP;
-		//Entity::fixedUpdateAll(this);
+		Entity::fixedUpdateAll();
 	}
 	timeLeftOver = fixedElapsed;
 
@@ -61,6 +64,6 @@ GLvoid GameApp::time(){
 GLvoid GameApp::Render() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	Entity::renderAll();
 	SDL_GL_SwapWindow(displayWindow);
 }

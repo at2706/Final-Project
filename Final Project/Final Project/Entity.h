@@ -1,17 +1,16 @@
 #pragma once
 #include "Sprite.h"
-
 #include "Utilities.h"
 #include "Matrix.h"
 
 class Entity {
 public:
-	Entity(Sprite *s, float x, float y);
+	Entity(Sprite *s, float x = 0, float y = 0);
 	~Entity();
 
 	void Update(float elapsed);
-	void FixedUpdate(GameApp *g);
-	static void fixedUpdateAll(GameApp *g);
+	void FixedUpdate();
+	static void fixedUpdateAll();
 	void Render();
 	static void renderAll();
 	void buildMatrix();

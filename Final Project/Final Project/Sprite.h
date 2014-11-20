@@ -11,7 +11,7 @@ public:
 	Sprite(GLuint texID, GLuint tWidth, GLuint tHeight, GLuint u, GLuint v, GLuint width, GLuint height);
 
 	//Uniform Constructor
-	Sprite::Sprite(GLuint texID, GLuint index, GLuint SpriteCountX, GLint SpriteCountY);
+	Sprite(GLuint texID, GLuint index, GLuint SpriteCountX, GLint SpriteCountY);
 	virtual GLvoid draw();
 
 private:

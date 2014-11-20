@@ -1,5 +1,4 @@
 #include "Entity.h"
-#include "GameApp.h"
 
 list<Entity*> Entity::entities;
 Entity::Entity(Sprite *s, float x, float y) {
@@ -20,12 +19,12 @@ void Entity::Update(float elapsed) {
 
 }
 
-void Entity::FixedUpdate(GameApp *g) {
+void Entity::FixedUpdate() {
 
 }
-void Entity::fixedUpdateAll(GameApp *g){
+void Entity::fixedUpdateAll(){
 	for (list<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
-		(*it)->FixedUpdate(g);
+		(*it)->FixedUpdate();
 }
 
 void Entity::Render() {

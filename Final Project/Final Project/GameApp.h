@@ -1,6 +1,5 @@
 #pragma once
-#include "Utilities.h"
-#include "Matrix.h"
+#include "Entity.h"
 
 class GameApp
 {
@@ -30,6 +29,9 @@ private:
 	Vector gravity;
 	GameState state;
 
-
+	GLuint tileSheet;
+	GLuint UISheet;
+	GLuint fontTexture;
+	GLuint bgTexture;
 };
 
