@@ -18,7 +18,7 @@ private:
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	enum GameState { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_PAUSE, STATE_GAME_OVER };
 
-	void init();
+	GLvoid init();
 	GLvoid time();
 	GLuint loadTexture(const char *image_path, GLint param = GL_LINEAR);
 
@@ -29,9 +29,10 @@ private:
 	Vector gravity;
 	GameState state;
 
+	GLuint charSheet;
 	GLuint tileSheet;
 	GLuint UISheet;
-	GLuint fontTexture;
+	GLuint fontSheet;
 	GLuint bgTexture;
 };
 

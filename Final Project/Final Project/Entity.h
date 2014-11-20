@@ -8,24 +8,25 @@ public:
 	Entity(Sprite *s, float x = 0, float y = 0);
 	~Entity();
 
-	void Update(float elapsed);
-	void FixedUpdate();
-	static void fixedUpdateAll();
-	void Render();
-	static void renderAll();
-	void buildMatrix();
-	void setRotation(float); //Takes in degree arguement
+	GLvoid Update(float elapsed);
+	GLvoid FixedUpdate();
+	static GLvoid fixedUpdateAll();
+	GLvoid Render();
+	static GLvoid renderAll();
+	GLvoid buildMatrix();
+	GLvoid setScale(GLfloat x = 1.0f, GLfloat y = 1.0f);
+	GLvoid setRotation(float); //Takes in degree arguement
 
-	void rotate(GLfloat degree);
+	GLvoid rotate(GLfloat degree);
 
-	void moveX();
-	void moveY();
+	GLvoid moveX();
+	GLvoid moveY();
 
-	void decelerateX();
-	void decelerateY();
+	GLvoid decelerateX();
+	GLvoid decelerateY();
 
-	void moveR();
-	void decelerateR();
+	GLvoid moveR();
+	GLvoid decelerateR();
 
 	Sprite *sprite;
 	
@@ -36,8 +37,6 @@ public:
 	Vector velocity;
 	Vector acceleration;
 	Vector friction;
-
-	unsigned int texture;
 
 	vector<float> vertices;
 	vector<float> uvs;

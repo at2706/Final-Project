@@ -34,7 +34,7 @@ Sprite::Sprite(GLuint texID, GLuint index, GLuint SpriteCountX, GLint SpriteCoun
 }
 
 
-GLvoid Sprite::draw(){
+GLvoid Sprite::render(){
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -47,14 +47,14 @@ GLvoid Sprite::draw(){
 		size.x / 2, -size.y / 2,
 		size.x / 2, size.y / 2 });
 	if (!uniform){//Non-uniformed sprite sheets
-		texCoordData.insert(vertexData.end(), { UVcoords.x, UVcoords.y,
+		texCoordData.insert(texCoordData.end(), { UVcoords.x, UVcoords.y,
 			UVcoords.x, UVcoords.y + size.y,
 			UVcoords.x + size.x, UVcoords.y + size.y,
 			UVcoords.x + size.x, UVcoords.y });
 	}
 
-	else{//Non-uniformed sprite sheets
-		texCoordData.insert(vertexData.end(), { UVcoords.x, UVcoords.y,
+	else{ //Uniformed sprite sheets
+		texCoordData.insert(texCoordData.end(), { UVcoords.x, UVcoords.y,
 			UVcoords.x, UVcoords.y + size.y,
 			UVcoords.x + (size.x / ratio), UVcoords.y + size.y,
 			UVcoords.x + (size.x / ratio), UVcoords.y });

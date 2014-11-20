@@ -12,7 +12,7 @@ public:
 
 	//Uniform Constructor
 	Sprite(GLuint texID, GLuint index, GLuint SpriteCountX, GLint SpriteCountY);
-	virtual GLvoid draw();
+	virtual GLvoid render();
 
 private:
 	Vector size;

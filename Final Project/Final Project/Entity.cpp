@@ -4,8 +4,12 @@ list<Entity*> Entity::entities;
 Entity::Entity(Sprite *s, float x, float y) {
 	sprite = s;
 
+	setScale(3,3);
+
 	position.x = x;
 	position.y = y;
+
+	visible = true;
 
 	entities.push_back(this);
 	it = --entities.end();
@@ -15,29 +19,37 @@ Entity::~Entity(){
 	entities.erase(it);
 }
 
-void Entity::Update(float elapsed) {
+GLvoid Entity::Update(float elapsed) {
 
 }
 
-void Entity::FixedUpdate() {
+GLvoid Entity::FixedUpdate() {
 
 }
-void Entity::fixedUpdateAll(){
+GLvoid Entity::fixedUpdateAll(){
 	for (list<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
 		(*it)->FixedUpdate();
 }
 
-void Entity::Render() {
+GLvoid Entity::Render() {
 	if (visible){
 
+		buildMatrix();
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glMultMatrixf(matrix.ml);
+
+		sprite->render();
+
+		glPopMatrix();
 	}
 }
-void Entity::renderAll(){
+GLvoid Entity::renderAll(){
 	for (list<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
 		(*it)->Render();
 }
 
-void Entity::buildMatrix(){
+GLvoid Entity::buildMatrix(){
 	Matrix scaleMatrix;
 	scaleMatrix.m[0][0] = scale.x;
 	scaleMatrix.m[1][1] = scale.y;
@@ -70,7 +82,12 @@ void Entity::buildMatrix(){
 	matrix = scaleMatrix * rotationMatrix * translateMatrix;
 }
 
-void Entity::setRotation(GLfloat z){
+GLvoid Entity::setScale(GLfloat x, GLfloat y){
+	scale.x = x;
+	scale.y = y;
+}
+
+GLvoid Entity::setRotation(GLfloat z){
 	rotation.z = (z * PI) / 180.0f;
 }
 
