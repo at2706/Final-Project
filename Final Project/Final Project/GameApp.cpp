@@ -10,8 +10,8 @@ GameApp::GameApp(){
 	e = new Entity(s);
 
 	//Uniformed sheet not working...
-	/*s = new Sprite(tileSheet, 98, 16, 8);
-	e = new Entity(s, 0.2f, 0.0f);*/
+	s = new Sprite(tileSheet, 98, 16, 8);
+	e = new Entity(s, 0.2f, 0.0f);
 }
 
 GLvoid GameApp::init() {

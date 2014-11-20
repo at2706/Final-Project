@@ -29,7 +29,7 @@ Sprite::Sprite(GLuint texID, GLuint index, GLuint SpriteCountX, GLint SpriteCoun
 	UVcoords.x = (GLfloat)(((GLint)index) % spriteCountX) / (GLfloat)spriteCountX;
 	size.x = ratio / (GLfloat)spriteCountX;
 
-	UVcoords.y = (GLfloat)(((GLint)index) / spriteCountX) / (GLfloat)spriteCountY;
+	UVcoords.y = (GLfloat)(((GLint)index) / spriteCountY) / (GLfloat)spriteCountY;
 	size.y = 1.0 / (GLfloat)spriteCountY;
 }
 

@@ -18,7 +18,6 @@ private:
 	Vector size;
 	Vector UVcoords;
 
-	GLint index;
 	GLint spriteCountX;
 	GLint spriteCountY;
 
