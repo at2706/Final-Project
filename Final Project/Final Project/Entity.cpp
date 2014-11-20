@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "GameApp.h"
 
 list<Entity*> Entity::entities;
 Entity::Entity(Sprite *s, float x, float y) {
@@ -19,26 +20,36 @@ void Entity::Update(float elapsed) {
 
 }
 
-void Entity::FixedUpdate() {
+void Entity::FixedUpdate(GameApp *g) {
 
+}
+void Entity::fixedUpdateAll(GameApp *g){
+	for (list<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
+		(*it)->FixedUpdate(g);
 }
 
 void Entity::Render() {
+	if (visible){
 
+	}
+}
+void Entity::renderAll(){
+	for (list<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
+		(*it)->Render();
 }
 
 void Entity::buildMatrix(){
 	Matrix scaleMatrix;
 	scaleMatrix.m[0][0] = scale.x;
 	scaleMatrix.m[1][1] = scale.y;
-	//scaleMatrix.m[2][2] = scale.z;
+	scaleMatrix.m[2][2] = scale.z;
 
 	Matrix translateMatrix;
 	translateMatrix.m[3][0] = position.x;
 	translateMatrix.m[3][1] = position.y;
-	//translateMatrix.m[3][2] = position.z;
+	translateMatrix.m[3][2] = position.z;
 
-	/*Matrix rotationXMatrix;
+	Matrix rotationXMatrix;
 	rotationXMatrix.m[1][1] = cos(rotation.x);
 	rotationXMatrix.m[2][1] = -sin(rotation.x);
 	rotationXMatrix.m[1][2] = sin(rotation.x);
@@ -48,7 +59,7 @@ void Entity::buildMatrix(){
 	rotationYMatrix.m[0][0] = cos(rotation.y);
 	rotationYMatrix.m[2][0] = sin(rotation.y);
 	rotationYMatrix.m[0][2] = -sin(rotation.y);
-	rotationYMatrix.m[2][2] = cos(rotation.y);*/
+	rotationYMatrix.m[2][2] = cos(rotation.y);
 
 	Matrix rotationZMatrix;
 	rotationZMatrix.m[0][0] = cos(rotation.z);
@@ -56,9 +67,9 @@ void Entity::buildMatrix(){
 	rotationZMatrix.m[0][1] = sin(rotation.z);
 	rotationZMatrix.m[1][1] = cos(rotation.z);
 
-	matrix = scaleMatrix * rotationZMatrix /** rotationYMatrix * rotationXMatrix*/ * translateMatrix;
+	Matrix rotationMatrix = rotationXMatrix * rotationYMatrix * rotationZMatrix;
+	matrix = scaleMatrix * rotationMatrix * translateMatrix;
 }
-
 
 void Entity::setRotation(GLfloat z){
 	rotation.z = (z * PI) / 180.0f;

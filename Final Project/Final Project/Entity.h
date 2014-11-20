@@ -10,8 +10,10 @@ public:
 	~Entity();
 
 	void Update(float elapsed);
-	void FixedUpdate();
+	void FixedUpdate(GameApp *g);
+	static void fixedUpdateAll(GameApp *g);
 	void Render();
+	static void renderAll();
 	void buildMatrix();
 	void setRotation(float); //Takes in degree arguement
 
@@ -38,8 +40,8 @@ public:
 
 	unsigned int texture;
 
-	std::vector<float> vertices;
-	std::vector<float> uvs;
+	vector<float> vertices;
+	vector<float> uvs;
 	bool visible;
 
 private:

@@ -7,14 +7,23 @@ public:
 	Sprite();
 	~Sprite();
 
-	virtual GLvoid draw(GLfloat x, GLfloat y, GLfloat facing);
+	//Non-uniform Constructor
+	Sprite(GLuint texID, GLuint tWidth, GLuint tHeight, GLuint u, GLuint v, GLuint width, GLuint height);
+
+	//Uniform Constructor
+	Sprite::Sprite(GLuint texID, GLuint index, GLuint SpriteCountX, GLint SpriteCountY);
+	virtual GLvoid draw();
 
 private:
-	Matrix matrix;
-	Vector textureSize;
 	Vector size;
 	Vector UVcoords;
 
+	GLint index;
+	GLint spriteCountX;
+	GLint spriteCountY;
+
 	GLuint textureID;
+	GLboolean uniform;
+	GLfloat ratio;
 };
 
