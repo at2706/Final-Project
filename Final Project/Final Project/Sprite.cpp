@@ -66,7 +66,8 @@ GLvoid Sprite::render(){
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDrawArrays(GL_QUADS, 0, 4);
+	vector<unsigned int> indices = { 0, 1, 2, 0, 2, 3 };
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices.data());
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
