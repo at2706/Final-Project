@@ -21,10 +21,10 @@ Sprite::Sprite(GLuint texID, GLuint tWidth, GLuint tHeight, GLuint u, GLuint v, 
 }
 
 //Uniform Constructor
-Sprite::Sprite(GLuint texID, GLuint index, GLuint SpriteCountX, GLint SpriteCountY)
+Sprite::Sprite(GLuint texID, GLuint index, GLuint spriteCountX, GLint spriteCountY)
 	: textureID(texID){
 	uniform = true;
-	ratio = SpriteCountX / SpriteCountY;
+	ratio = spriteCountX / spriteCountY;
 
 	UVcoords.x = (GLfloat)(((GLint)index) % spriteCountX) / (GLfloat)spriteCountX;
 	size.x = ratio / (GLfloat)spriteCountX;

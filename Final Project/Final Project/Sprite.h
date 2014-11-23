@@ -18,9 +18,6 @@ private:
 	Vector size;
 	Vector UVcoords;
 
-	GLint spriteCountX;
-	GLint spriteCountY;
-
 	GLuint textureID;
 	GLboolean uniform;
 	GLfloat ratio;

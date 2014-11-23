@@ -4,7 +4,7 @@ list<Entity*> Entity::entities;
 Entity::Entity(Sprite *s, float x, float y) {
 	sprite = s;
 
-	setScale(3,3);
+	setScale();
 
 	position.x = x;
 	position.y = y;
@@ -20,11 +20,10 @@ Entity::~Entity(){
 }
 
 GLvoid Entity::Update(float elapsed) {
-
 }
 
 GLvoid Entity::FixedUpdate() {
-
+	
 }
 GLvoid Entity::fixedUpdateAll(){
 	for (list<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
