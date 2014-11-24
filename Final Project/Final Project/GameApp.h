@@ -1,6 +1,8 @@
 #pragma once
 #include "Entity.h"
 #include "UIElement.h"
+#define LAYOUT_X 5
+#define LAYOUT_Y 5
 
 class GameApp
 {
@@ -38,5 +40,13 @@ private:
 
 	UIElement *UImain;
 	Entity *players[4];
+
+	// for level generation
+	void makeGameLevel();
+	bool genPath(int, int, int);
+
+	int mapLayout[LAYOUT_X][LAYOUT_Y];
+	Vector mapGoal;
+	Vector mapStart;
 };
 

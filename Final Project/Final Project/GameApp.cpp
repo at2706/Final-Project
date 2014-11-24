@@ -1,6 +1,6 @@
 #include "GameApp.h"
 
-GameApp::GameApp(){
+GameApp::GameApp() {
 	init();
 	charSheet = loadTexture("sheet.png");
 	tileSheet = loadTexture("arne_sprites.png", GL_NEAREST);
@@ -27,6 +27,22 @@ GameApp::GameApp(){
 	UIElement *ele = new UIElement(s,0.0f,0.5f);
 	UImain->attach(ele);
 
+	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
+	// for level generation
+	mapStart.x = 1 + (std::rand() % (4));
+	mapStart.y = 1 + (std::rand() % (4));
+	mapGoal.x = 1 + (std::rand() % (4));
+	mapGoal.y = 1 + (std::rand() % (4));
+	// to ensure theres enough space between the start and end point
+	while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 6) {
+		mapStart.x = 1 + (std::rand() % (4));
+		mapStart.y = 1 + (std::rand() % (4));
+		mapGoal.x = 1 + (std::rand() % (4));
+		mapGoal.y = 1 + (std::rand() % (4));
+	}
+	mapLayout[(int)mapStart.x][(int)mapStart.y] = 1;
+	mapLayout[(int)mapGoal.x][(int)mapGoal.y] = 1;
+	makeGameLevel();
 }
 
 GLvoid GameApp::init() {
@@ -109,4 +125,34 @@ GLvoid GameApp::Render() {
 	UImain->render();
 	Entity::renderAll();
 	SDL_GL_SwapWindow(displayWindow);
+}
+
+void GameApp::makeGameLevel() {
+	while (!genPath(mapStart.x, mapStart.y, 8)){} // to make sure the maplayout has a path from start to end of length 8
+}
+
+bool GameApp::genPath(int x, int y, int length) {
+	// first part of procedural generation
+	// I HAVE NOT TESTED THIS, THIS WAS MADE BASED OFF OF PSEUDOCODE
+	if (x == mapGoal.x && y == mapGoal.y && length == 0)
+		return true;
+	if (mapLayout[x][y] == 1 || x < 0 || y < 0 || x > LAYOUT_X || y > LAYOUT_Y)
+		return false;
+	mapLayout[x][y] = 1;
+	switch (1 + (std::rand() % (4))) {
+	case 1:
+		if (genPath(x, y - 1, length - 1)) // north of x,y
+			return true;
+	case 2:
+		if (genPath(x + 1, y, length - 1)) // east of x,y
+			return true;
+	case 3:
+		if (genPath(x, y + 1, length - 1)) // south of x,y
+			return true;
+	case 4:
+		if (genPath(x - 1, y, length - 1)) // west of x,y
+			return true;
+	}
+	mapLayout[x][y] = 0;
+	return false;
 }
