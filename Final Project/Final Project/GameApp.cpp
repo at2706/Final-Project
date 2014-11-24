@@ -127,6 +127,80 @@ GLvoid GameApp::Render() {
 	SDL_GL_SwapWindow(displayWindow);
 }
 
+// collision stuff that i used
+// NOT DONE YET, levelData needs to  be created which will have to be on me since i need that for procedural generation
+void GameApp::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
+	*gridX = (int)((worldX + (WORLD_OFFSET_X)) / TILE_SIZE);
+	*gridY = (int)((-worldY + (WORLD_OFFSET_Y)) / TILE_SIZE);
+}
+
+float GameApp::checkPointForGridCollisionY(float x, float y) {
+	int gridX, gridY;
+	worldToTileCoordinates(x, y, &gridX, &gridY);
+	if (gridX < 0 || gridX > 100 || gridY < 0 || gridY > 100) {
+		return 0.0f;
+	}
+	if (isSolid(levelData[gridY][gridX])) {
+		float yCoord = (gridY * TILE_SIZE);
+		return -y - yCoord;
+	}
+	return 0.0f;
+}
+
+float GameApp::checkPointForGridCollisionX(float x, float y) {
+	int gridX, gridY;
+	worldToTileCoordinates(x, y, &gridX, &gridY);
+	if (gridX < 0 || gridX > 100 || gridY < 0 || gridY > 100) {
+		return 0.0f;
+	}
+	if (isSolid(levelData[gridY][gridX])) {
+		float xCoord = (gridX * TILE_SIZE);
+		return -x - xCoord;
+	}
+	return 0.0f;
+}
+
+void GameApp::doLevelCollisionY(Entity* temp) {
+	float adjust = checkPointForGridCollisionY(temp->position.x, temp->position.y - temp->getHeight() * 0.5f); // do we have a variable for width and height?
+	if (adjust != 0.0f) {
+		temp->position.y += adjust + 0.0001f;
+		temp->velocity.y = 0.0f;
+		temp->collidedBottom =true;
+	}
+	adjust = checkPointForGridCollisionY(temp->position.x, temp->position.y + temp->getHeight() * 0.5f); // same as previous
+	if (adjust != 0.0f) {
+		temp->position.y -= adjust - 0.0001f;
+		temp->velocity.y = 0.0f;
+		temp->collidedTop = true;
+	}
+}
+
+void GameApp::doLevelCollisionX(Entity* temp) {
+	float adjust = checkPointForGridCollisionX(temp->position.x - temp->getWidth() * 0.5f, temp->position.y); // same as previous
+	if (adjust != 0.0f) {
+		temp->position.x -= adjust * TILE_SIZE *0.008f;
+		temp->velocity.x = 0.0f;
+		temp->collidedLeft = true;
+	}
+	adjust = checkPointForGridCollisionX(temp->position.x + temp->getWidth() * 0.5f, temp->position.y); // same as previous
+	if (adjust != 0.0f) {
+		temp->position.x += adjust * TILE_SIZE * 0.001;
+		temp->velocity.x = 0.0f;
+		temp->collidedRight = true;
+	}
+}
+
+bool GameApp::isSolid(int tile) {
+	// gotta change this to the spritesheet we are using
+	// make a case for all the solid blocks
+	switch (tile) {
+	case 1:
+		return true;
+		break;
+	}
+}
+
+// THIS STUFF IS FOR LEVEL GENERATION
 void GameApp::makeGameLevel() {
 	while (!genPath(mapStart.x, mapStart.y, 8)){} // to make sure the maplayout has a path from start to end of length 8
 }

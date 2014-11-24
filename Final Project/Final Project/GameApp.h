@@ -3,6 +3,8 @@
 #include "UIElement.h"
 #define LAYOUT_X 5
 #define LAYOUT_Y 5
+#define WORLD_OFFSET_X 0
+#define WORLD_OFFSET_Y 0
 
 class GameApp
 {
@@ -40,6 +42,14 @@ private:
 
 	UIElement *UImain;
 	Entity *players[4];
+
+	// for collision
+	void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
+	void doLevelCollisionY(Entity* temp);
+	void doLevelCollisionX(Entity* temp);
+	float checkPointForGridCollisionY(float x, float y);
+	float checkPointForGridCollisionX(float x, float y);
+	bool isSolid(int);
 
 	// for level generation
 	void makeGameLevel();
