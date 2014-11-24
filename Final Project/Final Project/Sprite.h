@@ -14,8 +14,9 @@ public:
 	Sprite(GLuint texID, GLuint index, GLuint SpriteCountX, GLint SpriteCountY);
 	virtual GLvoid render();
 
-private:
 	Vector size;
+
+private:
 	Vector UVcoords;
 
 	GLuint textureID;

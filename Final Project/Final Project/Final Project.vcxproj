@@ -14,6 +14,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameApp.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="UIElement.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>
@@ -23,6 +24,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -19,6 +19,10 @@ public:
 
 	GLvoid rotate(GLfloat degree);
 
+	GLboolean collidesWith(Entity *e);
+	GLvoid collisionPenX();
+	GLvoid collisionPenY();
+
 	GLvoid moveX();
 	GLvoid moveY();
 
@@ -40,7 +44,19 @@ public:
 
 	vector<float> vertices;
 	vector<float> uvs;
-	bool visible;
+
+	GLboolean isStatic;
+	GLboolean isIdle;
+	GLboolean visible;
+
+	GLboolean enableGravity;
+	GLboolean enableBounce;
+
+	GLboolean enableCollisions;
+	GLboolean collidedTop;
+	GLboolean collidedBottom;
+	GLboolean collidedLeft;
+	GLboolean collidedRight;
 
 private:
 	static list<Entity*> entities;

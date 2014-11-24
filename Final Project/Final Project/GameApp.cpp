@@ -4,13 +4,29 @@ GameApp::GameApp(){
 	init();
 	charSheet = loadTexture("sheet.png");
 	tileSheet = loadTexture("arne_sprites.png", GL_NEAREST);
+	UISheet = loadTexture("greenSheet.png", GL_NEAREST);
 	Sprite *s;
 	Entity *e;
 	s = new Sprite(charSheet, 1024, 1024, 112, 866, 112, 75);
 	e = new Entity(s);
-
+	
 	s = new Sprite(tileSheet, 114, 16, 8);
 	e = new Entity(s, 0.5f, 0.0f);
+
+	e->speed = 2.0;
+	e->acceleration.x = 4;
+	e->friction.x = 4;
+	players[0] = e;
+
+	//<SubTexture name="green_panel.png" x="190" y="94" width="100" height="100"/>
+	s = new Sprite(UISheet, 512, 256, 190.0f, 94.0, 100.0f, 100.0f);
+	UImain = new UIElement(s, -1.2f,0.4f,1.0f,1.0f);
+
+	//<SubTexture name="green_boxCross.png" x="380" y="36" width="38" height="36"/>
+	s = new Sprite(UISheet, 512, 256, 380.0f, 36.0f, 38.0f, 36.0f);
+	UIElement *ele = new UIElement(s,0.0f,0.5f);
+	UImain->attach(ele);
+
 }
 
 GLvoid GameApp::init() {
@@ -21,7 +37,7 @@ GLvoid GameApp::init() {
 
 	glViewport(0, 0, 1280, 720);
 	glMatrixMode(GL_PROJECTION);
-	glOrtho(-2.66, 2.66, -2.0, 2.0, -2.0, 2.0);
+	glOrtho(-1.33, 1.33, -1.0, 1.0, -1.0, 1.0);
 	glMatrixMode(GL_MODELVIEW);
 }
 
@@ -36,6 +52,16 @@ GLboolean GameApp::updateAndRender() {
 			return true;
 		}
 	}
+
+	if (keys[SDL_SCANCODE_D]){
+		players[0]->isIdle = false;
+		players[0]->setRotation(0.0f);
+	}
+	else if (keys[SDL_SCANCODE_A]){
+		players[0]->isIdle = false;
+		players[0]->setRotation(180.0f);
+	}
+	else players[0]->isIdle = true;
 
 	Update();
 
@@ -80,6 +106,7 @@ GLuint GameApp::loadTexture(const char *image_path, GLint param) {
 GLvoid GameApp::Render() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	UImain->render();
 	Entity::renderAll();
 	SDL_GL_SwapWindow(displayWindow);
 }

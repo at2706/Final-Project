@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include "UIElement.h"
 
 class GameApp
 {
@@ -34,5 +35,8 @@ private:
 	GLuint UISheet;
 	GLuint fontSheet;
 	GLuint bgTexture;
+
+	UIElement *UImain;
+	Entity *players[4];
 };
 
