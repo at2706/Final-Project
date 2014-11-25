@@ -20,11 +20,11 @@ GameApp::GameApp() {
 
 	//<SubTexture name="green_panel.png" x="190" y="94" width="100" height="100"/>
 	s = new Sprite(UISheet, 512, 256, 190.0f, 94.0, 100.0f, 100.0f);
-	UImain = new UIElement(s, -1.2f,0.4f,1.0f,1.0f);
+	UImain = new UIElement(s, -0.8f,0.4f,1.0f);
 
 	//<SubTexture name="green_boxCross.png" x="380" y="36" width="38" height="36"/>
 	s = new Sprite(UISheet, 512, 256, 380.0f, 36.0f, 38.0f, 36.0f);
-	UIElement *ele = new UIElement(s,0.0f,0.5f);
+	UIElement *ele = new UIElement(s,0.0f);
 	UImain->attach(ele);
 
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
@@ -42,7 +42,7 @@ GameApp::GameApp() {
 	}
 	mapLayout[(int)mapStart.x][(int)mapStart.y] = 1;
 	mapLayout[(int)mapGoal.x][(int)mapGoal.y] = 1;
-	makeGameLevel();
+	//makeGameLevel();
 }
 
 GLvoid GameApp::init() {
@@ -129,7 +129,7 @@ GLvoid GameApp::Render() {
 
 // collision stuff that i used
 // NOT DONE YET, levelData needs to  be created which will have to be on me since i need that for procedural generation
-void GameApp::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
+/*void GameApp::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
 	*gridX = (int)((worldX + (WORLD_OFFSET_X)) / TILE_SIZE);
 	*gridY = (int)((-worldY + (WORLD_OFFSET_Y)) / TILE_SIZE);
 }
@@ -229,4 +229,4 @@ bool GameApp::genPath(int x, int y, int length) {
 	}
 	mapLayout[x][y] = 0;
 	return false;
-}
+}*/

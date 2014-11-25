@@ -12,6 +12,9 @@ public:
 	virtual GLvoid render();
 	GLvoid buildMatrix();
 
+	GLvoid setPosition(GLfloat,GLfloat);
+	GLvoid setScale(GLfloat, GLfloat);
+
 	UIElement *parent;
 	vector<UIElement*> children;
 	Sprite *sprite;

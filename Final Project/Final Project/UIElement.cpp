@@ -4,6 +4,7 @@ UIElement::UIElement(Sprite *sheet, GLfloat posX, GLfloat posY, GLfloat scale_x,
 	: isVisible(true), position(posX,posY,0.0f), scale(scale_x,scale_y, 0.0f){
 	parent = nullptr;
 	sprite = sheet;
+	buildMatrix();
 }
 
 UIElement::~UIElement(){
@@ -12,19 +13,18 @@ UIElement::~UIElement(){
 GLvoid UIElement::attach(UIElement *e){
 	e->parent = this;
 
-	e->position.x = (position.x * sprite->size.x *scale.x) + position.x;
-	e->position.y = (position.y * sprite->size.y * scale.y) + position.y;
-
+	e->position.x = (e->position.x * sprite->size.x * scale.x) + position.x;
+	e->position.y = (e->position.y * sprite->size.y * scale.y) + position.y;
+	e->buildMatrix();
 	children.push_back(e);
 }
 
 GLvoid UIElement::render(){
 	if (isVisible){
-			buildMatrix();
-			glMatrixMode(GL_MODELVIEW);
-			glPushMatrix();
-			glMultMatrixf(matrix.ml);
-			sprite->render();
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glMultMatrixf(matrix.ml);
+		sprite->render();
 
 		glPopMatrix();
 
@@ -43,4 +43,14 @@ GLvoid UIElement::buildMatrix(){
 	translateMatrix.m[3][1] = position.y;
 
 	matrix = scaleMatrix * translateMatrix;
+}
+
+GLvoid UIElement::setPosition(GLfloat x, GLfloat y){
+	position = Vector(x, y);
+	buildMatrix();
+}
+
+GLvoid UIElement::setScale(GLfloat x, GLfloat y){
+	scale = Vector(x, y);
+	buildMatrix();
 }

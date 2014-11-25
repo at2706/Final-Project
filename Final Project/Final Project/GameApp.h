@@ -44,16 +44,16 @@ private:
 	Entity *players[4];
 
 	// for collision
-	void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
+	/*void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
 	void doLevelCollisionY(Entity* temp);
 	void doLevelCollisionX(Entity* temp);
 	float checkPointForGridCollisionY(float x, float y);
 	float checkPointForGridCollisionX(float x, float y);
-	bool isSolid(int);
+	bool isSolid(int);*/
 
 	// for level generation
-	void makeGameLevel();
-	bool genPath(int, int, int);
+	/*void makeGameLevel();
+	bool genPath(int, int, int);*/
 
 	int mapLayout[LAYOUT_X][LAYOUT_Y];
 	Vector mapGoal;
