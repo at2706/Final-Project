@@ -12,6 +12,7 @@ Entity::Entity(Sprite *s, float x, float y) {
 	visible = true;
 	isIdle = true;
 	enableCollisions = true;
+	enableGravity = true;
 
 	entities.push_back(this);
 	it = --entities.end();
@@ -32,26 +33,26 @@ GLvoid Entity::FixedUpdate() {
 	if (!isStatic){
 
 		if (!isIdle){
-			//moveY();
-			//collisionPenY();
+			moveY();
+			collisionPenY();
 			//tileCollisionY(g);
-			moveX();
+ 			moveX();
 			collisionPenX();
 			//tileCollisionX(g);
 		}
 		else{
 			decelerateY();
-			//collisionPenY();
+			collisionPenY();
 			//tileCollisionY(g);
 			decelerateX();
 			collisionPenX();
 			//tileCollisionX(g);
 		}
 
-		/*if (enableGravity && !collidedBottom){
-			velocity.x += g->gravity.x * FIXED_TIMESTEP;
-			velocity.y += g->gravity.y * FIXED_TIMESTEP;
-		}*/
+		if (enableGravity){
+			//velocity.x += g->gravity.x * FIXED_TIMESTEP;
+			velocity.y += -2.8f * FIXED_TIMESTEP;
+		}
 	}
 }
 GLvoid Entity::fixedUpdateAll(){

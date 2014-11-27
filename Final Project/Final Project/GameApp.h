@@ -34,6 +34,7 @@ private:
 	Vector gravity;
 	GameState state;
 
+	GLuint myVertexBuffer;
 	GLuint charSheet;
 	GLuint tileSheet;
 	GLuint UISheet;

@@ -13,8 +13,8 @@ UIElement::~UIElement(){
 GLvoid UIElement::attach(UIElement *e){
 	e->parent = this;
 
-	e->position.x = (e->position.x * sprite->size.x * scale.x) + position.x;
-	e->position.y = (e->position.y * sprite->size.y * scale.y) + position.y;
+	e->position.x = (e->position.x * (sprite->size.x / 2) * scale.x) + position.x;
+	e->position.y = (e->position.y * (sprite->size.y / 2) * scale.y) + position.y;
 	e->buildMatrix();
 	children.push_back(e);
 }

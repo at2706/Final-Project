@@ -42,11 +42,13 @@ GLvoid Sprite::render(){
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	vector<GLfloat> vertexData;
 	vector<GLfloat> texCoordData;
-	vertexData.insert(vertexData.end(), { -size.x / 2, size.y / 2,
-		-size.x / 2, -size.y / 2,
-		size.x / 2, -size.y / 2,
-		size.x / 2, size.y / 2 });
+	
 	if (!uniform){//Non-uniformed sprite sheets
+		vertexData.insert(vertexData.end(), { -(size.x * ratio) / 2, size.y / 2,
+			-(size.x * ratio) / 2, -size.y / 2,
+			(size.x * ratio) / 2, -size.y / 2,
+			(size.x * ratio) / 2, size.y / 2 });
+
 		texCoordData.insert(texCoordData.end(), { UVcoords.x, UVcoords.y,
 			UVcoords.x, UVcoords.y + size.y,
 			UVcoords.x + size.x, UVcoords.y + size.y,
@@ -54,6 +56,11 @@ GLvoid Sprite::render(){
 	}
 
 	else{ //Uniformed sprite sheets
+		vertexData.insert(vertexData.end(), { -size.x / 2, size.y / 2,
+			-size.x / 2, -size.y / 2,
+			size.x / 2, -size.y / 2,
+			size.x / 2, size.y / 2 });
+
 		texCoordData.insert(texCoordData.end(), { UVcoords.x, UVcoords.y,
 			UVcoords.x, UVcoords.y + size.y,
 			UVcoords.x + (size.x / ratio), UVcoords.y + size.y,

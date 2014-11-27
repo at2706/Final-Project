@@ -9,9 +9,10 @@ GameApp::GameApp() {
 	Entity *e;
 	s = new Sprite(charSheet, 1024, 1024, 112, 866, 112, 75);
 	e = new Entity(s);
+	e->enableGravity = false;
 	
 	s = new Sprite(tileSheet, 114, 16, 8);
-	e = new Entity(s, 0.5f, 0.0f);
+	e = new Entity(s, 0.0f, 0.5f);
 
 	e->speed = 2.0;
 	e->acceleration.x = 4;
@@ -22,10 +23,10 @@ GameApp::GameApp() {
 	s = new Sprite(UISheet, 512, 256, 190.0f, 94.0, 100.0f, 100.0f);
 	UImain = new UIElement(s, -0.8f,0.4f,1.0f);
 
-	//<SubTexture name="green_boxCross.png" x="380" y="36" width="38" height="36"/>
-	s = new Sprite(UISheet, 512, 256, 380.0f, 36.0f, 38.0f, 36.0f);
-	UIElement *ele = new UIElement(s,0.0f);
-	UImain->attach(ele);
+	////<SubTexture name="green_boxCross.png" x="380" y="36" width="38" height="36"/>
+	//s = new Sprite(UISheet, 512, 256, 380.0f, 36.0f, 38.0f, 36.0f);
+	//UIElement *ele = new UIElement(s,1.0f);
+	//UImain->attach(ele);
 
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
 	// for level generation
@@ -53,7 +54,7 @@ GLvoid GameApp::init() {
 
 	glViewport(0, 0, 1280, 720);
 	glMatrixMode(GL_PROJECTION);
-	glOrtho(-1.33, 1.33, -1.0, 1.0, -1.0, 1.0);
+	glOrtho(-1.777777, 1.777777, -1.0, 1.0, -1.0, 1.0);
 	glMatrixMode(GL_MODELVIEW);
 }
 
@@ -77,7 +78,12 @@ GLboolean GameApp::updateAndRender() {
 		players[0]->isIdle = false;
 		players[0]->setRotation(180.0f);
 	}
+
 	else players[0]->isIdle = true;
+
+	if (keys[SDL_SCANCODE_SPACE] && players[0]->collidedBottom){
+		players[0]->velocity.y = 2.0f;
+	}
 
 	Update();
 
@@ -107,6 +113,15 @@ GLvoid GameApp::time(){
 
 }
 
+GLvoid GameApp::Render() {
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	Entity::renderAll();
+	UImain->render();
+	SDL_GL_SwapWindow(displayWindow);
+}
+
 GLuint GameApp::loadTexture(const char *image_path, GLint param) {
 	SDL_Surface *surface = IMG_Load(image_path);
 	GLuint textureID;
@@ -118,15 +133,6 @@ GLuint GameApp::loadTexture(const char *image_path, GLint param) {
 	SDL_FreeSurface(surface);
 	return textureID;
 }
-
-GLvoid GameApp::Render() {
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	UImain->render();
-	Entity::renderAll();
-	SDL_GL_SwapWindow(displayWindow);
-}
-
 // collision stuff that i used
 // NOT DONE YET, levelData needs to  be created which will have to be on me since i need that for procedural generation
 /*void GameApp::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
