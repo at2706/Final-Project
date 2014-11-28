@@ -12,7 +12,7 @@ UIElement::~UIElement(){
 
 GLvoid UIElement::attach(UIElement *e){
 	e->parent = this;
-
+	e->fontTexture = fontTexture;
 	e->position.x = (e->position.x * (sprite->size.x / 2) * scale.x) + position.x;
 	e->position.y = (e->position.y * (sprite->size.y / 2) * scale.y) + position.y;
 	e->buildMatrix();

@@ -5,6 +5,8 @@ GameApp::GameApp() {
 	charSheet = loadTexture("sheet.png");
 	tileSheet = loadTexture("arne_sprites.png", GL_NEAREST);
 	UISheet = loadTexture("greenSheet.png", GL_NEAREST);
+	fontTexture = loadTexture("font1.png");
+	state = STATE_GAME_LEVEL;
 	Sprite *s;
 	Entity *e;
 	s = new Sprite(charSheet, 1024, 1024, 112, 866, 112, 75);
@@ -19,14 +21,7 @@ GameApp::GameApp() {
 	e->friction.x = 4;
 	players[0] = e;
 
-	//<SubTexture name="green_panel.png" x="190" y="94" width="100" height="100"/>
-	s = new Sprite(UISheet, 512, 256, 190.0f, 94.0, 100.0f, 100.0f);
-	UImain = new UIElement(s, -0.8f,0.4f,1.0f);
-
-	////<SubTexture name="green_boxCross.png" x="380" y="36" width="38" height="36"/>
-	//s = new Sprite(UISheet, 512, 256, 380.0f, 36.0f, 38.0f, 36.0f);
-	//UIElement *ele = new UIElement(s,1.0f);
-	//UImain->attach(ele);
+	buildMainMenu();
 
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
 	// for level generation
@@ -68,22 +63,46 @@ GLboolean GameApp::updateAndRender() {
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 			return true;
 		}
+		else if (event.type == SDL_KEYDOWN) {
+			if (event.key.keysym.scancode == SDL_SCANCODE_S) {
+				mainList->selectionDown();
+			}
+
+			else if (event.type == SDL_KEYDOWN) {
+				if (event.key.keysym.scancode == SDL_SCANCODE_W) {
+					mainList->selectionUp();
+				}
+			}
+		}
+	}
+	
+
+	switch (state){
+	case STATE_MAIN_MENU:
+		
+		break;
+	case STATE_GAME_LEVEL:
+		if (keys[SDL_SCANCODE_D]){
+			players[0]->isIdle = false;
+			players[0]->setRotation(0.0f);
+		}
+		else if (keys[SDL_SCANCODE_A]){
+			players[0]->isIdle = false;
+			players[0]->setRotation(180.0f);
+		}
+
+		else players[0]->isIdle = true;
+
+		if (keys[SDL_SCANCODE_SPACE] && players[0]->collidedBottom){
+			players[0]->velocity.y = 2.0f;
+		}
+		break;
+	case STATE_GAME_OVER:
+
+		break;
 	}
 
-	if (keys[SDL_SCANCODE_D]){
-		players[0]->isIdle = false;
-		players[0]->setRotation(0.0f);
-	}
-	else if (keys[SDL_SCANCODE_A]){
-		players[0]->isIdle = false;
-		players[0]->setRotation(180.0f);
-	}
 
-	else players[0]->isIdle = true;
-
-	if (keys[SDL_SCANCODE_SPACE] && players[0]->collidedBottom){
-		players[0]->velocity.y = 2.0f;
-	}
 
 	Update();
 
@@ -117,8 +136,20 @@ GLvoid GameApp::Render() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	Entity::renderAll();
-	UImain->render();
+	
+	switch (state){
+	case STATE_MAIN_MENU:
+		UImain->render();
+		break;
+	case STATE_GAME_LEVEL:
+		Entity::renderAll();
+		break;
+	case STATE_GAME_OVER:
+
+		break;
+	}
+
+
 	SDL_GL_SwapWindow(displayWindow);
 }
 
@@ -133,6 +164,35 @@ GLuint GameApp::loadTexture(const char *image_path, GLint param) {
 	SDL_FreeSurface(surface);
 	return textureID;
 }
+
+GLvoid GameApp::buildMainMenu(){
+	Sprite *s;
+	//<SubTexture name="green_panel.png" x="190" y="94" width="100" height="100"/>
+	s = new Sprite(UISheet, 512, 256, 190, 94, 100, 100);
+	UImain = new UIElement(s, 0.0f, 0.4f, 1.0f, 1.0f);
+	UImain->fontTexture = fontTexture;
+
+	//<SubTexture name="green_sliderRight.png" x="339" y="143" width="39" height="31"/>
+	s = new Sprite(UISheet, 512, 256, 339, 143, 39, 31);
+	mainList = new UIList(s, -0.7f, 0.7f);
+	mainList->spacing.y = 0.08f;
+	UImain->attach(mainList);
+	UIText *b;
+	b = new UIText("Start");
+	b->color = { 1, 1, 1, 1 };
+	mainList->attach(b);
+
+	b = new UIText("Players");
+	b->color = { 1, 1, 1, 1 };
+	mainList->attach(b);
+
+	b = new UIText("Quit");
+	b->spacing = -0.13f;
+	b->color = { 1, 1, 1, 1 };
+	mainList->attach(b);
+
+}
+
 // collision stuff that i used
 // NOT DONE YET, levelData needs to  be created which will have to be on me since i need that for procedural generation
 /*void GameApp::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {

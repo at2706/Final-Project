@@ -10,11 +10,10 @@ Sprite::~Sprite(){
 //Non-uniform Constructor
 Sprite::Sprite(GLuint texID, GLuint tWidth, GLuint tHeight, GLuint u, GLuint v, GLuint width, GLuint height)
 	: textureID(texID){
-	uniform = false;
 	ratio = tWidth / tHeight;
 
 	UVcoords.x = (float)u / tWidth;
-	size.x = (float)width / tWidth;
+	size.x = (float)width / tHeight;
 
 	UVcoords.y = (float)v / tHeight;
 	size.y = (float)height / tHeight;
@@ -23,7 +22,6 @@ Sprite::Sprite(GLuint texID, GLuint tWidth, GLuint tHeight, GLuint u, GLuint v, 
 //Uniform Constructor
 Sprite::Sprite(GLuint texID, GLuint index, GLuint spriteCountX, GLint spriteCountY)
 	: textureID(texID){
-	uniform = true;
 	ratio = spriteCountX / spriteCountY;
 
 	UVcoords.x = (GLfloat)(((GLint)index) % spriteCountX) / (GLfloat)spriteCountX;
@@ -40,41 +38,27 @@ GLvoid Sprite::render(){
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	vector<GLfloat> vertexData;
-	vector<GLfloat> texCoordData;
-	
-	if (!uniform){//Non-uniformed sprite sheets
-		vertexData.insert(vertexData.end(), { -(size.x * ratio) / 2, size.y / 2,
-			-(size.x * ratio) / 2, -size.y / 2,
-			(size.x * ratio) / 2, -size.y / 2,
-			(size.x * ratio) / 2, size.y / 2 });
 
-		texCoordData.insert(texCoordData.end(), { UVcoords.x, UVcoords.y,
-			UVcoords.x, UVcoords.y + size.y,
-			UVcoords.x + size.x, UVcoords.y + size.y,
-			UVcoords.x + size.x, UVcoords.y });
-	}
+	GLfloat vertexData[] = { -size.x / 2, size.y / 2,
+		-size.x / 2, -size.y / 2,
+		size.x / 2, -size.y / 2,
+		size.x / 2, size.y / 2 };
 
-	else{ //Uniformed sprite sheets
-		vertexData.insert(vertexData.end(), { -size.x / 2, size.y / 2,
-			-size.x / 2, -size.y / 2,
-			size.x / 2, -size.y / 2,
-			size.x / 2, size.y / 2 });
+	GLfloat texCoordData[] = { UVcoords.x, UVcoords.y,
+		UVcoords.x, UVcoords.y + size.y,
+		UVcoords.x + (size.x / ratio), UVcoords.y + size.y,
+		UVcoords.x + (size.x / ratio), UVcoords.y };
 
-		texCoordData.insert(texCoordData.end(), { UVcoords.x, UVcoords.y,
-			UVcoords.x, UVcoords.y + size.y,
-			UVcoords.x + (size.x / ratio), UVcoords.y + size.y,
-			UVcoords.x + (size.x / ratio), UVcoords.y });
-	}
-
-	glVertexPointer(2, GL_FLOAT, 0, vertexData.data());
+	glVertexPointer(2, GL_FLOAT, 0, vertexData);
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, 0, texCoordData.data());
+	glTexCoordPointer(2, GL_FLOAT, 0, texCoordData);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	vector<unsigned int> indices = { 0, 1, 2, 0, 2, 3 };
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices.data());
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);

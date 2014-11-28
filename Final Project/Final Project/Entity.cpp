@@ -9,10 +9,14 @@ Entity::Entity(Sprite *s, float x, float y) {
 	position.x = x;
 	position.y = y;
 
+	healthMax = 100;
+	health = 50;
+	
 	visible = true;
 	isIdle = true;
 	enableCollisions = true;
 	enableGravity = true;
+	healthBar = true;
 
 	entities.push_back(this);
 	it = --entities.end();
@@ -70,6 +74,8 @@ GLvoid Entity::Render() {
 
 		sprite->render();
 
+		renderHealthBar();
+
 		glPopMatrix();
 	}
 }
@@ -107,7 +113,7 @@ GLvoid Entity::buildMatrix(){
 	rotationZMatrix.m[0][1] = sin(rotation.z);
 	rotationZMatrix.m[1][1] = cos(rotation.z);
 
-	Matrix rotationMatrix = rotationXMatrix * rotationYMatrix * rotationZMatrix;
+	rotationMatrix = rotationXMatrix * rotationYMatrix * rotationZMatrix;
 	matrix = scaleMatrix * rotationMatrix * translateMatrix;
 }
 
@@ -207,4 +213,41 @@ GLvoid Entity::decelerateX(){
 GLvoid Entity::decelerateY(){
 	velocity.y = lerp(velocity.y, 0.0f, FIXED_TIMESTEP * friction.y);
 	position.y += velocity.y * FIXED_TIMESTEP;
+}
+
+GLvoid Entity::renderHealthBar(){
+	glMultMatrixf(rotationMatrix.inverse().ml);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	Color color = {0,1,0,1};
+	GLfloat vertexData[] = { -sprite->size.x / 2, 0.1f,
+		-sprite->size.x / 2, 0.08f,
+		sprite->size.x / 2, 0.08f,
+		sprite->size.x / 2, 0.1f };
+
+	GLfloat colorData[] = { color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a };
+
+	glColorPointer(4, GL_FLOAT, 0, colorData);
+	glVertexPointer(2, GL_FLOAT, 0, vertexData);
+
+	glLineWidth(2.0f);
+	glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+	GLfloat vertexData2[] = { -sprite->size.x / 2, 0.1f,
+		-sprite->size.x / 2, 0.08f,
+		(sprite->size.x / 2) * (health / healthMax), 0.08f,
+		(sprite->size.x / 2) * (health / healthMax), 0.1f };
+
+	GLfloat colorData2[] = { color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a };
+
+	glColorPointer(4, GL_FLOAT, 0, colorData2);
+	glVertexPointer(2, GL_FLOAT, 0, vertexData2);
+
+	vector<unsigned int> indices = { 0, 1, 2, 0, 2, 3 };
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices.data());
+
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }

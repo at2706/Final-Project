@@ -18,9 +18,7 @@ public:
 
 private:
 	Vector UVcoords;
-
 	GLuint textureID;
-	GLboolean uniform;
 	GLfloat ratio;
 };
 

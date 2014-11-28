@@ -23,5 +23,6 @@ public:
 	Vector position;
 	Vector scale;
 	GLboolean isVisible;
+	GLuint fontTexture;
 	
 };

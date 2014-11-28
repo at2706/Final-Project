@@ -35,15 +35,16 @@ public:
 	Sprite *sprite;
 	
 	Matrix matrix;
+	Matrix rotationMatrix;
 	Vector position;
 	Vector scale;
-	float speed;		//Maximum velocity on the x-axis
+	GLfloat speed;		//Maximum velocity on the x-axis
 	Vector velocity;
 	Vector acceleration;
 	Vector friction;
 
-	vector<float> vertices;
-	vector<float> uvs;
+	GLfloat healthMax;
+	GLfloat health;
 
 	GLboolean isStatic;
 	GLboolean isIdle;
@@ -51,6 +52,8 @@ public:
 
 	GLboolean enableGravity;
 	GLboolean enableBounce;
+	GLboolean reviveable;
+	GLboolean healthBar;
 
 	GLboolean enableCollisions;
 	GLboolean collidedTop;
@@ -62,4 +65,6 @@ private:
 	static list<Entity*> entities;
 	list<Entity*>::iterator it;
 	Vector rotation;	//in radians
+
+	GLvoid renderHealthBar();
 };
