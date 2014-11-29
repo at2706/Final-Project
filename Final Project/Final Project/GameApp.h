@@ -33,15 +33,20 @@ private:
 	GLvoid time();
 	GLuint loadTexture(const char *image_path, GLint param = GL_LINEAR);
 	GLvoid buildMainMenu();
+	GLvoid buildPauseMenu();
+	GLvoid buildUIstatic();
 	GLvoid initPlayer(int);
 	GLvoid gameStart();
+	GLvoid followPlayers(Player *p);
+	GLvoid drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y);
 
+	GameState state;
 	GLfloat timeLeftOver = 0.0f;
 	GLfloat elapsed;
 	GLfloat ticks;
 	GLfloat lastFrameTicks;
 	Vector gravity;
-	GameState state;
+	GLfloat zoom;
 
 	GLuint myVertexBuffer;
 	GLuint charSheet;
@@ -50,13 +55,14 @@ private:
 	GLuint fontTexture;
 	GLuint bgTexture;
 
-	UIElement *UImain;
-	UIList *mainList;
 	GLuint playerCount;
 	Player players[4];
 
+	UIElement *UImain;
+	UIList *mainList;
 	UIElement *UIpause;
 	UIList *pauseList;
+	UIElement *UIstatic;
 
 	// for collision
 	/*void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);

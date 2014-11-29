@@ -8,15 +8,14 @@ GameApp::GameApp() {
 	fontTexture = loadTexture("font1.png");
 	state = STATE_MAIN_MENU;
 	playerCount = 1;
-	Sprite *s;
-	Entity *e;
-	s = new Sprite(charSheet, 1024, 1024, 112, 866, 112, 75);
-	e = new Entity(s);
-	e->enableGravity = false;
 	
 	SDL_JoystickOpen(0);
 
 	buildMainMenu();
+	buildPauseMenu();
+	buildUIstatic();
+
+	drawPlatformHorizontal(26,0.0f,-0.5f);
 
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
 	// for level generation
@@ -38,13 +37,13 @@ GameApp::GameApp() {
 
 GLvoid GameApp::init() {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
-	displayWindow = SDL_CreateWindow("Platformer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_OPENGL);
+	displayWindow = SDL_CreateWindow("Platformer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, RESOLUTION_W, RESOLUTION_H, SDL_WINDOW_OPENGL);
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
 
-	glViewport(0, 0, 1280, 720);
+	glViewport(0, 0, RESOLUTION_W, RESOLUTION_H);
 	glMatrixMode(GL_PROJECTION);
-	glOrtho(-1.777777, 1.777777, -1.0, 1.0, -1.0, 1.0);
+	glOrtho(-ASPECT_RATIO_X, ASPECT_RATIO_X, -ASPECT_RATIO_Y, ASPECT_RATIO_Y, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
 }
 
@@ -54,6 +53,30 @@ GameApp::~GameApp()
 		SDL_JoystickClose(players[i].controller);
 	}
 	SDL_Quit();
+}
+
+GLvoid tint(float alpha) {
+	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_BLEND);
+
+
+	glLoadIdentity();
+	GLfloat quad3[] = { -2.0f, 2.0f, -2.0f, -2.0f, 2.0f, -2.0f, 2.0f, 2.0f };
+	glVertexPointer(2, GL_FLOAT, 0, quad3);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	GLfloat tint[] = { 0.0f, 0.0f, 0.0f, alpha, 0.0f, 0.0f, 0.0f, alpha, 0.0f, 0.0f, 0.0f, alpha, 0.0f, 0.0f, 0.0f, alpha };
+	glColorPointer(4, GL_FLOAT, 0, tint);
+	glEnableClientState(GL_COLOR_ARRAY);
+
+	vector<unsigned int> indices = { 0, 1, 2, 0, 2, 3 };
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices.data());
+
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+}
+bool positionXSort(Player &p1, Player &p2){
+	return p1.hero->position.x < p2.hero->position.x;
 }
 
 GLboolean GameApp::updateAndRender() {
@@ -85,7 +108,6 @@ GLboolean GameApp::updateAndRender() {
 					mainList->selectionUp();
 					controllerCooldown = 0;
 				}
-
 			}
 			//LEFT and RIGHT for picking the amount of players
 			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 0 && controllerCooldown > 0.3f) {
@@ -118,16 +140,54 @@ GLboolean GameApp::updateAndRender() {
 			}
 			break;
 		case STATE_GAME_LEVEL:
-			if (event.type == SDL_JOYAXISMOTION){
-				players[event.jaxis.which].axisValues[event.jaxis.axis] = event.jaxis.value;
+			if (event.jaxis.which == 0)
+			{
+				if (event.type == SDL_JOYAXISMOTION){
+					players[event.jaxis.which].axisValues[event.jaxis.axis] = event.jaxis.value;
+				}
+				if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 10){
+					players[event.jaxis.which].hero->velocity.y = 1.5f;
+				}
+				if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 4){
+					state = STATE_GAME_PAUSE;
+				}
 			}
+			break;
+		case STATE_GAME_PAUSE:
+			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 1 && controllerCooldown > 0.1f) {
+
+				if (event.jaxis.value > CONTROLER_DEAD_ZONE) {
+					pauseList->selectionDown();
+					controllerCooldown = 0;
+				}
+
+				else if (event.jaxis.value < -CONTROLER_DEAD_ZONE) {
+					pauseList->selectionUp();
+					controllerCooldown = 0;
+				}
+			}
+
 			if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 10){
-				players[event.jaxis.which].hero->velocity.y = 1.5f;
+				switch (pauseList->selection){
+				case 0:
+					state = STATE_GAME_LEVEL;
+					break;
+				case 1:
+					return true;
+				}
+			}
+
+			if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 4){
+				state = STATE_GAME_LEVEL;
 			}
 			break;
 		case STATE_GAME_OVER:
 
 			break;
+		}
+
+		if (event.type == SDL_JOYBUTTONDOWN){
+			cout << to_string(event.jbutton.button) << endl;
 		}
 	}
 
@@ -136,33 +196,60 @@ GLboolean GameApp::updateAndRender() {
 		controllerCooldown += elapsed;
 		break;
 	case STATE_GAME_LEVEL:
+		sort(players, players + playerCount, positionXSort);
+
 		for (GLuint i = 0; i < playerCount; i++){
 			if (players[i].axisValues[0] > CONTROLER_DEAD_ZONE){
 				players[i].hero->isIdle = false;
 				players[i].hero->setRotation(0.0f);
+				players[i].hero->speed = 2 * players[i].axisValues[0] / AXIS_MAX;
 			}
 
 			else if (players[i].axisValues[0] < -CONTROLER_DEAD_ZONE){
 				players[i].hero->isIdle = false;
 				players[i].hero->setRotation(180.0f);
+				players[i].hero->speed = -2 * players[i].axisValues[0] / AXIS_MAX;
 			}
-			else players[i].hero->isIdle = true;
+			else{
+				players[i].hero->isIdle = true;
+				
+			}
+			if (i == 0){
+				cout << to_string(players[i].axisValues[0]) << endl;
+			}
 		}
 
 		/*if (keys[SDL_SCANCODE_D]){
-			players[0].hero->isIdle = false;
-			players[0].hero->setRotation(0.0f);
+		players[0].hero->isIdle = false;
+		players[0].hero->setRotation(0.0f);
 		}
 		else if (keys[SDL_SCANCODE_A]){
-			players[0].hero->isIdle = false;
-			players[0].hero->setRotation(180.0f);
+		players[0].hero->isIdle = false;
+		players[0].hero->setRotation(180.0f);
 		}
-
 		else players[0].hero->isIdle = true;
 
-		if (keys[SDL_SCANCODE_SPACE] && players[0].hero->collidedBottom){
-			players[0].hero->velocity.y = 2.0f;
+		if (keys[SDL_SCANCODE_W] && players[0].hero->collidedBottom){
+		players[0].hero->velocity.y = 2.0f;
 		}*/
+
+		/*if (keys[SDL_SCANCODE_RIGHT]){
+			players[1].hero->isIdle = false;
+			players[1].hero->setRotation(0.0f);
+		}
+		else if (keys[SDL_SCANCODE_LEFT]){
+			players[1].hero->isIdle = false;
+			players[1].hero->setRotation(180.0f);
+		}
+		else players[1].hero->isIdle = true;
+
+		if (keys[SDL_SCANCODE_UP] && players[1].hero->collidedBottom){
+			players[1].hero->velocity.y = 2.0f;
+		}*/
+
+		break;
+	case STATE_GAME_PAUSE:
+		controllerCooldown += elapsed;
 		break;
 	case STATE_GAME_OVER:
 
@@ -186,33 +273,54 @@ GLvoid GameApp::time(){
 	elapsed = ticks - lastFrameTicks;
 	lastFrameTicks = ticks;
 
-	GLfloat fixedElapsed = elapsed + timeLeftOver;
-	if (fixedElapsed > FIXED_TIMESTEP * MAX_TIMESTEPS) {
-		fixedElapsed = FIXED_TIMESTEP * MAX_TIMESTEPS;
-	}
+	if (state != STATE_GAME_PAUSE) {
+		GLfloat fixedElapsed = elapsed + timeLeftOver;
+		if (fixedElapsed > FIXED_TIMESTEP * MAX_TIMESTEPS) {
+			fixedElapsed = FIXED_TIMESTEP * MAX_TIMESTEPS;
+		}
 
-	while (fixedElapsed >= FIXED_TIMESTEP) {
-		fixedElapsed -= FIXED_TIMESTEP;
-		Entity::fixedUpdateAll();
+		while (fixedElapsed >= FIXED_TIMESTEP) {
+			fixedElapsed -= FIXED_TIMESTEP;
+			Entity::fixedUpdateAll();
+		}
+		timeLeftOver = fixedElapsed;
 	}
-	timeLeftOver = fixedElapsed;
 
 }
 
 GLvoid GameApp::Render() {
+	
+
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+	glLoadIdentity();
+	zoom = 0.8f;
+	Matrix scaleMatrix;
+	scaleMatrix.m[0][0] = zoom;
+	scaleMatrix.m[1][1] = zoom;
+	scaleMatrix.m[2][2] = zoom;
 	
 	switch (state){
 	case STATE_MAIN_MENU:
 		UImain->render();
 		break;
 	case STATE_GAME_LEVEL:
+		UIstatic->render();
+		
+		glMultMatrixf(scaleMatrix.ml);
+		followPlayers(players);
 		Entity::renderAll();
+		break;
+	case STATE_GAME_PAUSE:
+		followPlayers(players);
+		Entity::renderAll();
+		tint(0.5f);
+		UIpause->render();
 		break;
 	case STATE_GAME_OVER:
 
+		break;
+	default:
 		break;
 	}
 
@@ -232,6 +340,24 @@ GLuint GameApp::loadTexture(const char *image_path, GLint param) {
 	return textureID;
 }
 
+GLvoid GameApp::initPlayer(int i){
+	Sprite *s;
+	Entity *e;
+
+	s = new Sprite(tileSheet, 114, 16, 8);
+	e = new Entity(s, HERO);
+
+	e->position.x = -0.7f + i * 0.5f;
+	players[i].hero = e;
+	players[i].controller = SDL_JoystickOpen(i);
+}
+
+GLvoid GameApp::gameStart(){
+	for (GLuint i = 0; i < playerCount; i++){
+		initPlayer(i);
+	}
+	state = STATE_GAME_LEVEL;
+}
 GLvoid GameApp::buildMainMenu(){
 	Sprite *s;
 	//<SubTexture name="green_panel.png" x="190" y="94" width="100" height="100"/>
@@ -259,27 +385,73 @@ GLvoid GameApp::buildMainMenu(){
 	mainList->attach(b);
 
 }
-
-GLvoid GameApp::initPlayer(int i){
+GLvoid GameApp::buildPauseMenu(){
 	Sprite *s;
-	Entity *e;
+	UIText *t;
+	//<SubTexture name="green_panel.png" x="190" y="94" width="100" height="100"/>
+	s = new Sprite(UISheet, 512, 256, 190, 94, 100, 100);
+	UIpause = new UIElement(s, 0.0f, 0.0f, 1.22f, 0.8f);
+	UIpause->fontTexture = fontTexture;
 
-	s = new Sprite(tileSheet, 114, 16, 8);
-	e = new Entity(s, 0.0f, 0.5f);
+	//<SubTexture name="green_button03.png" x="0" y="192" width="190" height="45"/>
+	s = new Sprite(UISheet, 512, 256, 0, 192, 190, 45);
+	UIElement *pauseTitle = new UIElement(s, 0.0f, 1.1f, 0.4f, 0.6f);
+	UIpause->attach(pauseTitle);
+	t = new UIText("PAUSE",0.3f,-0.55f);
+	t->color = { 1, 1, 1, 1 };
+	pauseTitle->attach(t);
 
-	e->speed = 2.0;
-	e->acceleration.x = 4;
-	e->friction.x = 4;
-	players[i].hero = e;
-	players[i].controller = SDL_JoystickOpen(i);
+	//<SubTexture name="green_sliderRight.png" x="339" y="143" width="39" height="31"/>
+	s = new Sprite(UISheet, 512, 256, 339, 143, 39, 31);
+	pauseList = new UIList(s, -0.7f, 0.4f);
+	pauseList->spacing.y = 0.08f;
+	UIpause->attach(pauseList);
+
+	t = new UIText("Resume");
+	t->spacing = -0.12f;
+	t->color = { 1, 1, 1, 1 };
+	pauseList->attach(t);
+
+	t = new UIText("Quit");
+	t->color = { 1, 1, 1, 1 };
+	pauseList->attach(t);
+}
+GLvoid GameApp::buildUIstatic(){
+	Sprite *s;
+	UIText *b;
+
+	s = new Sprite(UISheet, 512, 256, 0, 192, 190, 45);
+	UIstatic = new UIElement(s, -1.5f, 0.9f,0.55f, 0.5f);
+	UIstatic->fontTexture = fontTexture;
+
+	b = new UIText("Lives: ", 0.3f, -0.75f);
+	b->color = { 1, 1, 1, 1 };
+	UIstatic->attach(b);
 }
 
-GLvoid GameApp::gameStart(){
+GLvoid GameApp::followPlayers(Player *p){
+	GLfloat posX = 0, posY = 0;
 	for (GLuint i = 0; i < playerCount; i++){
-		initPlayer(i);
+		if (i!= 1){
+			posX += p[i].hero->position.x;
+			posY += p[i].hero->position.y;
+		}
 	}
-	state = STATE_GAME_LEVEL;
+
+	posX /= playerCount;
+	posY /= playerCount;
+	glTranslatef(-posX, -posY, 0.0f);
 }
+GLvoid GameApp::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
+	Sprite *sprite;
+	Entity *platform;
+	sprite = new Sprite(tileSheet, 3, 16, 8);
+	for (GLfloat i = -(length / 2); i < (length / 2); i++){
+		platform = new Entity(sprite, (i * sprite->size.x) + x, y);
+		platform->isStatic = true;
+	}
+}
+
 
 // collision stuff that i used
 // NOT DONE YET, levelData needs to  be created which will have to be on me since i need that for procedural generation

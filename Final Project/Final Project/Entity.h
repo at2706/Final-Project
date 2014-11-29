@@ -19,6 +19,7 @@ public:
 	GLvoid setRotation(float); //Takes in degree arguement
 
 	GLvoid rotate(GLfloat degree);
+	GLvoid modHealth(GLfloat amount);
 
 	GLvoid moveX();
 	GLvoid moveY();
@@ -33,6 +34,7 @@ public:
 	EntityType type;
 
 	Matrix matrix;
+	Matrix translateMatrix;
 	Matrix rotationMatrix;
 	Vector position;
 	Vector scale;
@@ -40,9 +42,6 @@ public:
 	Vector velocity;
 	Vector acceleration;
 	Vector friction;
-
-	GLfloat healthMax;
-	GLfloat health;
 
 	GLboolean isStatic;
 	GLboolean isIdle;
@@ -65,7 +64,12 @@ private:
 	GLvoid collisionPenY();
 	GLvoid renderHealthBar();
 
+	GLvoid collisionEffect();
+
 	static list<Entity*> entities;
 	list<Entity*>::iterator it;
 	Vector rotation;	//in radians
+
+	GLfloat healthMax;
+	GLfloat health;
 };

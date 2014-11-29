@@ -10,7 +10,7 @@ Entity::Entity(Sprite *s, float x, float y) {
 	position.y = y;
 
 	healthMax = 100;
-	health = 50;
+	health = 100;
 	
 	visible = true;
 	isIdle = true;
@@ -22,11 +22,37 @@ Entity::Entity(Sprite *s, float x, float y) {
 	it = --entities.end();
 }
 Entity::Entity(Sprite *s, EntityType t){
+	sprite = s;
+	setScale();
+	visible = true;
+	isIdle = true;
+	healthBar = true;
+	type = t;
+
 	switch (t){
 	case HERO:
+		healthMax = 500;
+		health = 500;
+		speed = 2;
+		acceleration.x = 4;
+		friction.x = 4;
 
+		reviveable = true;
+		enableGravity = true;
+		enableCollisions = true;
 	break;
+	case FLYER:
+		healthMax = 100;
+		health = 100;
+		speed = 2;
+		acceleration.x = 4;
+	break;
+	case PLATFORM:
+		isStatic = true;
 	}
+
+	entities.push_back(this);
+	it = --entities.end();
 }
 
 Entity::~Entity(){
@@ -81,7 +107,7 @@ GLvoid Entity::Render() {
 
 		sprite->render();
 
-		if (health/healthMax < 0.95)
+		if (healthBar && health/healthMax < 0.95)
 			renderHealthBar();
 
 		glPopMatrix();
@@ -98,7 +124,6 @@ GLvoid Entity::buildMatrix(){
 	scaleMatrix.m[1][1] = scale.y;
 	scaleMatrix.m[2][2] = scale.z;
 
-	Matrix translateMatrix;
 	translateMatrix.m[3][0] = position.x;
 	translateMatrix.m[3][1] = position.y;
 	translateMatrix.m[3][2] = position.z;
@@ -197,6 +222,12 @@ GLvoid Entity::collisionPenY(){
 GLvoid Entity::rotate(GLfloat z){
 	rotation.z += (z * PI) / 180.0f;
 }
+GLvoid Entity::modHealth(GLfloat amount){
+	if (amount < -health) health = 0;
+	else if (amount > healthMax - health) health = healthMax;
+	else health += amount;
+}
+
 GLvoid Entity::moveX(){
 	velocity.x += acceleration.x * FIXED_TIMESTEP * cos(rotation.y);
 

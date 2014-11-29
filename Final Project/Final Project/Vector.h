@@ -6,7 +6,7 @@ public:
 	Vector();
 	Vector(float, float, float z = 0);
 
-	float length();
+	float length() const;
 	void normalize();
 	float operator* (const Vector&);
 	float x;

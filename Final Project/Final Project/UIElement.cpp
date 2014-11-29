@@ -25,12 +25,12 @@ GLvoid UIElement::render(){
 		glPushMatrix();
 		glMultMatrixf(matrix.ml);
 		sprite->render();
-
+		
 		glPopMatrix();
-
-		for (vector<UIElement*>::iterator it = children.begin(); it != children.end(); ++it)
-			(*it)->render();
 	}
+	
+	for (vector<UIElement*>::iterator it = children.begin(); it != children.end(); ++it)
+		(*it)->render();
 }
 
 GLvoid UIElement::buildMatrix(){
