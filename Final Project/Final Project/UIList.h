@@ -14,8 +14,9 @@ public:
 	GLvoid selectionUp();
 
 	Vector spacing;
+
+	GLuint selection;
 private:
 	UIElement *cursor;
-	GLuint selection;
 };
 

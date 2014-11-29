@@ -3,6 +3,7 @@
 #include "UIElement.h"
 #include "UIText.h"
 #include "UIList.h"
+#include "Player.h"
 #define LAYOUT_X 5
 #define LAYOUT_Y 5
 #define WORLD_OFFSET_X 0
@@ -25,10 +26,15 @@ private:
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	enum GameState { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_PAUSE, STATE_GAME_OVER };
 
+	SDL_Joystick * playerOneController;
+	GLfloat controllerCooldown;
+
 	GLvoid init();
 	GLvoid time();
 	GLuint loadTexture(const char *image_path, GLint param = GL_LINEAR);
 	GLvoid buildMainMenu();
+	GLvoid initPlayer(int);
+	GLvoid gameStart();
 
 	GLfloat timeLeftOver = 0.0f;
 	GLfloat elapsed;
@@ -46,7 +52,11 @@ private:
 
 	UIElement *UImain;
 	UIList *mainList;
-	Entity *players[4];
+	GLuint playerCount;
+	Player players[4];
+
+	UIElement *UIpause;
+	UIList *pauseList;
 
 	// for collision
 	/*void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
@@ -64,4 +74,3 @@ private:
 	Vector mapGoal;
 	Vector mapStart;
 };
-

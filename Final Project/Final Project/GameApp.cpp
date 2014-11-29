@@ -6,20 +6,15 @@ GameApp::GameApp() {
 	tileSheet = loadTexture("arne_sprites.png", GL_NEAREST);
 	UISheet = loadTexture("greenSheet.png", GL_NEAREST);
 	fontTexture = loadTexture("font1.png");
-	state = STATE_GAME_LEVEL;
+	state = STATE_MAIN_MENU;
+	playerCount = 1;
 	Sprite *s;
 	Entity *e;
 	s = new Sprite(charSheet, 1024, 1024, 112, 866, 112, 75);
 	e = new Entity(s);
 	e->enableGravity = false;
 	
-	s = new Sprite(tileSheet, 114, 16, 8);
-	e = new Entity(s, 0.0f, 0.5f);
-
-	e->speed = 2.0;
-	e->acceleration.x = 4;
-	e->friction.x = 4;
-	players[0] = e;
+	SDL_JoystickOpen(0);
 
 	buildMainMenu();
 
@@ -42,7 +37,7 @@ GameApp::GameApp() {
 }
 
 GLvoid GameApp::init() {
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
 	displayWindow = SDL_CreateWindow("Platformer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_OPENGL);
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
@@ -55,6 +50,9 @@ GLvoid GameApp::init() {
 
 GameApp::~GameApp()
 {
+	for (GLuint i = 0; i < playerCount; i++){
+		SDL_JoystickClose(players[i].controller);
+	}
 	SDL_Quit();
 }
 
@@ -63,39 +61,108 @@ GLboolean GameApp::updateAndRender() {
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 			return true;
 		}
-		else if (event.type == SDL_KEYDOWN) {
-			if (event.key.keysym.scancode == SDL_SCANCODE_S) {
-				mainList->selectionDown();
-			}
+		/*
+		=============					=============
+			AXIS							VALUE
+		=============					=============
+		0: left stick x-axis			Negative: Up, Left
+		1: left stick y-axis			Positive: Down, Right
+		2: right stick x-axis			
+		3: right stick y-axis			*/
+		
 
-			else if (event.type == SDL_KEYDOWN) {
-				if (event.key.keysym.scancode == SDL_SCANCODE_W) {
+		switch (state){
+		case STATE_MAIN_MENU:
+			//UP and DOWN the main menu
+			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 1 && controllerCooldown > 0.1f) {
+
+				if (event.jaxis.value > CONTROLER_DEAD_ZONE) {
+					mainList->selectionDown();
+					controllerCooldown = 0;
+				}
+
+				else if (event.jaxis.value < -CONTROLER_DEAD_ZONE) {
 					mainList->selectionUp();
+					controllerCooldown = 0;
+				}
+
+			}
+			//LEFT and RIGHT for picking the amount of players
+			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 0 && controllerCooldown > 0.3f) {
+				if (mainList->selection == 1 && event.jaxis.value < -CONTROLER_DEAD_ZONE) {
+					if (playerCount > 1){
+						playerCount--;
+						UIText *t = static_cast<UIText*>(mainList->children[1]);
+						t->text = "Players: " + to_string(playerCount);
+						controllerCooldown = 0;
+					}
+				}
+				else if (mainList->selection == 1 && event.jaxis.value > CONTROLER_DEAD_ZONE) {
+					if (playerCount < SDL_NumJoysticks()){
+						playerCount++;
+						UIText *t = static_cast<UIText*>(mainList->children[1]);
+						t->text = "Players:" + to_string(playerCount);
+						controllerCooldown = 0;
+					}
 				}
 			}
+			//Pressing A does menu action
+			if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 10){
+				switch (mainList->selection){
+				case 0:
+					gameStart();
+					break;
+				case 2:
+					return true;
+				}
+			}
+			break;
+		case STATE_GAME_LEVEL:
+			if (event.type == SDL_JOYAXISMOTION){
+				players[event.jaxis.which].axisValues[event.jaxis.axis] = event.jaxis.value;
+			}
+			if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 10){
+				players[event.jaxis.which].hero->velocity.y = 1.5f;
+			}
+			break;
+		case STATE_GAME_OVER:
+
+			break;
 		}
 	}
-	
 
 	switch (state){
 	case STATE_MAIN_MENU:
-		
+		controllerCooldown += elapsed;
 		break;
 	case STATE_GAME_LEVEL:
-		if (keys[SDL_SCANCODE_D]){
-			players[0]->isIdle = false;
-			players[0]->setRotation(0.0f);
+		for (GLuint i = 0; i < playerCount; i++){
+			if (players[i].axisValues[0] > CONTROLER_DEAD_ZONE){
+				players[i].hero->isIdle = false;
+				players[i].hero->setRotation(0.0f);
+			}
+
+			else if (players[i].axisValues[0] < -CONTROLER_DEAD_ZONE){
+				players[i].hero->isIdle = false;
+				players[i].hero->setRotation(180.0f);
+			}
+			else players[i].hero->isIdle = true;
+		}
+
+		/*if (keys[SDL_SCANCODE_D]){
+			players[0].hero->isIdle = false;
+			players[0].hero->setRotation(0.0f);
 		}
 		else if (keys[SDL_SCANCODE_A]){
-			players[0]->isIdle = false;
-			players[0]->setRotation(180.0f);
+			players[0].hero->isIdle = false;
+			players[0].hero->setRotation(180.0f);
 		}
 
-		else players[0]->isIdle = true;
+		else players[0].hero->isIdle = true;
 
-		if (keys[SDL_SCANCODE_SPACE] && players[0]->collidedBottom){
-			players[0]->velocity.y = 2.0f;
-		}
+		if (keys[SDL_SCANCODE_SPACE] && players[0].hero->collidedBottom){
+			players[0].hero->velocity.y = 2.0f;
+		}*/
 		break;
 	case STATE_GAME_OVER:
 
@@ -169,12 +236,12 @@ GLvoid GameApp::buildMainMenu(){
 	Sprite *s;
 	//<SubTexture name="green_panel.png" x="190" y="94" width="100" height="100"/>
 	s = new Sprite(UISheet, 512, 256, 190, 94, 100, 100);
-	UImain = new UIElement(s, 0.0f, 0.4f, 1.0f, 1.0f);
+	UImain = new UIElement(s, 0.0f, 0.0f, 1.22f, 0.8f);
 	UImain->fontTexture = fontTexture;
 
 	//<SubTexture name="green_sliderRight.png" x="339" y="143" width="39" height="31"/>
 	s = new Sprite(UISheet, 512, 256, 339, 143, 39, 31);
-	mainList = new UIList(s, -0.7f, 0.7f);
+	mainList = new UIList(s, -0.7f, 0.65f);
 	mainList->spacing.y = 0.08f;
 	UImain->attach(mainList);
 	UIText *b;
@@ -182,7 +249,7 @@ GLvoid GameApp::buildMainMenu(){
 	b->color = { 1, 1, 1, 1 };
 	mainList->attach(b);
 
-	b = new UIText("Players");
+	b = new UIText("Players:1");
 	b->color = { 1, 1, 1, 1 };
 	mainList->attach(b);
 
@@ -191,6 +258,27 @@ GLvoid GameApp::buildMainMenu(){
 	b->color = { 1, 1, 1, 1 };
 	mainList->attach(b);
 
+}
+
+GLvoid GameApp::initPlayer(int i){
+	Sprite *s;
+	Entity *e;
+
+	s = new Sprite(tileSheet, 114, 16, 8);
+	e = new Entity(s, 0.0f, 0.5f);
+
+	e->speed = 2.0;
+	e->acceleration.x = 4;
+	e->friction.x = 4;
+	players[i].hero = e;
+	players[i].controller = SDL_JoystickOpen(i);
+}
+
+GLvoid GameApp::gameStart(){
+	for (GLuint i = 0; i < playerCount; i++){
+		initPlayer(i);
+	}
+	state = STATE_GAME_LEVEL;
 }
 
 // collision stuff that i used

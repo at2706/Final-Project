@@ -6,6 +6,7 @@
 class Entity {
 public:
 	Entity(Sprite *s, float x = 0, float y = 0);
+	Entity(Sprite *s, EntityType t);
 	~Entity();
 
 	GLvoid Update(float elapsed);
@@ -19,10 +20,6 @@ public:
 
 	GLvoid rotate(GLfloat degree);
 
-	GLboolean collidesWith(Entity *e);
-	GLvoid collisionPenX();
-	GLvoid collisionPenY();
-
 	GLvoid moveX();
 	GLvoid moveY();
 
@@ -33,7 +30,8 @@ public:
 	GLvoid decelerateR();
 
 	Sprite *sprite;
-	
+	EntityType type;
+
 	Matrix matrix;
 	Matrix rotationMatrix;
 	Vector position;
@@ -62,9 +60,12 @@ public:
 	GLboolean collidedRight;
 
 private:
+	GLboolean collidesWith(Entity *e);
+	GLvoid collisionPenX();
+	GLvoid collisionPenY();
+	GLvoid renderHealthBar();
+
 	static list<Entity*> entities;
 	list<Entity*>::iterator it;
 	Vector rotation;	//in radians
-
-	GLvoid renderHealthBar();
 };

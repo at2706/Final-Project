@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameApp.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="UIElement.h" />
     <ClInclude Include="UIList.h" />
@@ -25,6 +26,7 @@
     <ClCompile Include="GameApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="UIElement.cpp" />
     <ClCompile Include="UIList.cpp" />

@@ -21,6 +21,13 @@ Entity::Entity(Sprite *s, float x, float y) {
 	entities.push_back(this);
 	it = --entities.end();
 }
+Entity::Entity(Sprite *s, EntityType t){
+	switch (t){
+	case HERO:
+
+	break;
+	}
+}
 
 Entity::~Entity(){
 	entities.erase(it);
@@ -74,7 +81,8 @@ GLvoid Entity::Render() {
 
 		sprite->render();
 
-		renderHealthBar();
+		if (health/healthMax < 0.95)
+			renderHealthBar();
 
 		glPopMatrix();
 	}
@@ -221,7 +229,7 @@ GLvoid Entity::renderHealthBar(){
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	Color color = {0,1,0,1};
+	Color color = { 1 - (health / healthMax), (health / healthMax), 0, 1 };
 	GLfloat vertexData[] = { -sprite->size.x / 2, 0.1f,
 		-sprite->size.x / 2, 0.08f,
 		sprite->size.x / 2, 0.08f,
@@ -235,10 +243,10 @@ GLvoid Entity::renderHealthBar(){
 	glLineWidth(2.0f);
 	glDrawArrays(GL_LINE_LOOP, 0, 4);
 
-	GLfloat vertexData2[] = { -sprite->size.x / 2, 0.1f,
-		-sprite->size.x / 2, 0.08f,
-		(sprite->size.x / 2) * (health / healthMax), 0.08f,
-		(sprite->size.x / 2) * (health / healthMax), 0.1f };
+	GLfloat vertexData2[] = { (-sprite->size.x / 2) + 0.0025f, 0.1f,
+		(-sprite->size.x / 2) + 0.0025f, 0.08f,
+		-(sprite->size.x / 2) + 0.0025f + ((sprite->size.x) * (health / healthMax)), 0.08f,
+		-(sprite->size.x / 2) + 0.0025f + ((sprite->size.x) * (health / healthMax)), 0.1f };
 
 	GLfloat colorData2[] = { color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a };
 
