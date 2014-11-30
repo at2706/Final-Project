@@ -6,7 +6,7 @@
 class Entity {
 public:
 	Entity(Sprite *s, float x = 0, float y = 0);
-	Entity(Sprite *s, EntityType t);
+	Entity(Sprite *s, EntityType t, float x = 0, float y = 0);
 	~Entity();
 
 	GLvoid Update(float elapsed);
@@ -17,6 +17,7 @@ public:
 	GLvoid buildMatrix();
 	GLvoid setScale(GLfloat x = 1.0f, GLfloat y = 1.0f);
 	GLvoid setRotation(float); //Takes in degree arguement
+	GLvoid setPosition(GLfloat x, GLfloat y, GLfloat z = 0.0f);
 
 	GLvoid rotate(GLfloat degree);
 	GLvoid modHealth(GLfloat amount);

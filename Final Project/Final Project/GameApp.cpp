@@ -7,14 +7,19 @@ GameApp::GameApp() {
 	UISheet = loadTexture("greenSheet.png", GL_NEAREST);
 	fontTexture = loadTexture("font1.png");
 	state = STATE_MAIN_MENU;
+	introMusic = Mix_LoadMUS("introMusic.mp3");
+	menuMove = Mix_LoadWAV("menuMove.wav");
+	jump = Mix_LoadWAV("jump.wav");
 	playerCount = 1;
 	
+	Mix_PlayMusic(introMusic, -1);
+	Mix_VolumeMusic(30);
 	SDL_JoystickOpen(0);
 
 	buildMainMenu();
 	buildPauseMenu();
 	buildUIstatic();
-
+	
 	drawPlatformHorizontal(26,0.0f,-0.5f);
 
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
@@ -40,6 +45,7 @@ GLvoid GameApp::init() {
 	displayWindow = SDL_CreateWindow("Platformer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, RESOLUTION_W, RESOLUTION_H, SDL_WINDOW_OPENGL);
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
 
 	glViewport(0, 0, RESOLUTION_W, RESOLUTION_H);
 	glMatrixMode(GL_PROJECTION);
@@ -52,6 +58,11 @@ GameApp::~GameApp()
 	for (GLuint i = 0; i < playerCount; i++){
 		SDL_JoystickClose(players[i].controller);
 	}
+
+	Mix_FreeMusic(introMusic);
+	Mix_FreeChunk(menuMove);
+	Mix_FreeChunk(jump);
+
 	SDL_Quit();
 }
 
@@ -77,6 +88,9 @@ GLvoid tint(float alpha) {
 }
 bool positionXSort(Player &p1, Player &p2){
 	return p1.hero->position.x < p2.hero->position.x;
+}
+bool positionYSort(Player &p1, Player &p2){
+	return p1.hero->position.y < p2.hero->position.y;
 }
 
 GLboolean GameApp::updateAndRender() {
@@ -146,6 +160,7 @@ GLboolean GameApp::updateAndRender() {
 					players[event.jaxis.which].axisValues[event.jaxis.axis] = event.jaxis.value;
 				}
 				if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 10){
+					Mix_PlayChannel(-1, jump, 0);
 					players[event.jaxis.which].hero->velocity.y = 1.5f;
 				}
 				if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 4){
@@ -167,18 +182,23 @@ GLboolean GameApp::updateAndRender() {
 				}
 			}
 
-			if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 10){
-				switch (pauseList->selection){
-				case 0:
+			if (event.type == SDL_JOYBUTTONDOWN){
+				switch (event.jbutton.button){
+				//A button
+				case 10:
+					switch (pauseList->selection){
+					case 0:
+						state = STATE_GAME_LEVEL;
+						break;
+					case 1:
+						return true;
+					}
+					break;
+					//Start Button
+				case 4:
 					state = STATE_GAME_LEVEL;
 					break;
-				case 1:
-					return true;
 				}
-			}
-
-			if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 4){
-				state = STATE_GAME_LEVEL;
 			}
 			break;
 		case STATE_GAME_OVER:
@@ -213,9 +233,6 @@ GLboolean GameApp::updateAndRender() {
 			else{
 				players[i].hero->isIdle = true;
 				
-			}
-			if (i == 0){
-				cout << to_string(players[i].axisValues[0]) << endl;
 			}
 		}
 
@@ -290,28 +307,34 @@ GLvoid GameApp::time(){
 
 GLvoid GameApp::Render() {
 	
-
+	GLfloat fadeValue;
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	zoom = 0.8f;
-	Matrix scaleMatrix;
-	scaleMatrix.m[0][0] = zoom;
-	scaleMatrix.m[1][1] = zoom;
-	scaleMatrix.m[2][2] = zoom;
+	zoom = 1.0f;
 	
 	switch (state){
 	case STATE_MAIN_MENU:
 		UImain->render();
+
 		break;
 	case STATE_GAME_LEVEL:
 		UIstatic->render();
-		
+
+		scaleMatrix.m[0][0] = zoom;
+		scaleMatrix.m[1][1] = zoom;
+		scaleMatrix.m[2][2] = zoom;
 		glMultMatrixf(scaleMatrix.ml);
 		followPlayers(players);
 		Entity::renderAll();
+
+		fadeTime += elapsed;
+		fadeValue = mapValue(fadeTime, 0.0f, 2.0f, 0.0f, 1.0f);
+		tint(1 - fadeValue);
+		
 		break;
 	case STATE_GAME_PAUSE:
+		glMultMatrixf(scaleMatrix.ml);
 		followPlayers(players);
 		Entity::renderAll();
 		tint(0.5f);
@@ -356,6 +379,7 @@ GLvoid GameApp::gameStart(){
 	for (GLuint i = 0; i < playerCount; i++){
 		initPlayer(i);
 	}
+	Mix_HaltMusic();
 	state = STATE_GAME_LEVEL;
 }
 GLvoid GameApp::buildMainMenu(){
@@ -367,7 +391,7 @@ GLvoid GameApp::buildMainMenu(){
 
 	//<SubTexture name="green_sliderRight.png" x="339" y="143" width="39" height="31"/>
 	s = new Sprite(UISheet, 512, 256, 339, 143, 39, 31);
-	mainList = new UIList(s, -0.7f, 0.65f);
+	mainList = new UIList(s, menuMove, -0.7f, 0.65f);
 	mainList->spacing.y = 0.08f;
 	UImain->attach(mainList);
 	UIText *b;
@@ -403,7 +427,7 @@ GLvoid GameApp::buildPauseMenu(){
 
 	//<SubTexture name="green_sliderRight.png" x="339" y="143" width="39" height="31"/>
 	s = new Sprite(UISheet, 512, 256, 339, 143, 39, 31);
-	pauseList = new UIList(s, -0.7f, 0.4f);
+	pauseList = new UIList(s, menuMove, -0.7f, 0.4f);
 	pauseList->spacing.y = 0.08f;
 	UIpause->attach(pauseList);
 
@@ -447,9 +471,12 @@ GLvoid GameApp::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 	Entity *platform;
 	sprite = new Sprite(tileSheet, 3, 16, 8);
 	for (GLfloat i = -(length / 2); i < (length / 2); i++){
-		platform = new Entity(sprite, (i * sprite->size.x) + x, y);
+		platform = new Entity(sprite, PLATFORM);
+		platform->setPosition((i * sprite->size.x), y);
 		platform->isStatic = true;
 	}
+	sprite = new Sprite(tileSheet, 80, 16, 8);
+	platform = new Entity(sprite, FLYER, 0.2f, 0.3f);
 }
 
 

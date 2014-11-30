@@ -4,7 +4,7 @@ class UIList :
 	public UIElement
 {
 public:
-	UIList(Sprite *s, GLfloat posX, GLfloat posY);
+	UIList(Sprite *s, Mix_Chunk *wav, GLfloat posX, GLfloat posY);
 	~UIList();
 
 	GLvoid attach(UIElement *e);
@@ -18,5 +18,6 @@ public:
 	GLuint selection;
 private:
 	UIElement *cursor;
+	Mix_Chunk *sound;
 };
 

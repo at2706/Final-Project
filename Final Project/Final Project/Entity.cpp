@@ -5,9 +5,7 @@ Entity::Entity(Sprite *s, float x, float y) {
 	sprite = s;
 
 	setScale();
-
-	position.x = x;
-	position.y = y;
+	setPosition(x, y);
 
 	healthMax = 100;
 	health = 100;
@@ -21,18 +19,18 @@ Entity::Entity(Sprite *s, float x, float y) {
 	entities.push_back(this);
 	it = --entities.end();
 }
-Entity::Entity(Sprite *s, EntityType t){
+Entity::Entity(Sprite *s, EntityType t, float x, float y){
 	sprite = s;
 	setScale();
+	setPosition(x, y);
 	visible = true;
-	isIdle = true;
 	healthBar = true;
 	type = t;
 
 	switch (t){
 	case HERO:
 		healthMax = 500;
-		health = 500;
+		health = 400;
 		speed = 2;
 		acceleration.x = 4;
 		friction.x = 4;
@@ -40,15 +38,21 @@ Entity::Entity(Sprite *s, EntityType t){
 		reviveable = true;
 		enableGravity = true;
 		enableCollisions = true;
+		healthBar = true;
+		isIdle = true;
 	break;
 	case FLYER:
 		healthMax = 100;
 		health = 100;
-		speed = 2;
-		acceleration.x = 4;
+		speed = 1.0f;
+		acceleration.x = 1;
+		healthBar = true;
+		isIdle = false;
 	break;
 	case PLATFORM:
 		isStatic = true;
+		enableCollisions = true;
+		healthBar = false;
 	}
 
 	entities.push_back(this);
@@ -154,9 +158,13 @@ GLvoid Entity::setScale(GLfloat x, GLfloat y){
 	scale.x = x;
 	scale.y = y;
 }
-
 GLvoid Entity::setRotation(GLfloat z){
 	rotation.y = (z * PI) / 180.0f;
+}
+GLvoid Entity::setPosition(GLfloat x, GLfloat y, GLfloat z){
+	position.x = x;
+	position.y = y;
+	position.z = z;
 }
 
 GLboolean Entity::collidesWith(Entity *e){
@@ -274,14 +282,12 @@ GLvoid Entity::renderHealthBar(){
 	glLineWidth(2.0f);
 	glDrawArrays(GL_LINE_LOOP, 0, 4);
 
-	GLfloat vertexData2[] = { (-sprite->size.x / 2) + 0.0025f, 0.1f,
-		(-sprite->size.x / 2) + 0.0025f, 0.08f,
-		-(sprite->size.x / 2) + 0.0025f + ((sprite->size.x) * (health / healthMax)), 0.08f,
-		-(sprite->size.x / 2) + 0.0025f + ((sprite->size.x) * (health / healthMax)), 0.1f };
+	GLfloat vertexData2[] = { (-sprite->size.x / 2), 0.1f,
+		(-sprite->size.x / 2), 0.08f,
+		-(sprite->size.x / 2) + ((sprite->size.x) * (health / healthMax)), 0.08f,
+		-(sprite->size.x / 2) + ((sprite->size.x) * (health / healthMax)), 0.1f };
 
-	GLfloat colorData2[] = { color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a };
-
-	glColorPointer(4, GL_FLOAT, 0, colorData2);
+	glColorPointer(4, GL_FLOAT, 0, colorData);
 	glVertexPointer(2, GL_FLOAT, 0, vertexData2);
 
 	vector<unsigned int> indices = { 0, 1, 2, 0, 2, 3 };

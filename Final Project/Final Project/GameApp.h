@@ -26,7 +26,10 @@ private:
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	enum GameState { STATE_MAIN_MENU, STATE_GAME_LEVEL, STATE_GAME_PAUSE, STATE_GAME_OVER };
 
-	SDL_Joystick * playerOneController;
+	Mix_Music *introMusic;
+	Mix_Chunk *menuMove;
+	Mix_Chunk *jump;
+
 	GLfloat controllerCooldown;
 
 	GLvoid init();
@@ -46,7 +49,9 @@ private:
 	GLfloat ticks;
 	GLfloat lastFrameTicks;
 	Vector gravity;
+	Matrix scaleMatrix;
 	GLfloat zoom;
+	GLfloat fadeTime;
 
 	GLuint myVertexBuffer;
 	GLuint charSheet;
