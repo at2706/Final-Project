@@ -1,46 +1,14 @@
-﻿Build started 12/1/2014 7:08:29 PM.
+﻿Build started 12/2/2014 6:09:47 PM.
      1>Project "C:\Users\Andy\OneDrive\Documents\CS3113- Game Programming\Final-Project\Final Project\Final Project\Final Project.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\SDL2\include /IC:\SDL2_image\include /IC:\SDL2_mixer\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Entity.cpp GameApp.cpp Ladder.cpp Player.cpp Sprite.cpp UIElement.cpp UIList.cpp UIText.cpp main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\SDL2\include /IC:\SDL2_image\include /IC:\SDL2_mixer\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Entity.cpp
          Entity.cpp
      1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\utilities.h(76): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         Generating Code...
-         Compiling...
-         main.cpp
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\utilities.h(76): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         UIText.cpp
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\utilities.h(76): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\uitext.cpp(41): warning C4244: 'argument' : conversion from 'GLfloat' to 'unsigned int', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\uitext.cpp(42): warning C4244: 'argument' : conversion from 'GLfloat' to 'unsigned int', possible loss of data
-         UIList.cpp
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\utilities.h(76): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         UIElement.cpp
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\utilities.h(76): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         Sprite.cpp
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\utilities.h(76): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\sprite.cpp(13): warning C4244: '=' : conversion from 'GLuint' to 'GLfloat', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\sprite.cpp(25): warning C4244: '=' : conversion from 'GLuint' to 'GLfloat', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\sprite.cpp(31): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         Player.cpp
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\utilities.h(76): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         Ladder.cpp
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\utilities.h(76): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         GameApp.cpp
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\utilities.h(76): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\gameapp.cpp(28): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\gameapp.cpp(29): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\gameapp.cpp(30): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\gameapp.cpp(31): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\gameapp.cpp(34): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\gameapp.cpp(35): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\gameapp.cpp(36): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\gameapp.cpp(37): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\gameapp.cpp(156): warning C4018: '<' : signed/unsigned mismatch
-         Generating Code...
+     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\entity.cpp(258): warning C4065: switch statement contains 'default' but no 'case' labels
+     1>c:\users\andy\onedrive\documents\cs3113- game programming\final-project\final project\final project\entity.cpp(280): warning C4065: switch statement contains 'default' but no 'case' labels
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Andy\OneDrive\Documents\CS3113- Game Programming\Final-Project\Final Project\Debug\Final Project.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\SDL2\lib\x86 /LIBPATH:C:\SDL2_image\lib\x86 /LIBPATH:C:\SDL2_mixer\lib\x86 SDL2.lib SDL2main.lib SDL2_image.lib OpenGL32.lib SDL2_mixer.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Andy\OneDrive\Documents\CS3113- Game Programming\Final-Project\Final Project\Debug\Final Project.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Andy\OneDrive\Documents\CS3113- Game Programming\Final-Project\Final Project\Debug\Final Project.lib" /MACHINE:X86 Debug\Entity.obj
          Debug\GameApp.obj
-         Debug\Ladder.obj
          Debug\main.obj
          Debug\Matrix.obj
          Debug\Player.obj
@@ -54,4 +22,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:12.07
+Time Elapsed 00:00:02.25

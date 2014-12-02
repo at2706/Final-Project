@@ -32,7 +32,7 @@
 #define SPRITE_COUNT_X 16
 #define SPRITE_COUNT_Y 8
 
-#define GRAVITY -2.8f
+#define GRAVITY -9.8f
 
 #define MARGIN_TOP 0.1f
 #define MARGIN_BOTTOM 0.1f

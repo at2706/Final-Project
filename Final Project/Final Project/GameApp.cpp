@@ -21,7 +21,6 @@ GameApp::GameApp() {
 	buildUIstatic();
 	
 	drawPlatformHorizontal(26,0.0f,-0.5f);
-	drawLadder(7, -0.2f, -0.475f);
 
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
 	// for level generation
@@ -86,12 +85,6 @@ GLvoid tint(float alpha) {
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
-}
-bool positionXSort(Player &p1, Player &p2){
-	return p1.hero->position.x < p2.hero->position.x;
-}
-bool positionYSort(Player &p1, Player &p2){
-	return p1.hero->position.y < p2.hero->position.y;
 }
 
 GLboolean GameApp::updateAndRender() {
@@ -237,7 +230,6 @@ GLboolean GameApp::updateAndRender() {
 		controllerCooldown += elapsed;
 		break;
 	case STATE_GAME_LEVEL:
-		sort(players, players + playerCount, positionXSort);
 
 		/*if (keys[SDL_SCANCODE_D]){
 			players[0].hero->isIdle = false;
@@ -248,7 +240,11 @@ GLboolean GameApp::updateAndRender() {
 			players[0].hero->isIdle = false;
 			players[0].hero->setRotation(180.0f);
 
-		}*/
+		}
+		else players[0].hero->isIdle = true;
+
+		if (keys[SDL_SCANCODE_SPACE])
+			players[0].hero->velocity.y = 2.0f;*/
 
 		for (GLuint i = 0; i < playerCount; i++){
 			if (players[i].axisValues[0] > CONTROLER_DEAD_ZONE){
@@ -264,23 +260,8 @@ GLboolean GameApp::updateAndRender() {
 			}
 			else{
 				players[i].hero->isIdle = true;
-				
 			}
 		}
-
-		/*if (keys[SDL_SCANCODE_D]){
-		players[0].hero->isIdle = false;
-		players[0].hero->setRotation(0.0f);
-		}
-		else if (keys[SDL_SCANCODE_A]){
-		players[0].hero->isIdle = false;
-		players[0].hero->setRotation(180.0f);
-		}
-		else players[0].hero->isIdle = true;
-
-		if (keys[SDL_SCANCODE_W] && players[0].hero->collidedBottom){
-		players[0].hero->velocity.y = 2.0f;
-		}*/
 
 		/*if (keys[SDL_SCANCODE_RIGHT]){
 			players[1].hero->isIdle = false;
@@ -343,30 +324,34 @@ GLvoid GameApp::Render() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	zoom = 1.0f;
-	
+	zoom = 1.5f;
 	switch (state){
 	case STATE_MAIN_MENU:
 		UImain->render();
 
 		break;
 	case STATE_GAME_LEVEL:
-		UIstatic->render();
-
-		scaleMatrix.m[0][0] = zoom;
-		scaleMatrix.m[1][1] = zoom;
-		scaleMatrix.m[2][2] = zoom;
-		glMultMatrixf(scaleMatrix.ml);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(-ASPECT_RATIO_X * zoom, ASPECT_RATIO_X * zoom, -ASPECT_RATIO_Y * zoom, ASPECT_RATIO_Y * zoom, -1.0f, 1.0f);
+		glMatrixMode(GL_MODELVIEW);
+		
 		followPlayers(players);
 		Entity::renderAll();
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(-ASPECT_RATIO_X, ASPECT_RATIO_X, -ASPECT_RATIO_Y, ASPECT_RATIO_Y, -1.0f, 1.0f);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		UIstatic->render();
+		
 
-		fadeTime += elapsed;
+		/*fadeTime += elapsed;
 		fadeValue = mapValue(fadeTime, 0.0f, 2.0f, 0.0f, 1.0f);
-		tint(1 - fadeValue);
+		tint(1 - fadeValue);*/
 		
 		break;
 	case STATE_GAME_PAUSE:
-		glMultMatrixf(scaleMatrix.ml);
 		followPlayers(players);
 		Entity::renderAll();
 		tint(0.5f);
@@ -499,22 +484,14 @@ GLvoid GameApp::followPlayers(Player *p){
 	glTranslatef(-posX, -posY, 0.0f);
 }
 GLvoid GameApp::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
-	static Sprite *sprite;
+	Sprite *sprite;
 	Entity *platform;
-	sprite = new Sprite(tileSheet, 3, 16, 8);
 	for (GLfloat i = -(length / 2); i < (length / 2); i++){
+		sprite = new Sprite(tileSheet, 3, 16, 8);
 		platform = new Entity(sprite, PLATFORM);
 		platform->setPosition((i * sprite->size.x) + x, y);
 	}
 }
-GLvoid GameApp::drawLadder(GLfloat length, GLfloat x, GLfloat y){
-	static Sprite *sprite = new Sprite(tileSheet, 20, 16, 8);
-	Ladder *ladder;
-	for (GLfloat i = 0; i < length; i++){
-		ladder = new Ladder(sprite, x, (i * sprite->size.y) + y);
-	}
-}
-
 
 // collision stuff that i used
 // NOT DONE YET, levelData needs to  be created which will have to be on me since i need that for procedural generation

@@ -9,6 +9,7 @@ public:
 	Entity(Sprite *s, EntityType t, float x = 0, float y = 0);
 	~Entity();
 
+	enum CollisionShape{ BOX, POINT, CIRCLE };
 	GLvoid Update(float elapsed);
 	GLvoid FixedUpdate();
 	static GLvoid fixedUpdateAll();
@@ -34,6 +35,7 @@ public:
 
 	Sprite *sprite;
 	EntityType type;
+	CollisionShape shape;
 
 	Matrix matrix;
 	Matrix translateMatrix;
@@ -59,19 +61,20 @@ public:
 	GLboolean collidedBottom;
 	GLboolean collidedLeft;
 	GLboolean collidedRight;
-
-protected:
-	virtual GLvoid collisionEffectX(Entity *e);
-	virtual GLvoid collisionEffectY(Entity *e);
+	
 
 private:
+	GLfloat distance(Vector v2, Vector v1);
 	GLboolean collidesWith(Entity *e);
 	GLvoid collisionPenX();
 	GLvoid collisionPenY();
-	GLvoid renderHealthBar();
-	
+	GLvoid collisionEffectX(Entity *e);
+	GLvoid collisionEffectY(Entity *e);
 	static list<Entity*> entities;
 	list<Entity*>::iterator it;
+
+	GLvoid renderHealthBar();
+	
 	Vector rotation;	//in radians
 
 	GLfloat healthMax;
