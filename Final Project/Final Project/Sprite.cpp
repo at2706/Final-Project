@@ -27,13 +27,14 @@ Sprite::Sprite(GLuint texID, GLuint index, GLuint spriteCountX, GLint spriteCoun
 	UVcoords.x = (GLfloat)(((GLint)index) % spriteCountX) / (GLfloat)spriteCountX;
 	size.x = ratio / (GLfloat)spriteCountX;
 
-	UVcoords.y = (GLfloat)(((GLint)index) / spriteCountY) / (GLfloat)spriteCountY;
+	UVcoords.y = (GLfloat)(((GLint)index) / spriteCountX) / (GLfloat)spriteCountY;
 	size.y = 1.0 / (GLfloat)spriteCountY;
 }
 
 
 GLvoid Sprite::render(){
 	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
@@ -60,6 +61,7 @@ GLvoid Sprite::render(){
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
 }

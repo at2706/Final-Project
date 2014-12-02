@@ -21,6 +21,7 @@ public:
 
 	GLvoid rotate(GLfloat degree);
 	GLvoid modHealth(GLfloat amount);
+	GLvoid shoot();
 
 	GLvoid moveX();
 	GLvoid moveY();
@@ -59,14 +60,16 @@ public:
 	GLboolean collidedLeft;
 	GLboolean collidedRight;
 
+protected:
+	virtual GLvoid collisionEffectX(Entity *e);
+	virtual GLvoid collisionEffectY(Entity *e);
+
 private:
 	GLboolean collidesWith(Entity *e);
 	GLvoid collisionPenX();
 	GLvoid collisionPenY();
 	GLvoid renderHealthBar();
-
-	GLvoid collisionEffect();
-
+	
 	static list<Entity*> entities;
 	list<Entity*>::iterator it;
 	Vector rotation;	//in radians

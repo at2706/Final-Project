@@ -9,6 +9,6 @@ public:
 
 	Entity *hero;
 	SDL_Joystick *controller;
-	GLfloat axisValues[3];
+	GLfloat axisValues[6];
 };
 

@@ -1,7 +1,7 @@
 #include "UIElement.h"
 
 UIElement::UIElement(Sprite *sheet, GLfloat posX, GLfloat posY, GLfloat scale_x, GLfloat scale_y)
-	: isVisible(true), position(posX,posY,0.0f), scale(scale_x,scale_y, 0.0f){
+	: isVisible(true), position(posX,posY,1.0f), scale(scale_x,scale_y, 0.0f){
 	parent = nullptr;
 	sprite = sheet;
 	buildMatrix();

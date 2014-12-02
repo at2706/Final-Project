@@ -21,6 +21,7 @@ GameApp::GameApp() {
 	buildUIstatic();
 	
 	drawPlatformHorizontal(26,0.0f,-0.5f);
+	drawLadder(7, -0.2f, -0.475f);
 
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
 	// for level generation
@@ -110,6 +111,24 @@ GLboolean GameApp::updateAndRender() {
 
 		switch (state){
 		case STATE_MAIN_MENU:
+			if (event.type == SDL_KEYDOWN){
+				if (event.key.keysym.scancode == SDL_SCANCODE_S){
+					mainList->selectionDown();
+				}
+				else if (event.key.keysym.scancode == SDL_SCANCODE_W){
+					mainList->selectionUp();
+				}
+				else if (event.key.keysym.scancode == SDL_SCANCODE_RETURN){
+					switch (mainList->selection){
+					case 0:
+						gameStart();
+						break;
+					case 2:
+						return true;
+					}
+				}
+			}
+			
 			//UP and DOWN the main menu
 			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 1 && controllerCooldown > 0.1f) {
 
@@ -154,18 +173,20 @@ GLboolean GameApp::updateAndRender() {
 			}
 			break;
 		case STATE_GAME_LEVEL:
-			if (event.jaxis.which == 0)
-			{
-				if (event.type == SDL_JOYAXISMOTION){
-					players[event.jaxis.which].axisValues[event.jaxis.axis] = event.jaxis.value;
-				}
-				if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 10){
-					Mix_PlayChannel(-1, jump, 0);
-					players[event.jaxis.which].hero->velocity.y = 1.5f;
-				}
-				if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 4){
-					state = STATE_GAME_PAUSE;
-				}
+
+			if (event.type == SDL_JOYAXISMOTION){
+				players[event.jaxis.which].axisValues[event.jaxis.axis] = event.jaxis.value;
+				if (event.jaxis.axis > 3)
+					cout <<to_string(event.jaxis.axis) << ": " << to_string(event.jaxis.value) << endl;
+			}
+			
+
+			if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 10){
+				Mix_PlayChannel(-1, jump, 0);
+				players[event.jaxis.which].hero->velocity.y = 1.5f;
+			}
+			if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 4){
+				state = STATE_GAME_PAUSE;
 			}
 			break;
 		case STATE_GAME_PAUSE:
@@ -217,6 +238,17 @@ GLboolean GameApp::updateAndRender() {
 		break;
 	case STATE_GAME_LEVEL:
 		sort(players, players + playerCount, positionXSort);
+
+		/*if (keys[SDL_SCANCODE_D]){
+			players[0].hero->isIdle = false;
+			players[0].hero->setRotation(0.0f);
+
+		}
+		else if (keys[SDL_SCANCODE_A]){
+			players[0].hero->isIdle = false;
+			players[0].hero->setRotation(180.0f);
+
+		}*/
 
 		for (GLuint i = 0; i < playerCount; i++){
 			if (players[i].axisValues[0] > CONTROLER_DEAD_ZONE){
@@ -367,7 +399,7 @@ GLvoid GameApp::initPlayer(int i){
 	Sprite *s;
 	Entity *e;
 
-	s = new Sprite(tileSheet, 114, 16, 8);
+	s = new Sprite(tileSheet, 99, 16, 8);
 	e = new Entity(s, HERO);
 
 	e->position.x = -0.7f + i * 0.5f;
@@ -467,16 +499,20 @@ GLvoid GameApp::followPlayers(Player *p){
 	glTranslatef(-posX, -posY, 0.0f);
 }
 GLvoid GameApp::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
-	Sprite *sprite;
+	static Sprite *sprite;
 	Entity *platform;
 	sprite = new Sprite(tileSheet, 3, 16, 8);
 	for (GLfloat i = -(length / 2); i < (length / 2); i++){
 		platform = new Entity(sprite, PLATFORM);
-		platform->setPosition((i * sprite->size.x), y);
-		platform->isStatic = true;
+		platform->setPosition((i * sprite->size.x) + x, y);
 	}
-	sprite = new Sprite(tileSheet, 80, 16, 8);
-	platform = new Entity(sprite, FLYER, 0.2f, 0.3f);
+}
+GLvoid GameApp::drawLadder(GLfloat length, GLfloat x, GLfloat y){
+	static Sprite *sprite = new Sprite(tileSheet, 20, 16, 8);
+	Ladder *ladder;
+	for (GLfloat i = 0; i < length; i++){
+		ladder = new Ladder(sprite, x, (i * sprite->size.y) + y);
+	}
 }
 
 
