@@ -20,6 +20,7 @@
     <ClInclude Include="UIText.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="Vector.h" />
+    <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp" />
@@ -32,6 +33,7 @@
     <ClCompile Include="UIList.cpp" />
     <ClCompile Include="UIText.cpp" />
     <ClCompile Include="Vector.cpp" />
+    <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1235ACC9-45C8-4391-BB4D-B583EE5C460A}</ProjectGuid>

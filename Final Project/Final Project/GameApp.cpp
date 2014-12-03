@@ -258,6 +258,8 @@ GLboolean GameApp::updateAndRender() {
 		if (keys[SDL_SCANCODE_SPACE])
 			players[0].hero->velocity.y = 2.0f;
 
+		if (keys[SDL_SCANCODE_F])
+			players[0].hero->shoot();
 		/*for (GLuint i = 0; i < playerCount; i++){
 			if (players[i].axisValues[0] > CONTROLER_DEAD_ZONE){
 				players[i].hero->isIdle = false;
@@ -398,6 +400,7 @@ GLvoid GameApp::initPlayer(int i){
 
 	s = new Sprite(tileSheet, 99, 16, 8);
 	e = new Entity(s, HERO);
+	e->projectile = new Sprite(tileSheet, 21, 16, 8);
 
 	e->position.x = -0.7f + i * 0.5f;
 	players[i].hero = e;
@@ -512,8 +515,6 @@ GLvoid GameApp::drawLadder(GLfloat length, GLfloat x, GLfloat y){
 		sprite = new Sprite(tileSheet, 20, 16, 8);
 		ladder = new Entity(sprite, LADDER, x, y + (sprite->size.y * i));
 	}
-	sprite = new Sprite(tileSheet, 21, 16, 8);
-	ladder = new Entity(sprite, PROJECTILE, -0.2f, 0.5f);
 }
 
 // collision stuff that i used

@@ -53,7 +53,8 @@ Entity::Entity(Sprite *s, EntityType t, float x, float y){
 
 	case PROJECTILE:
 		speed = 6;
-		//timeDeath = 4;
+		velocity.x = 1;
+		timeDeath = 2;
 		enableCollisions = true;
 		shape = POINT;
 		break;
@@ -113,8 +114,10 @@ GLvoid Entity::FixedUpdate() {
 	if (timeDeath < timeAlive) suicide();
 }
 GLvoid Entity::fixedUpdateAll(){
-	for (vector<Entity*>::iterator it = killQueue.begin(); it != killQueue.end(); ++it)
+	for (vector<Entity*>::iterator it = killQueue.begin(); it != killQueue.end(); ++it){
+		(*it)->deathEffect();
 		delete (*it);
+	}
 	killQueue.erase(killQueue.begin(), killQueue.end());
 	for (list<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
 		(*it)->FixedUpdate();
@@ -186,6 +189,11 @@ GLvoid Entity::setPosition(GLfloat x, GLfloat y, GLfloat z){
 	position.z = z;
 }
 
+GLvoid Entity::shoot(){
+	Entity *bullet = new Entity(projectile, PROJECTILE, -0.2f, 0.5f);
+	bullet->setPosition((sprite->size.x * cos(rotation.y) /2) + position.x, position.y);
+	bullet->velocity.x *= cos(rotation.y);
+}
 GLvoid Entity::suicide(){
 	if (!deathMark){
 		killQueue.push_back(this);
@@ -270,8 +278,10 @@ GLvoid Entity::collisionPenY(){
 GLvoid Entity::collisionEffectX(Entity *e){
 	switch (type){
 	case PROJECTILE:
-		e->modHealth(-300);
-		suicide();
+		if (e->type != PROJECTILE) {
+			e->modHealth(-300);
+			suicide();
+		}
 		break;
 	case LADDER:
 		break;
@@ -318,6 +328,9 @@ GLvoid Entity::collisionEffectY(Entity *e){
 
 		e->velocity.y = e->enableBounce ? -e->velocity.y : 0.0f;
 	}
+}
+GLvoid Entity::deathEffect(){
+
 }
 
 GLvoid Entity::rotate(GLfloat z){

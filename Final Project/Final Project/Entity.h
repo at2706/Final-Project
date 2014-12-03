@@ -74,6 +74,7 @@ private:
 	GLboolean collidesWith(Entity *e);
 	GLvoid collisionPenX();
 	GLvoid collisionPenY();
+	GLvoid deathEffect();
 	
 	static list<Entity*> entities;
 	static vector<Entity*> killQueue;
