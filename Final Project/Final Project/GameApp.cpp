@@ -505,7 +505,8 @@ GLvoid GameApp::drawLadder(GLfloat length, GLfloat x, GLfloat y){
 
 // collision stuff that i used
 // NOT DONE YET, levelData needs to  be created which will have to be on me since i need that for procedural generation
-/*void GameApp::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
+/*
+void GameApp::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
 	*gridX = (int)((worldX + (WORLD_OFFSET_X)) / TILE_SIZE);
 	*gridY = (int)((-worldY + (WORLD_OFFSET_Y)) / TILE_SIZE);
 }
@@ -581,28 +582,234 @@ void GameApp::makeGameLevel() {
 	while (!genPath(mapStart.x, mapStart.y, 8)){} // to make sure the maplayout has a path from start to end of length 8
 }
 
+
 bool GameApp::genPath(int x, int y, int length) {
 	// first part of procedural generation
 	// I HAVE NOT TESTED THIS, THIS WAS MADE BASED OFF OF PSEUDOCODE
 	if (x == mapGoal.x && y == mapGoal.y && length == 0)
 		return true;
-	if (mapLayout[x][y] == 1 || x < 0 || y < 0 || x > LAYOUT_X || y > LAYOUT_Y)
+	if (mapLayout[x][y] != 0 || x < 0 || y < 0 || x > LAYOUT_X || y > LAYOUT_Y)
 		return false;
-	mapLayout[x][y] = 1;
-	switch (1 + (std::rand() % (4))) {
+
+	//assigning random layout to current tile
+	switch (1 + (std::rand() % 10)) {
+		// 1-4, must check the if the tile for the end point is compatible or not
 	case 1:
-		if (genPath(x, y - 1, length - 1)) // north of x,y
+		if (y + 1 < LAYOUT_Y) {
+			if ((x == mapStart.x && y == mapStart.y) || (x == mapGoal.x && y == mapGoal.y && (mapLayout[x][y + 1] == 6 || mapLayout[x][y + 1] == 9 || mapLayout[x][y + 1] == 10)))
+				mapLayout[x][y] = 1;
+			break;
+		}
+	case 2:
+		if (y - 1 > -1) {
+			if ((x == mapStart.x && y == mapStart.y) || (x == mapGoal.x && y == mapGoal.y && (mapLayout[x][y - 1] == 6 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 8)))
+				mapLayout[x][y] = 2;
+			break;
+		}
+	case 3:
+		if (x + 1 < LAYOUT_X) {
+			if ((x == mapStart.x && y == mapStart.y) || (x == mapGoal.x && y == mapGoal.y && (mapLayout[x + 1][y] == 5 || mapLayout[x + 1][y] == 8 || mapLayout[x + 1][y] == 9)))
+				mapLayout[x][y] = 3;
+			break;
+		}
+	case 4:
+		if (x - 1 > -1) {
+			if ((x == mapStart.x && y == mapStart.y) || (x == mapGoal.x && y == mapGoal.y && (mapLayout[x - 1][y] == 5 || mapLayout[x - 1][y] == 7 || mapLayout[x - 1][y] == 10)))
+				mapLayout[x][y] = 4;
+			break;
+		}
+		// case 5 and 6 are for 2 parallel walls
+	case 5:
+		if (x - 1 > -1) { // make sure we don't access something outside the array
+			if (mapLayout[x - 1][y] == 3 || mapLayout[x - 1][y] == 5 || mapLayout[x - 1][y] == 7 || mapLayout[x - 1][y] == 10) { // make sure left side has an opening
+				if (y - 1 > -1) { // make sure we don't access something outside the array
+					if (mapLayout[x][y - 1] == 0 || mapLayout[x][y - 1] == 5 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 10) { // make sure top is not a door connecting to current tile
+						mapLayout[x][y] = 5;
+						break;
+					}
+				}
+				else if (y + 1 < LAYOUT_Y) { // make sure we dont access something outside the array
+					if (mapLayout[x][y + 1] == 0 || mapLayout[x][y + 1] == 5 || mapLayout[x][y + 1] == 7 || mapLayout[x][y + 1] == 8) { // make sure bottom is not a door connecting to current tile
+						mapLayout[x][y] = 5;
+						break;
+					}
+				}
+			}
+		}
+		else if (x + 1 < LAYOUT_X) { // make sure we don't access something outside the array
+			if (mapLayout[x + 1][y] == 4 || mapLayout[x + 1][y] == 5 || mapLayout[x + 1][y] == 8 || mapLayout[x + 1][y] == 9) { // make sure right side has an opening
+				if (y - 1 > -1) { // make sure we don't access something outside the array
+					if (mapLayout[x][y - 1] == 0 || mapLayout[x][y - 1] == 5 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 10) { // make sure top is not a door connecting to current tile
+						mapLayout[x][y] = 5;
+						break;
+					}
+				}
+				else if (y + 1 < LAYOUT_Y) { // make sure we dont access something outside the array
+					if (mapLayout[x][y + 1] == 0 || mapLayout[x][y + 1] == 5 || mapLayout[x][y + 1] == 7 || mapLayout[x][y + 1] == 8) { // make sure bottom is not a door connecting to current tile
+						mapLayout[x][y] = 5;
+						break;
+					}
+				}
+			}
+		}
+	case 6:
+		if (y - 1 > -1) { // make sure we don't access something outside the array
+			if (mapLayout[x][y - 1] == 1 || mapLayout[x][y - 1] == 6 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 8) { // make sure top side has an opening
+				if (x - 1 > -1) { // make sure we don't access something outside the array
+					if (mapLayout[x - 1][y] == 0 || mapLayout[x - 1][y] == 6 || mapLayout[x - 1][y] == 8 || mapLayout[x - 1][y] == 9) { // make sure left is not a door connecting to current tile
+						mapLayout[x][y] = 6;
+						break;
+					}
+				}
+				else if (x + 1 < LAYOUT_X) { // make sure we dont access something outside the array
+					if (mapLayout[x + 1][y] == 0 || mapLayout[x + 1][y] == 6 || mapLayout[x + 1][y] == 7 || mapLayout[x + 1][y] == 10) { // make sure right is not a door connecting to current tile
+						mapLayout[x][y] = 6;
+						break;
+					}
+				}
+			}
+		}
+		else if (y + 1 < LAYOUT_Y) {
+			if (mapLayout[x][y - 1] == 1 || mapLayout[x][y - 1] == 6 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 8) { // make sure top side has an opening
+				if (x - 1 > -1) { // make sure we don't access something outside the array
+					if (mapLayout[x - 1][y] == 0 || mapLayout[x - 1][y] == 6 || mapLayout[x - 1][y] == 8 || mapLayout[x - 1][y] == 9) { // make sure left is not a door connecting to current tile
+						mapLayout[x][y] = 6;
+						break;
+					}
+				}
+				else if (x + 1 < LAYOUT_X) { // make sure we dont access something outside the array
+					if (mapLayout[x + 1][y] == 0 || mapLayout[x + 1][y] == 6 || mapLayout[x + 1][y] == 7 || mapLayout[x + 1][y] == 10) { // make sure right is not a door connecting to current tile
+						mapLayout[x][y] = 6;
+						break;
+					}
+				}
+			}
+		}
+		// case 7-10 are for corners
+	case 7:
+		if (y + 1 < LAYOUT_Y) { // make sure south of tile is still in range
+			if (mapLayout[x][y + 1] == 2 || mapLayout[x][y + 1] == 6 || mapLayout[x][y + 1] == 9 || mapLayout[x][y + 1] == 10) { // make sure south has opening connecting to current tile
+				mapLayout[x][y] = 7;
+				break;
+			}
+		}
+		else if (x + 1 < LAYOUT_X) { // make sure east of tile is still in range
+			if (mapLayout[x + 1][y] == 4 || mapLayout[x + 1][y] == 5 || mapLayout[x + 1][y] == 8 || mapLayout[x + 1][y] == 9) {
+				mapLayout[x][y] = 7;
+				break;
+			}
+		}
+	case 8:
+		if (x - 1 > -1) { // make sure west of tile is still in range
+			if (mapLayout[x - 1][y] == 3 || mapLayout[x - 1][y] == 5 || mapLayout[x - 1][y] == 7 || mapLayout[x - 1][y] == 10) {
+				mapLayout[x][y] = 8;
+				break;
+			}
+		}
+		else if (y + 1 < LAYOUT_Y) { // make sure south of tile is still in range
+			if (mapLayout[x][y + 1] == 2 || mapLayout[x][y + 1] == 6 || mapLayout[x][y + 1] == 9 || mapLayout[x][y + 1] == 10) { // make sure south has opening connecting to current tile
+				mapLayout[x][y] = 8;
+				break;
+			}
+		}
+	case 9:
+		if (x - 1 > -1) { // make sure west of tile is still in range
+			if (mapLayout[x - 1][y] == 3 || mapLayout[x - 1][y] == 5 || mapLayout[x - 1][y] == 7 || mapLayout[x - 1][y] == 10) {
+				mapLayout[x][y] = 9;
+				break;
+			}
+		}
+		else if (y - 1 > -1) { // make sure north of tile is still in range
+			if (mapLayout[x][y - 1] == 1 || mapLayout[x][y - 1] == 6 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 8) {
+				mapLayout[x][y] = 9;
+				break;
+			}
+		}
+	case 10:
+		if (y - 1 > -1) { // make sure north of tile is still in range
+			if (mapLayout[x][y - 1] == 1 || mapLayout[x][y - 1] == 6 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 8) {
+				mapLayout[x][y] = 10;
+				break;
+			}
+		}
+		else if (x + 1 < LAYOUT_X) { // make sure east of tile is still in range
+			if (mapLayout[x + 1][y] == 4 || mapLayout[x + 1][y] == 5 || mapLayout[x + 1][y] == 8 || mapLayout[x + 1][y] == 9) {
+				mapLayout[x][y] = 10;
+				break;
+			}
+		}
+	}
+
+	// moving onwards to the next part of the path
+	switch (mapLayout[x][y]) {
+	case 1:
+		if (genPath(x, y + 1, length - 1)) // south of x,y
 			return true;
 	case 2:
-		if (genPath(x + 1, y, length - 1)) // east of x,y
+		if (genPath(x, y - 1, length - 1)) // north of x,y
 			return true;
 	case 3:
-		if (genPath(x, y + 1, length - 1)) // south of x,y
+		if (genPath(x + 1, y, length - 1)) // east of x,y
 			return true;
 	case 4:
 		if (genPath(x - 1, y, length - 1)) // west of x,y
 			return true;
+	case 5:
+		switch (1 + std::rand() % 2) {
+		case 1:
+			if (genPath(x + 1, y, length - 1)) // east of x,y
+				return true;
+		case 2:
+			if (genPath(x - 1, y, length - 1)) // west of x,y
+				return true;
+		}
+	case 6:
+		switch (1 + std::rand() % 2) {
+		case 1:
+			if (genPath(x, y - 1, length - 1)) // north of x,y
+				return true;
+		case 2:
+			if (genPath(x, y + 1, length - 1)) // south of x,y
+				return true;
+		}
+	case 7:
+		switch (1 + std::rand() % 2) {
+		case 1:
+			if (genPath(x + 1, y, length - 1)) // east of x,y
+				return true;
+		case 2:
+			if (genPath(x, y + 1, length - 1)) // south of x,y
+				return true;
+		}
+	case 8:
+		switch (1 + std::rand() % 2) {
+		case 1:
+			if (genPath(x - 1, y, length - 1)) // west of x,y
+				return true;
+		case 2:
+			if (genPath(x, y + 1, length - 1)) // south of x,y
+				return true;
+		}
+	case 9:
+		switch (1 + std::rand() % 2) {
+		case 1:
+			if (genPath(x - 1, y, length - 1)) // west of x,y
+				return true;
+		case 2:
+			if (genPath(x, y - 1, length - 1)) // north of x,y
+				return true;
+		}
+	case 10:
+		switch (1 + std::rand() % 2) {
+		case 1:
+			if (genPath(x + 1, y, length - 1)) // east of x,y
+				return true;
+		case 2:
+			if (genPath(x, y - 1, length - 1)) // north of x,y
+				return true;
+		}
 	}
 	mapLayout[x][y] = 0;
 	return false;
-}*/
+}
+*/
