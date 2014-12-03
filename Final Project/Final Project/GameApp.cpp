@@ -21,9 +21,9 @@ GameApp::GameApp() {
 	buildPauseMenu();
 	buildUIstatic();
 	
-	drawLadder(4, 0.0f, 0.0f);
+	drawLadder(8, 0.0f, -0.4f);
 	drawPlatformHorizontal(26,0.0f,-0.5f);
-
+	drawPlatformHorizontal(8, 0.62f, 0.45f);
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
 	// initialize mapLayout
 	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
@@ -43,8 +43,13 @@ GameApp::GameApp() {
 		mapGoal.x = (std::rand() % (4));
 		mapGoal.y = (std::rand() % (4));
 	}
-	makeGameLevel();
-	std::cout << "holder";
+	//makeGameLevel();
+	for (unsigned int i = LAYOUT_X; i > 0; --i) {
+		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
+			cout << to_string(mapLayout[i][j]) + " ";
+		}
+		cout << endl;
+	}
 }
 
 GLvoid GameApp::init() {
@@ -502,11 +507,13 @@ GLvoid GameApp::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 
 GLvoid GameApp::drawLadder(GLfloat length, GLfloat x, GLfloat y){
 	Sprite *sprite;
-	Ladder *ladder;
+	Entity *ladder;
 	for (GLuint i = 0; i < length; i++){
 		sprite = new Sprite(tileSheet, 20, 16, 8);
-		ladder = new Ladder(sprite, x, y + (sprite->size.y * i));
+		ladder = new Entity(sprite, LADDER, x, y + (sprite->size.y * i));
 	}
+	sprite = new Sprite(tileSheet, 21, 16, 8);
+	ladder = new Entity(sprite, PROJECTILE, -0.2f, 0.5f);
 }
 
 // collision stuff that i used
@@ -594,8 +601,6 @@ void GameApp::makeGameLevel() {
 		}
 	}
 }
-
-
 bool GameApp::genPath(int x, int y, int length) {
 	// first part of procedural generation
 	// I HAVE NOT TESTED THIS, THIS WAS MADE BASED OFF OF PSEUDOCODE

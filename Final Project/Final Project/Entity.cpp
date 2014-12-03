@@ -1,6 +1,7 @@
 #include "Entity.h"
 
 list<Entity*> Entity::entities;
+vector<Entity*> Entity::killQueue;
 Entity::Entity(Sprite *s, float x, float y) {
 	sprite = s;
 
@@ -34,17 +35,28 @@ Entity::Entity(Sprite *s, EntityType t, float x, float y){
 		speed = 2;
 		acceleration.x = 4;
 		friction.x = 4;
+		friction.y = 4;
 
-		reviveable = true;
+		revivable = true;
 		enableGravity = true;
 		enableCollisions = true;
 		healthBar = true;
 		isIdle = true;
+		enableBounce = true;
 	break;
 
 	case PLATFORM:
+	case LADDER:
 		isStatic = true;
 		enableCollisions = true;
+		break;
+
+	case PROJECTILE:
+		speed = 6;
+		//timeDeath = 4;
+		enableCollisions = true;
+		shape = POINT;
+		break;
 	}
 
 	entities.push_back(this);
@@ -69,13 +81,17 @@ GLvoid Entity::FixedUpdate() {
 	collidedBottom = false;
 	collidedLeft = false;
 	collidedRight = false;
+	
 	if (!isStatic){
-
+		if(type != FLYER && type != PROJECTILE)
+			enableGravity = true;
 		if (!isIdle){
 			moveY();
+			decelerateY();
 			collisionPenY();
 			//tileCollisionY(g);
- 			moveX();
+			moveX();
+			decelerateX();
 			collisionPenX();
 			//tileCollisionX(g);
 		}
@@ -93,8 +109,13 @@ GLvoid Entity::FixedUpdate() {
 			velocity.y += GRAVITY * FIXED_TIMESTEP;
 		}
 	}
+	if (timeDeath > 0) timeAlive += FIXED_TIMESTEP;
+	if (timeDeath < timeAlive) suicide();
 }
 GLvoid Entity::fixedUpdateAll(){
+	for (vector<Entity*>::iterator it = killQueue.begin(); it != killQueue.end(); ++it)
+		delete (*it);
+	killQueue.erase(killQueue.begin(), killQueue.end());
 	for (list<Entity*>::iterator it = entities.begin(); it != entities.end(); ++it)
 		(*it)->FixedUpdate();
 }
@@ -165,6 +186,13 @@ GLvoid Entity::setPosition(GLfloat x, GLfloat y, GLfloat z){
 	position.z = z;
 }
 
+GLvoid Entity::suicide(){
+	if (!deathMark){
+		killQueue.push_back(this);
+		deathMark = true;
+	}
+}
+
 GLboolean Entity::collidesWith(Entity *e){
 	if (!enableCollisions || !e->enableCollisions) return false;
 
@@ -187,8 +215,8 @@ GLboolean Entity::collidesWith(Entity *e){
 			return d1 < radius;
 		}
 		else if (e->shape == POINT){
-			return !((e->position.x > left && e->position.x < right)
-				|| (e->position.y > bot && e->position.y < top));
+			return ((e->position.x > left && e->position.x < right)
+				&& (e->position.y > bot && e->position.y < top));
 		}
 	}
 	else if (shape == CIRCLE){
@@ -202,8 +230,11 @@ GLboolean Entity::collidesWith(Entity *e){
 			GLfloat ebot = e->position.y - ((e->sprite->size.y) / 2);
 			GLfloat eleft = e->position.x - ((e->sprite->size.x) / 2);
 			GLfloat eright = e->position.x + ((e->sprite->size.x) / 2);
-			return !((position.x > eleft && position.x < eright)
-				|| (position.y > ebot && position.y < etop));
+			if (e->type == HERO){
+				cout << "123" << endl;
+			}
+			return ((position.x > eleft && position.x < eright)
+				&& (position.y > ebot && position.y < etop));
 		}
 		else if (e->shape == CIRCLE){
 			GLfloat d1 = distance(position, e->position);
@@ -238,7 +269,12 @@ GLvoid Entity::collisionPenY(){
 
 GLvoid Entity::collisionEffectX(Entity *e){
 	switch (type){
-
+	case PROJECTILE:
+		e->modHealth(-300);
+		suicide();
+		break;
+	case LADDER:
+		break;
 	default:
 		GLfloat distance_x = fabs(e->position.x - position.x);
 		GLfloat width1 = sprite->size.x * 0.5f * scale.x;
@@ -258,7 +294,13 @@ GLvoid Entity::collisionEffectX(Entity *e){
 }
 GLvoid Entity::collisionEffectY(Entity *e){
 	switch (type){
-
+	case PROJECTILE:
+		break;
+	case LADDER:
+		e->enableGravity = false;
+		e->velocity.y = 0;
+		e->collidedBottom = true;
+		break;
 	default:
 		GLfloat distance_y = fabs(e->position.y - position.y);
 		GLfloat height1 = sprite->size.y * 0.5f * scale.y;
@@ -274,7 +316,7 @@ GLvoid Entity::collisionEffectY(Entity *e){
 			collidedTop = true;
 		}
 
-		e->velocity.y = 0.0f;
+		e->velocity.y = e->enableBounce ? -e->velocity.y : 0.0f;
 	}
 }
 
@@ -282,9 +324,14 @@ GLvoid Entity::rotate(GLfloat z){
 	rotation.z += (z * PI) / 180.0f;
 }
 GLvoid Entity::modHealth(GLfloat amount){
-	if (amount < -health) health = 0;
-	else if (amount > healthMax - health) health = healthMax;
-	else health += amount;
+	if (!isStatic){
+		health += amount;
+		if (health < 0){
+			if (!revivable)
+				suicide();
+			else health = 0;
+		}
+	}
 }
 
 GLvoid Entity::moveX(){
@@ -293,7 +340,6 @@ GLvoid Entity::moveX(){
 	//Speed Limit
 	if (velocity.x > speed)			velocity.x = speed;
 	else if (velocity.x < -speed)	velocity.x = -speed;
-	position.x += velocity.x * FIXED_TIMESTEP;
 
 }
 GLvoid Entity::moveY(){
@@ -302,7 +348,6 @@ GLvoid Entity::moveY(){
 	//Speed Limit for y, but it makes gravity weird
 	//if (velocity.y > speed * sin(rotation.z)) velocity.y = speed * sin(rotation.z);
 	//else if (velocity.y < -speed * fabs(sin(rotation.z))) velocity.y = -speed * fabs(sin(rotation.z));
-	position.y += velocity.y * FIXED_TIMESTEP;
 }
 GLvoid Entity::decelerateX(){
 	velocity.x = lerp(velocity.x, 0.0f, FIXED_TIMESTEP * friction.x);

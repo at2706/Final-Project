@@ -43,7 +43,7 @@
 
 using namespace std;
 
-enum EntityType {DEFAULT, HERO, FLYER, CRAWLER, SPAWNER, PLATFORM };
+enum EntityType {DEFAULT, HERO, PLATFORM, LADDER, FLYER, PROJECTILE };
 struct Color{
 	float r;
 	float g;

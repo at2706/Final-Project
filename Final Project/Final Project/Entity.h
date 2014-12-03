@@ -23,6 +23,7 @@ public:
 	GLvoid rotate(GLfloat degree);
 	GLvoid modHealth(GLfloat amount);
 	GLvoid shoot();
+	GLvoid suicide();
 
 	GLvoid moveX();
 	GLvoid moveY();
@@ -34,6 +35,7 @@ public:
 	GLvoid decelerateR();
 
 	Sprite *sprite;
+	Sprite *projectile;
 	EntityType type;
 	CollisionShape shape;
 
@@ -50,10 +52,11 @@ public:
 	GLboolean isStatic;
 	GLboolean isIdle;
 	GLboolean visible;
+	GLboolean deathMark;
 
 	GLboolean enableGravity;
 	GLboolean enableBounce;
-	GLboolean reviveable;
+	GLboolean revivable;
 	GLboolean healthBar;
 
 	GLboolean enableCollisions;
@@ -73,6 +76,7 @@ private:
 	GLvoid collisionPenY();
 	
 	static list<Entity*> entities;
+	static vector<Entity*> killQueue;
 	list<Entity*>::iterator it;
 
 	GLvoid renderHealthBar();
@@ -81,4 +85,8 @@ private:
 
 	GLfloat healthMax;
 	GLfloat health;
+
+	GLfloat timeAlive;
+	GLfloat timeDeath;
+
 };

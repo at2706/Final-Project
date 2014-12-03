@@ -1,6 +1,5 @@
 #pragma once
 #include "Entity.h"
-#include "Ladder.h"
 #include "UIElement.h"
 #include "UIText.h"
 #include "UIList.h"
