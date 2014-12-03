@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include "Ladder.h"
 #include "UIElement.h"
 #include "UIText.h"
 #include "UIList.h"
@@ -42,6 +43,7 @@ private:
 	GLvoid gameStart();
 	GLvoid followPlayers(Player *p);
 	GLvoid drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y);
+	GLvoid drawLadder(GLfloat length, GLfloat x, GLfloat y);
 
 	GameState state;
 	GLfloat timeLeftOver = 0.0f;

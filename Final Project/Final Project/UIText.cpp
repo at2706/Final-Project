@@ -1,6 +1,5 @@
 #include "UIText.h"
 
-
 UIText::UIText(string text, GLfloat size, GLfloat posX, GLfloat posY)
 	: UIElement(NULL, posX, posY, size, size), text(text) {
 	color = {1,1,1,1};

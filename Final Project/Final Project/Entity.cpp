@@ -69,7 +69,6 @@ GLvoid Entity::FixedUpdate() {
 	collidedBottom = false;
 	collidedLeft = false;
 	collidedRight = false;
-	acceleration.y = 0.0f;
 	if (!isStatic){
 
 		if (!isIdle){
@@ -224,7 +223,7 @@ GLvoid Entity::collisionPenX(){
 	list<Entity*>::iterator end = entities.end();
 	for (list<Entity*>::iterator it2 = entities.begin(); it2 != end; ++it2){
 		if (this != (*it2) && collidesWith((*it2))){
-			collisionEffectX((*it2));
+			(*it2)->collisionEffectX(this);
 		}
 	}
 }
@@ -232,7 +231,7 @@ GLvoid Entity::collisionPenY(){
 	list<Entity*>::iterator end = entities.end();
 	for (list<Entity*>::iterator it2 = entities.begin(); it2 != end; ++it2){
 		if (this != (*it2) && collidesWith((*it2))){
-			collisionEffectY(*(it2));
+			(*it2)->collisionEffectY(this);
 		}
 	}
 }
@@ -244,17 +243,17 @@ GLvoid Entity::collisionEffectX(Entity *e){
 		GLfloat distance_x = fabs(e->position.x - position.x);
 		GLfloat width1 = sprite->size.x * 0.5f * scale.x;
 		GLfloat width2 = e->sprite->size.x * 0.5f * e->scale.x;
-		GLfloat xPenetration = fabs(distance_x - width1 - width2);
+		GLfloat xPenetration = fabs(distance_x - width2 - width1);
 
-		if (position.x > e->position.x){
-			position.x += xPenetration + 0.0001f;
+		if (e->position.x > position.x){
+			e->position.x += xPenetration + 0.0001f;
 			collidedRight = true;
 		}
 		else{
-			position.x -= xPenetration + 0.0001f;
+			e->position.x -= xPenetration + 0.0001f;
 			collidedLeft = true;
 		}
-		velocity.x = 0.0f;
+		e->velocity.x = 0.0f;
 	}
 }
 GLvoid Entity::collisionEffectY(Entity *e){
@@ -264,18 +263,18 @@ GLvoid Entity::collisionEffectY(Entity *e){
 		GLfloat distance_y = fabs(e->position.y - position.y);
 		GLfloat height1 = sprite->size.y * 0.5f * scale.y;
 		GLfloat height2 = e->sprite->size.y * 0.5f * e->scale.y;
-		GLfloat yPenetration = fabs(distance_y - height1 - height2);
+		GLfloat yPenetration = fabs(distance_y - height2 - height1);
 
-		if (position.y > e->position.y){
-			position.y += yPenetration + 0.0001f;
+		if (e->position.y > position.y){
+			e->position.y += yPenetration + 0.0001f;
 			collidedBottom = true;
 		}
 		else{
-			position.y -= yPenetration + 0.0001f;
+			e->position.y -= yPenetration + 0.0001f;
 			collidedTop = true;
 		}
 
-		velocity.y = 0.0f;
+		e->velocity.y = 0.0f;
 	}
 }
 

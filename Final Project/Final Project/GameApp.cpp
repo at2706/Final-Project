@@ -20,6 +20,7 @@ GameApp::GameApp() {
 	buildPauseMenu();
 	buildUIstatic();
 	
+	drawLadder(4, 0.0f, 0.0f);
 	drawPlatformHorizontal(26,0.0f,-0.5f);
 
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
@@ -231,7 +232,7 @@ GLboolean GameApp::updateAndRender() {
 		break;
 	case STATE_GAME_LEVEL:
 
-		/*if (keys[SDL_SCANCODE_D]){
+		if (keys[SDL_SCANCODE_D]){
 			players[0].hero->isIdle = false;
 			players[0].hero->setRotation(0.0f);
 
@@ -244,9 +245,9 @@ GLboolean GameApp::updateAndRender() {
 		else players[0].hero->isIdle = true;
 
 		if (keys[SDL_SCANCODE_SPACE])
-			players[0].hero->velocity.y = 2.0f;*/
+			players[0].hero->velocity.y = 2.0f;
 
-		for (GLuint i = 0; i < playerCount; i++){
+		/*for (GLuint i = 0; i < playerCount; i++){
 			if (players[i].axisValues[0] > CONTROLER_DEAD_ZONE){
 				players[i].hero->isIdle = false;
 				players[i].hero->setRotation(0.0f);
@@ -261,7 +262,7 @@ GLboolean GameApp::updateAndRender() {
 			else{
 				players[i].hero->isIdle = true;
 			}
-		}
+		}*/
 
 		/*if (keys[SDL_SCANCODE_RIGHT]){
 			players[1].hero->isIdle = false;
@@ -490,6 +491,15 @@ GLvoid GameApp::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 		sprite = new Sprite(tileSheet, 3, 16, 8);
 		platform = new Entity(sprite, PLATFORM);
 		platform->setPosition((i * sprite->size.x) + x, y);
+	}
+}
+
+GLvoid GameApp::drawLadder(GLfloat length, GLfloat x, GLfloat y){
+	Sprite *sprite;
+	Ladder *ladder;
+	for (GLuint i = 0; i < length; i++){
+		sprite = new Sprite(tileSheet, 20, 16, 8);
+		ladder = new Ladder(sprite, x, y + (sprite->size.y * i));
 	}
 }
 

@@ -62,14 +62,16 @@ public:
 	GLboolean collidedLeft;
 	GLboolean collidedRight;
 	
+protected:
+	GLvoid collisionEffectX(Entity *e);
+	GLvoid collisionEffectY(Entity *e);
 
 private:
 	GLfloat distance(Vector v2, Vector v1);
 	GLboolean collidesWith(Entity *e);
 	GLvoid collisionPenX();
 	GLvoid collisionPenY();
-	GLvoid collisionEffectX(Entity *e);
-	GLvoid collisionEffectY(Entity *e);
+	
 	static list<Entity*> entities;
 	list<Entity*>::iterator it;
 
