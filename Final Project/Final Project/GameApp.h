@@ -80,8 +80,8 @@ private:
 	bool isSolid(int);*/
 
 	// for level generation
-	/*void makeGameLevel();
-	bool genPath(int, int, int);*/
+	void makeGameLevel();
+	bool genPath(int, int, int);
 
 	int mapLayout[LAYOUT_X][LAYOUT_Y];
 	Vector mapGoal;
