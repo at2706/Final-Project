@@ -21,9 +21,10 @@ GameApp::GameApp() {
 	buildPauseMenu();
 	buildUIstatic();
 	
-	drawLadder(8, 0.0f, -0.4f);
+	drawLadder(8, 0.0f, -0.3f);
 	drawPlatformHorizontal(26,0.0f,-0.5f);
 	drawPlatformHorizontal(8, 0.62f, 0.45f);
+	drawPlatformHorizontal(4, 0.2f, -0.36f);
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
 	// initialize mapLayout
 	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
@@ -244,50 +245,58 @@ GLboolean GameApp::updateAndRender() {
 	case STATE_GAME_LEVEL:
 
 		if (keys[SDL_SCANCODE_D]){
-			players[0].hero->isIdle = false;
+			players[0].hero->flags.idle = false;
 			players[0].hero->setRotation(0.0f);
 
 		}
 		else if (keys[SDL_SCANCODE_A]){
-			players[0].hero->isIdle = false;
+			players[0].hero->flags.idle = false;
 			players[0].hero->setRotation(180.0f);
-
 		}
-		else players[0].hero->isIdle = true;
 
-		if (keys[SDL_SCANCODE_SPACE])
+		else players[0].hero->flags.idle = true;
+
+		if (keys[SDL_SCANCODE_W] && !players[0].hero->gravity.enabled){
 			players[0].hero->velocity.y = 2.0f;
+		}
+
+		else if (keys[SDL_SCANCODE_S] && !players[0].hero->gravity.enabled){
+			players[0].hero->velocity.y = -2.0f;
+		}
+
+		if (keys[SDL_SCANCODE_SPACE] && players[0].hero->collision.bottom)
+			players[0].hero->velocity.y = 6.0f;
 
 		if (keys[SDL_SCANCODE_F])
 			players[0].hero->shoot();
 		/*for (GLuint i = 0; i < playerCount; i++){
 			if (players[i].axisValues[0] > CONTROLER_DEAD_ZONE){
-				players[i].hero->isIdle = false;
+				players[i].hero->flags.idle = false;
 				players[i].hero->setRotation(0.0f);
 				players[i].hero->speed = 2 * players[i].axisValues[0] / AXIS_MAX;
 			}
 
 			else if (players[i].axisValues[0] < -CONTROLER_DEAD_ZONE){
-				players[i].hero->isIdle = false;
+				players[i].hero->flags.idle = false;
 				players[i].hero->setRotation(180.0f);
 				players[i].hero->speed = -2 * players[i].axisValues[0] / AXIS_MAX;
 			}
 			else{
-				players[i].hero->isIdle = true;
+				players[i].hero->flags.idle = true;
 			}
 		}*/
 
 		/*if (keys[SDL_SCANCODE_RIGHT]){
-			players[1].hero->isIdle = false;
+			players[1].hero->flags.idle = false;
 			players[1].hero->setRotation(0.0f);
 		}
 		else if (keys[SDL_SCANCODE_LEFT]){
-			players[1].hero->isIdle = false;
+			players[1].hero->flags.idle = false;
 			players[1].hero->setRotation(180.0f);
 		}
-		else players[1].hero->isIdle = true;
+		else players[1].hero->flags.idle = true;
 
-		if (keys[SDL_SCANCODE_UP] && players[1].hero->collidedBottom){
+		if (keys[SDL_SCANCODE_UP] && players[1].hero->collision.bottom){
 			players[1].hero->velocity.y = 2.0f;
 		}*/
 
@@ -350,7 +359,7 @@ GLvoid GameApp::Render() {
 		glOrtho(-ASPECT_RATIO_X * zoom, ASPECT_RATIO_X * zoom, -ASPECT_RATIO_Y * zoom, ASPECT_RATIO_Y * zoom, -1.0f, 1.0f);
 		glMatrixMode(GL_MODELVIEW);
 		
-		followPlayers(players);
+		//followPlayers(players);
 		Entity::renderAll();
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -413,6 +422,12 @@ GLvoid GameApp::gameStart(){
 	}
 	Mix_HaltMusic();
 	state = STATE_GAME_LEVEL;
+	
+	Sprite *s;
+	Entity *e;
+	s = new Sprite(tileSheet, 80, 16, 8);
+	e = new Entity(s, CRAWLER, 0.3f, -0.1f);
+
 }
 GLvoid GameApp::buildMainMenu(){
 	Sprite *s;
@@ -556,13 +571,13 @@ void GameApp::doLevelCollisionY(Entity* temp) {
 	if (adjust != 0.0f) {
 		temp->position.y += adjust + 0.0001f;
 		temp->velocity.y = 0.0f;
-		temp->collidedBottom =true;
+		temp->collision.bottom =true;
 	}
 	adjust = checkPointForGridCollisionY(temp->position.x, temp->position.y + temp->getHeight() * 0.5f); // same as previous
 	if (adjust != 0.0f) {
 		temp->position.y -= adjust - 0.0001f;
 		temp->velocity.y = 0.0f;
-		temp->collidedTop = true;
+		temp->collision.top = true;
 	}
 }
 
@@ -571,13 +586,13 @@ void GameApp::doLevelCollisionX(Entity* temp) {
 	if (adjust != 0.0f) {
 		temp->position.x -= adjust * TILE_SIZE *0.008f;
 		temp->velocity.x = 0.0f;
-		temp->collidedLeft = true;
+		temp->collision.left = true;
 	}
 	adjust = checkPointForGridCollisionX(temp->position.x + temp->getWidth() * 0.5f, temp->position.y); // same as previous
 	if (adjust != 0.0f) {
 		temp->position.x += adjust * TILE_SIZE * 0.001;
 		temp->velocity.x = 0.0f;
-		temp->collidedRight = true;
+		temp->collision.right = true;
 	}
 }
 

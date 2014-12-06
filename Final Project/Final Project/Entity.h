@@ -2,7 +2,34 @@
 #include "Sprite.h"
 #include "Utilities.h"
 #include "Matrix.h"
+struct Flags{
+	Flags() : visible(true){};
 
+	GLboolean visible;
+	GLboolean moveable;
+	GLboolean bounce;
+	GLboolean idle;
+	GLboolean revivable;
+	GLboolean healthBar;
+	GLboolean deathMark;
+};
+struct Gravity{
+	Gravity() : enabled(true){};
+	GLboolean enabled;
+	GLfloat x;
+	GLfloat y;
+};
+struct Collision{
+	Collision() : enabled(true){};
+	GLboolean enabled;
+	GLboolean top;
+	GLboolean bottom;
+	GLboolean left;
+	GLboolean right;
+	GLboolean points;
+};
+
+enum EntityType { DEFAULT, HERO, PLATFORM, LADDER, FLYER, PROJECTILE, CRAWLER };
 class Entity {
 public:
 	Entity(Sprite *s, float x = 0, float y = 0);
@@ -49,21 +76,9 @@ public:
 	Vector acceleration;
 	Vector friction;
 
-	GLboolean isStatic;
-	GLboolean isIdle;
-	GLboolean visible;
-	GLboolean deathMark;
-
-	GLboolean enableGravity;
-	GLboolean enableBounce;
-	GLboolean revivable;
-	GLboolean healthBar;
-
-	GLboolean enableCollisions;
-	GLboolean collidedTop;
-	GLboolean collidedBottom;
-	GLboolean collidedLeft;
-	GLboolean collidedRight;
+	Flags flags;
+	Gravity gravity;
+	Collision collision;
 	
 protected:
 	GLvoid collisionEffectX(Entity *e);
@@ -72,9 +87,14 @@ protected:
 private:
 	GLfloat distance(Vector v2, Vector v1);
 	GLboolean collidesWith(Entity *e);
-	GLvoid collisionPenX();
-	GLvoid collisionPenY();
+	GLboolean collidesWith(GLfloat x, GLfloat y);
+	GLvoid collisionPenX(Entity *e);
+	GLvoid collisionPenY(Entity *e);
+	GLvoid collisionCheckPoints(Entity *e);
+	GLvoid collisionCheckX();
+	GLvoid collisionCheckY();
 	GLvoid deathEffect();
+	GLvoid AI();
 	
 	static list<Entity*> entities;
 	static vector<Entity*> killQueue;

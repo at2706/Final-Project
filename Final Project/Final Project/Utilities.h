@@ -15,7 +15,7 @@
 #include <ctime>
 #include <random>
 
-#define PI 3.14159265359f
+#define PI 3.14159265358979323846f
 
 #define GAME_TITLE "Final Project"
 #define RESOLUTION_W 1280
@@ -43,7 +43,6 @@
 
 using namespace std;
 
-enum EntityType {DEFAULT, HERO, PLATFORM, LADDER, FLYER, PROJECTILE };
 struct Color{
 	float r;
 	float g;
