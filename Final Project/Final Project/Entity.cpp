@@ -309,7 +309,7 @@ GLboolean Entity::collidesWith(GLfloat x, GLfloat y){
 GLvoid Entity::collisionCheckPoints(Entity *e){
 	switch (type){
 	case SHOOTER:
-		if (e->type == HERO){
+		if (e->type == HERO && !e->flags.deathMark){
 			GLfloat range = 4.0f;
 			GLfloat top = e->position.y + ((e->sprite->size.y) / 2);
 			GLfloat bot = e->position.y - ((e->sprite->size.y) / 2);
@@ -449,8 +449,11 @@ GLvoid Entity::deathEffect(){
 GLvoid Entity::AI(){
 	switch (type){
 	case SHOOTER:
-		if (collision.points[1])
- 			shoot();
+		if (collision.points[1]){
+			shoot();
+			flags.idle = true;
+		}
+		else flags.idle = false;
 	case CRAWLER:
 		if (collision.left || collision.right || (collision.bottom && !collision.points[0]))
 			rotate(180.0f);
@@ -469,7 +472,10 @@ GLvoid Entity::modHealth(GLfloat amount){
 		if (health < 0){
 			if (!flags.revivable)
 				suicide();
-			else flags.deathMark = true;
+			else {
+				flags.deathMark = true;
+				flags.idle = true;
+			}
 			health = 0;
 		}
 	}
