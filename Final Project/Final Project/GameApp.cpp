@@ -24,6 +24,7 @@ GameApp::GameApp() {
 	//drawLadder(8, 0.0f, -0.3f);
 	drawPlatformHorizontal(26,0.0f,-0.5f);
 	drawPlatformHorizontal(8, 0.62f, 0.45f);
+
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
 	// initialize mapLayout
 	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
@@ -43,12 +44,12 @@ GameApp::GameApp() {
 		mapGoal.x = (std::rand() % (4));
 		mapGoal.y = (std::rand() % (4));
 	}
-	//makeGameLevel();
-	for (unsigned int i = LAYOUT_X; i > 0; --i) {
+	makeGameLevel();
+	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
 		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-			cout << to_string(mapLayout[i][j]) + " ";
+			std::cout << mapLayout[i][j] << " ";
 		}
-		cout << endl;
+		std::cout << endl;
 	}
 }
 
@@ -620,20 +621,58 @@ bool GameApp::isSolid(int tile) {
 
 // THIS STUFF IS FOR LEVEL GENERATION
 void GameApp::makeGameLevel() {
-	while (!genPath(mapStart.x, mapStart.y, 8)) { // to make sure the maplayout has a path from start to end of length 8
+	bool done = false;
+	while (!done) { // to make sure the maplayout has a path from start to end of length 8
 		for (unsigned int i = 0; i < LAYOUT_X; ++i) { // to clear the maplayout if generating the path failed
 			for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
 				mapLayout[i][j] = 0;
 			}
 		}
+		// regenerate start and end point
+		// this is to create new points
+		mapStart.x = (std::rand() % (4));
+		mapStart.y = (std::rand() % (4));
+		mapGoal.x = (std::rand() % (4));
+		mapGoal.y = (std::rand() % (4));
+		// this will ensure the path is reasonable
+		while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 4) {
+			mapStart.x = (std::rand() % (4));
+			mapStart.y = (std::rand() % (4));
+			mapGoal.x = (std::rand() % (4));
+			mapGoal.y = (std::rand() % (4));
+			cout << "Generating new start and end..." << endl;
+		}
+		cout << "Failed, retrying..." << endl;
+		// retry to generate
+		if (genPath(mapStart.x, mapStart.y, 8))
+			done = true;
 	}
+	cout << "start x: " << mapStart.x << " start y: " << mapStart.y << " end x: " << mapGoal.x << " end y: " << mapGoal.y << endl;
+	cout << "start : " << mapLayout[(int)mapStart.x][(int)mapStart.y] << " end: " << mapLayout[(int)mapGoal.x][(int)mapGoal.y] << endl;
 }
+
 bool GameApp::genPath(int x, int y, int length) {
 	// first part of procedural generation
 	// I HAVE NOT TESTED THIS, THIS WAS MADE BASED OFF OF PSEUDOCODE
-	if (x == mapGoal.x && y == mapGoal.y && length == 0)
+	cout << "x = " << x << " y = " << y << endl;
+	if (length == 0 && x != mapGoal.x && y != mapGoal.y)
+		return false;
+	if (x == mapGoal.x && y == mapGoal.y && length == 0) {
+		if (y + 1 < LAYOUT_Y - 1)
+			if (mapLayout[x][y + 1] == 6 || mapLayout[x][y + 1] == 9 || mapLayout[x][y + 1] == 10)
+				mapLayout[x][y] = 1;
+		if (y - 1 > 0)
+			if (mapLayout[x][y - 1] == 6 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 8)
+				mapLayout[x][y] = 2;
+		if (x + 1 < LAYOUT_X - 1)
+			if (mapLayout[x + 1][y] == 5 || mapLayout[x + 1][y] == 8 || mapLayout[x + 1][y] == 9)
+				mapLayout[x][y] = 3;
+		if (x - 1 > 0)
+			if (mapLayout[x - 1][y] == 5 || mapLayout[x - 1][y] == 7 || mapLayout[x - 1][y] == 10)
+				mapLayout[x][y] = 4;
 		return true;
-	if (mapLayout[x][y] != 0 || x < 0 || y < 0 || x > LAYOUT_X || y > LAYOUT_Y)
+	}
+	if (mapLayout[x][y] != 0 || x < 0 || y < 0 || x > LAYOUT_X - 1 || y > LAYOUT_Y - 1)
 		return false;
 
 	//assigning random layout to current tile
@@ -642,28 +681,28 @@ bool GameApp::genPath(int x, int y, int length) {
 		switch (1 + (std::rand() % 10)) {
 			// 1-4, must check the if the tile for the end point is compatible or not
 		case 1:
-			if (y + 1 < LAYOUT_Y) {
+			if (y + 1 < LAYOUT_Y - 1) {
 				if ((x == mapStart.x && y == mapStart.y) || (x == mapGoal.x && y == mapGoal.y && (mapLayout[x][y + 1] == 6 || mapLayout[x][y + 1] == 9 || mapLayout[x][y + 1] == 10)))
 					mapLayout[x][y] = 1;
 				done = true;
 				break;
 			}
 		case 2:
-			if (y - 1 > -1) {
+			if (y - 1 > 0) {
 				if ((x == mapStart.x && y == mapStart.y) || (x == mapGoal.x && y == mapGoal.y && (mapLayout[x][y - 1] == 6 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 8)))
 					mapLayout[x][y] = 2;
 				done = true;
 				break;
 			}
 		case 3:
-			if (x + 1 < LAYOUT_X) {
+			if (x + 1 < LAYOUT_X - 1) {
 				if ((x == mapStart.x && y == mapStart.y) || (x == mapGoal.x && y == mapGoal.y && (mapLayout[x + 1][y] == 5 || mapLayout[x + 1][y] == 8 || mapLayout[x + 1][y] == 9)))
 					mapLayout[x][y] = 3;
 				done = true;
 				break;
 			}
 		case 4:
-			if (x - 1 > -1) {
+			if (x - 1 > 0) {
 				if ((x == mapStart.x && y == mapStart.y) || (x == mapGoal.x && y == mapGoal.y && (mapLayout[x - 1][y] == 5 || mapLayout[x - 1][y] == 7 || mapLayout[x - 1][y] == 10)))
 					mapLayout[x][y] = 4;
 				done = true;
