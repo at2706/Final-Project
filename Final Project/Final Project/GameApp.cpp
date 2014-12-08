@@ -632,45 +632,47 @@ void GameApp::makeGameLevel() {
 		// this is to create new points
 		mapStart.x = (std::rand() % (4));
 		mapStart.y = (std::rand() % (4));
-		mapGoal.x = (std::rand() % (4));
-		mapGoal.y = (std::rand() % (4));
-		// this will ensure the path is reasonable
-		while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 4) {
-			mapStart.x = (std::rand() % (4));
-			mapStart.y = (std::rand() % (4));
-			mapGoal.x = (std::rand() % (4));
-			mapGoal.y = (std::rand() % (4));
-			cout << "Generating new start and end..." << endl;
-		}
-		cout << "Failed, retrying..." << endl;
+		std::cout << "Failed, retrying..." << endl;
 		// retry to generate
-		if (genPath(mapStart.x, mapStart.y, 8))
+		if (genPath(mapStart.x, mapStart.y, 9))
 			done = true;
 	}
-	cout << "start x: " << mapStart.x << " start y: " << mapStart.y << " end x: " << mapGoal.x << " end y: " << mapGoal.y << endl;
-	cout << "start : " << mapLayout[(int)mapStart.x][(int)mapStart.y] << " end: " << mapLayout[(int)mapGoal.x][(int)mapGoal.y] << endl;
+	cout << "start x: " << mapStart.x << " start y: " << mapStart.y << endl;
+	cout << "start : " << mapLayout[(int)mapStart.x][(int)mapStart.y] << endl;
 }
 
 bool GameApp::genPath(int x, int y, int length) {
 	// first part of procedural generation
 	// I HAVE NOT TESTED THIS, THIS WAS MADE BASED OFF OF PSEUDOCODE
 	cout << "x = " << x << " y = " << y << endl;
-	if (length == 0 && x != mapGoal.x && y != mapGoal.y)
+	if (length < 0)
 		return false;
-	if (x == mapGoal.x && y == mapGoal.y && length == 0) {
-		if (y + 1 < LAYOUT_Y - 1)
-			if (mapLayout[x][y + 1] == 6 || mapLayout[x][y + 1] == 9 || mapLayout[x][y + 1] == 10)
+	if (mapLayout[x][y] == 0 && length == 0) {
+		if (y + 1 < LAYOUT_Y - 1) {
+			if (mapLayout[x][y + 1] == 6 || mapLayout[x][y + 1] == 9 || mapLayout[x][y + 1] == 10) {
 				mapLayout[x][y] = 1;
-		if (y - 1 > 0)
-			if (mapLayout[x][y - 1] == 6 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 8)
+				return true;
+			}
+		}
+		else if (y - 1 > 0) {
+			if (mapLayout[x][y - 1] == 6 || mapLayout[x][y - 1] == 7 || mapLayout[x][y - 1] == 8) {
 				mapLayout[x][y] = 2;
-		if (x + 1 < LAYOUT_X - 1)
-			if (mapLayout[x + 1][y] == 5 || mapLayout[x + 1][y] == 8 || mapLayout[x + 1][y] == 9)
+				return true;
+			}
+		}
+		else if (x + 1 < LAYOUT_X - 1) {
+			if (mapLayout[x + 1][y] == 5 || mapLayout[x + 1][y] == 8 || mapLayout[x + 1][y] == 9) {
 				mapLayout[x][y] = 3;
-		if (x - 1 > 0)
-			if (mapLayout[x - 1][y] == 5 || mapLayout[x - 1][y] == 7 || mapLayout[x - 1][y] == 10)
+				return true;
+			}
+		}
+		else if (x - 1 > 0) {
+			if (mapLayout[x - 1][y] == 5 || mapLayout[x - 1][y] == 7 || mapLayout[x - 1][y] == 10) {
 				mapLayout[x][y] = 4;
-		return true;
+				return true;
+			}
+		}
+		return false; // something went terribly wrong if this returns false!!
 	}
 	if (mapLayout[x][y] != 0 || x < 0 || y < 0 || x > LAYOUT_X - 1 || y > LAYOUT_Y - 1)
 		return false;
