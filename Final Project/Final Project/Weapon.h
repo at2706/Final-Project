@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity.h"
+#include "Sprite.h"
 class Weapon
 {
 public:

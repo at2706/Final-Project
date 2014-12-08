@@ -1,21 +1,24 @@
-﻿Build started 12/5/2014 10:34:51 PM.
+﻿Build started 12/7/2014 7:17:10 PM.
      1>Project "D:\Users\Andy\Google Drive\CS3113- Game Programming\Final-Project\Final Project\Final Project\Final Project.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\SDL2\include /IC:\SDL2_image\include /IC:\SDL2_mixer\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt GameApp.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\SDL2\include /IC:\SDL2_image\include /IC:\SDL2_mixer\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Entity.cpp GameApp.cpp
          GameApp.cpp
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\utilities.h(77): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(5): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(35): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(36): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(37): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(38): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(39): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(41): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(42): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(43): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(44): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(45): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(162): warning C4018: '<' : signed/unsigned mismatch
-     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(346): warning C4101: 'fadeValue' : unreferenced local variable
-     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(612): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(161): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(347): warning C4101: 'fadeValue' : unreferenced local variable
+     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(623): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+         Entity.cpp
+     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\utilities.h(77): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Users\Andy\Google Drive\CS3113- Game Programming\Final-Project\Final Project\Debug\Final Project.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\SDL2\lib\x86 /LIBPATH:C:\SDL2_image\lib\x86 /LIBPATH:C:\SDL2_mixer\lib\x86 SDL2.lib SDL2main.lib SDL2_image.lib OpenGL32.lib SDL2_mixer.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Users\Andy\Google Drive\CS3113- Game Programming\Final-Project\Final Project\Debug\Final Project.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Users\Andy\Google Drive\CS3113- Game Programming\Final-Project\Final Project\Debug\Final Project.lib" /MACHINE:X86 Debug\Entity.obj
          Debug\GameApp.obj
@@ -33,4 +36,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.11
+Time Elapsed 00:00:01.97

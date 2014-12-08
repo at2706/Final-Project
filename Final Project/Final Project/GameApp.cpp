@@ -21,10 +21,9 @@ GameApp::GameApp() {
 	buildPauseMenu();
 	buildUIstatic();
 	
-	drawLadder(8, 0.0f, -0.3f);
+	//drawLadder(8, 0.0f, -0.3f);
 	drawPlatformHorizontal(26,0.0f,-0.5f);
 	drawPlatformHorizontal(8, 0.62f, 0.45f);
-	drawPlatformHorizontal(4, 0.2f, -0.36f);
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
 	// initialize mapLayout
 	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
@@ -244,31 +243,33 @@ GLboolean GameApp::updateAndRender() {
 		break;
 	case STATE_GAME_LEVEL:
 
-		if (keys[SDL_SCANCODE_D]){
-			players[0].hero->flags.idle = false;
-			players[0].hero->setRotation(0.0f);
+		if (!players[0].hero->flags.deathMark){
+			if (keys[SDL_SCANCODE_D]){
+				players[0].hero->flags.idle = false;
+				players[0].hero->setRotation(0.0f);
 
+			}
+			else if (keys[SDL_SCANCODE_A]){
+				players[0].hero->flags.idle = false;
+				players[0].hero->setRotation(180.0f);
+			}
+
+			else players[0].hero->flags.idle = true;
+
+			if (keys[SDL_SCANCODE_W] && !players[0].hero->gravity.enabled){
+				players[0].hero->velocity.y = 2.0f;
+			}
+
+			else if (keys[SDL_SCANCODE_S] && !players[0].hero->gravity.enabled){
+				players[0].hero->velocity.y = -2.0f;
+			}
+
+			if (keys[SDL_SCANCODE_SPACE] && players[0].hero->collision.bottom)
+				players[0].hero->velocity.y = 6.0f;
+
+			if (keys[SDL_SCANCODE_F])
+				players[0].hero->shoot();
 		}
-		else if (keys[SDL_SCANCODE_A]){
-			players[0].hero->flags.idle = false;
-			players[0].hero->setRotation(180.0f);
-		}
-
-		else players[0].hero->flags.idle = true;
-
-		if (keys[SDL_SCANCODE_W] && !players[0].hero->gravity.enabled){
-			players[0].hero->velocity.y = 2.0f;
-		}
-
-		else if (keys[SDL_SCANCODE_S] && !players[0].hero->gravity.enabled){
-			players[0].hero->velocity.y = -2.0f;
-		}
-
-		if (keys[SDL_SCANCODE_SPACE] && players[0].hero->collision.bottom)
-			players[0].hero->velocity.y = 6.0f;
-
-		if (keys[SDL_SCANCODE_F])
-			players[0].hero->shoot();
 		/*for (GLuint i = 0; i < playerCount; i++){
 			if (players[i].axisValues[0] > CONTROLER_DEAD_ZONE){
 				players[i].hero->flags.idle = false;
@@ -347,7 +348,7 @@ GLvoid GameApp::Render() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	zoom = 1.5f;
+	zoom = 1.0f;
 	switch (state){
 	case STATE_MAIN_MENU:
 		UImain->render();
@@ -359,7 +360,7 @@ GLvoid GameApp::Render() {
 		glOrtho(-ASPECT_RATIO_X * zoom, ASPECT_RATIO_X * zoom, -ASPECT_RATIO_Y * zoom, ASPECT_RATIO_Y * zoom, -1.0f, 1.0f);
 		glMatrixMode(GL_MODELVIEW);
 		
-		//followPlayers(players);
+		followPlayers(players);
 		Entity::renderAll();
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -368,7 +369,6 @@ GLvoid GameApp::Render() {
 		glLoadIdentity();
 		UIstatic->render();
 		
-
 		/*fadeTime += elapsed;
 		fadeValue = mapValue(fadeTime, 0.0f, 2.0f, 0.0f, 1.0f);
 		tint(1 - fadeValue);*/
@@ -409,7 +409,13 @@ GLvoid GameApp::initPlayer(int i){
 
 	s = new Sprite(tileSheet, 99, 16, 8);
 	e = new Entity(s, HERO);
-	e->projectile = new Sprite(tileSheet, 21, 16, 8);
+
+	s = new Sprite(tileSheet, 21, 16, 8);
+	Weapon *w = new Weapon(s);
+	w->fireRate = 0.1f;
+	w->speed = 6.0f;
+	w->damage = 5.0f;
+	e->weapon = w;
 
 	e->position.x = -0.7f + i * 0.5f;
 	players[i].hero = e;
@@ -426,8 +432,13 @@ GLvoid GameApp::gameStart(){
 	Sprite *s;
 	Entity *e;
 	s = new Sprite(tileSheet, 80, 16, 8);
-	e = new Entity(s, CRAWLER, 0.3f, -0.1f);
-
+	e = new Entity(s, SHOOTER, 0.1f, -0.1f);
+	s = new Sprite(tileSheet, 39, 16, 8);
+	Weapon *w = new Weapon(s);
+	w->fireRate = 0.3f;
+	w->speed = 6.0f;
+	w->damage = 30.0f;
+	e->weapon = w;
 }
 GLvoid GameApp::buildMainMenu(){
 	Sprite *s;

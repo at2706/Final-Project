@@ -2,6 +2,7 @@
 #include "Sprite.h"
 #include "Utilities.h"
 #include "Matrix.h"
+#include "Weapon.h"
 struct Flags{
 	Flags() : visible(true){};
 
@@ -26,10 +27,11 @@ struct Collision{
 	GLboolean bottom;
 	GLboolean left;
 	GLboolean right;
-	GLboolean points;
+	GLboolean points[5];
+	GLfloat distance;
 };
 
-enum EntityType { DEFAULT, HERO, PLATFORM, LADDER, FLYER, PROJECTILE, CRAWLER };
+enum EntityType { DEFAULT, HERO, PLATFORM, LADDER, FLYER, PROJECTILE, CRAWLER, SHOOTER };
 class Entity {
 public:
 	Entity(Sprite *s, float x = 0, float y = 0);
@@ -62,13 +64,16 @@ public:
 	GLvoid decelerateR();
 
 	Sprite *sprite;
-	Sprite *projectile;
+	Weapon *weapon;
 	EntityType type;
 	CollisionShape shape;
 
 	Matrix matrix;
 	Matrix translateMatrix;
 	Matrix rotationMatrix;
+	GLfloat animationElapsed = 0.0f;
+	GLfloat framesPerSecond = 30.0f;
+
 	Vector position;
 	Vector scale;
 	GLfloat speed;		//Maximum velocity on the x-axis

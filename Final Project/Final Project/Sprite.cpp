@@ -31,11 +31,11 @@ Sprite::Sprite(GLuint texID, GLuint index, GLuint spriteCountX, GLint spriteCoun
 	size.y = 1.0 / (GLfloat)spriteCountY;
 }
 
-
 GLvoid Sprite::render(){
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_DEPTH_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
 	glBindTexture(GL_TEXTURE_2D, textureID);
