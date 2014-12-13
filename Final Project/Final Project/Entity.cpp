@@ -1,10 +1,13 @@
 #include "Entity.h"
+#include "GameApp.h"
 
+GameApp *Entity::world = nullptr;
 list<Entity*> Entity::entities;
 vector<Entity*> Entity::killQueue;
 Entity::Entity(Sprite *s, float x, float y) {
+	animation.push_back(s);
 	sprite = s;
-
+	
 	setScale();
 	setPosition(x, y);
 
@@ -22,6 +25,7 @@ Entity::Entity(Sprite *s, float x, float y) {
 	it = --entities.end();
 }
 Entity::Entity(Sprite *s, EntityType t, float x, float y){
+	animation.push_back(s);
 	sprite = s;
 	setScale();
 	setPosition(x, y);
@@ -63,7 +67,9 @@ Entity::Entity(Sprite *s, EntityType t, float x, float y){
 		break;
 
 	case SHOOTER:
+		value += 75;
 	case CRAWLER:
+		value += 100;
 		healthMax = 100;
 		health = 100;
 		speed = 0.5f;
@@ -116,9 +122,19 @@ GLvoid Entity::FixedUpdate() {
 	collision.left = false;
 	collision.right = false;
 	memset(collision.points, 0, sizeof collision.points);
-	
+	animationElapsed += FIXED_TIMESTEP;
+	if (animationElapsed > 1.0 / framesPerSecond) {
+		sprite = animation[animationIndex];
+		animationIndex++;
+		animationElapsed = 0.0;
+		if (animationIndex > animation.size() - 1) {
+			animationIndex = 0;
+		}
+		
+	}
+
 	if (flags.moveable){
-		if(type != FLYER && type != PROJECTILE)
+		if(type != FLYER && type != PROJECTILE && !flags.deathMark)
 			gravity.enabled = true;
 		if (weapon != nullptr)
 			weapon->cooldown += FIXED_TIMESTEP;
@@ -308,6 +324,14 @@ GLboolean Entity::collidesWith(GLfloat x, GLfloat y){
 
 GLvoid Entity::collisionCheckPoints(Entity *e){
 	switch (type){
+	case HERO:
+		if (!collision.points[0] && e->flags.deathMark && e->type == HERO){
+			GLfloat direction = (((sprite->size.x) / 2) + 0.02f) * cos(rotation.y) + position.x;
+			collision.points[0] = e->collidesWith(direction, position.y);
+			if (collision.points[0])
+				world->players[value].target = e;
+		}
+		break;
 	case SHOOTER:
 		if (e->type == HERO && !e->flags.deathMark){
 			GLfloat range = 4.0f;
@@ -317,12 +341,13 @@ GLvoid Entity::collisionCheckPoints(Entity *e){
 			GLfloat distance;
 			collision.points[1] = collision.points[1] || raySegmentIntersect(position, Vector(direction1, position.y + 0.2f), Vector(e->position.x, top), Vector(e->position.x, bot), distance);
 		}
-	case CRAWLER:{
-		GLfloat bottom1 = position.y - ((sprite->size.y) / 2) - 0.001f;
-		GLfloat direction = (((sprite->size.x) / 2) + 0.02f) * cos(rotation.y) + position.x;
-		collision.points[0] = collision.points[0] || (e->collidesWith(direction, bottom1));
+	case CRAWLER:
+		if (!e->flags.deathMark){
+			GLfloat bottom1 = position.y - ((sprite->size.y) / 2) - 0.001f;
+			GLfloat direction = (((sprite->size.x) / 2) + 0.02f) * cos(rotation.y) + position.x;
+			collision.points[0] = collision.points[0] || (e->collidesWith(direction, bottom1));
+		}
 		break;
-	}
 	}
 }
 
@@ -349,7 +374,7 @@ GLvoid Entity::collisionCheckY(){
 }
 
 GLvoid Entity::collisionPenX(Entity *e){
-	if (flags.moveable)
+	if (flags.moveable && !flags.deathMark && !e->flags.deathMark)
 	{
 		GLfloat distance_x = fabs(e->position.x - position.x);
 		GLfloat width1 = sprite->size.x * 0.5f * scale.x;
@@ -358,13 +383,13 @@ GLvoid Entity::collisionPenX(Entity *e){
 
 		if (position.x > e->position.x){
 			position.x += xPenetration + 0.0001f;
-			collision.right = true;
-			e->collision.left = true;
+			collision.left = true;
+			e->collision.right = true;
 		}
 		else{
 			position.x -= xPenetration + 0.0001f;
-			collision.left = true;
-			e->collision.right = true;
+			collision.right = true;
+			e->collision.left = true;
 		}
 		velocity.x = 0.0f;
 	}
@@ -396,16 +421,16 @@ GLvoid Entity::collisionEffectX(Entity *e){
 	switch (e->type){
 	case SHOOTER:
 	case CRAWLER:
-		if (flags.moveable){
-			velocity.y = 1.0f;
-			if (collision.right) setRotation(180.0f);
+		if (flags.moveable && !flags.deathMark){
+			velocity.y = 2.0f;
+			if (collision.left) setRotation(180.0f);
 			else setRotation(0.0f);
-			velocity.x = -cos(rotation.y);
+			velocity.x = -cos(rotation.y) * 2;
 			modHealth(-10);
 		}
 		break;
 	case PROJECTILE:
-		if (type != PROJECTILE && type != LADDER) {
+		if (type != PROJECTILE && type != LADDER && !flags.deathMark) {
 			modHealth(-e->health);
 			e->suicide();
 		}
@@ -413,7 +438,7 @@ GLvoid Entity::collisionEffectX(Entity *e){
 	case LADDER:
 		break;
 	default:
-		if (type != PROJECTILE)
+		if (type != PROJECTILE || !(flags.moveable && e->flags.moveable))
 		collisionPenX(e);
 	}
 }
@@ -421,7 +446,7 @@ GLvoid Entity::collisionEffectY(Entity *e){
 	switch (e->type){
 	case SHOOTER:
 	case CRAWLER:
-		if (flags.moveable){
+		if (flags.moveable && !flags.deathMark){
 			velocity.y = 1.0f;
 			velocity.x = -cos(rotation.y);
 			modHealth(-10);
@@ -430,24 +455,33 @@ GLvoid Entity::collisionEffectY(Entity *e){
 	case PROJECTILE:
 		break;
 	case LADDER:
-		if (type != PROJECTILE)
-		{
+		if (type != PROJECTILE) {
 			gravity.enabled = false;
 			velocity.y = 0;
-			collision.bottom = true;
+			//collision.bottom = true;
 		}
 		break;
 	default:
-		if (type != PROJECTILE)
-		collisionPenY(e);
+		if (type != PROJECTILE && !(flags.moveable && e->flags.moveable))
+			collisionPenY(e);
 	}
 }
 GLvoid Entity::deathEffect(){
+	switch (type){
+	case HERO:
 
+		break;
+
+	default:
+		;
+	}
 }
 
 GLvoid Entity::AI(){
 	switch (type){
+	case HERO:
+		
+		break;
 	case SHOOTER:
 		if (collision.points[1]){
 			shoot();
@@ -459,7 +493,6 @@ GLvoid Entity::AI(){
 			rotate(180.0f);
 		break;
 	}
-	
 }
 
 GLvoid Entity::rotate(GLfloat y){
@@ -475,8 +508,11 @@ GLvoid Entity::modHealth(GLfloat amount){
 			else {
 				flags.deathMark = true;
 				flags.idle = true;
+				velocity.x = 0.0f;
+				velocity.y = 0.0f;
 			}
 			health = 0;
+			deathEffect();
 		}
 	}
 }

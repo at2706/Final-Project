@@ -8,7 +8,9 @@ public:
 	~Player();
 
 	Entity *hero;
+	Entity *target;
 	SDL_Joystick *controller;
 	GLfloat axisValues[6];
+	UIText *reviveIndicator;
 };
 
