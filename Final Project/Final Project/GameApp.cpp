@@ -11,7 +11,7 @@ GameApp::GameApp() {
 	introMusic = Mix_LoadMUS("introMusic.mp3");
 	menuMove = Mix_LoadWAV("menuMove.wav");
 	jump = Mix_LoadWAV("jump.wav");
-	playerCount = 1;
+	playerCount = 2;
 	
 	Mix_PlayMusic(introMusic, -1);
 	Mix_VolumeMusic(30);
@@ -19,9 +19,9 @@ GameApp::GameApp() {
 
 	buildMainMenu();
 	buildPauseMenu();
-	buildUIstatic();
+	buildGameUI();
 	
-	//drawLadder(8, 0.0f, -0.3f);
+	drawLadder(8, 0.0f, -0.3f);
 	drawPlatformHorizontal(26,0.0f,-0.5f);
 	drawPlatformHorizontal(8, 0.62f, 0.45f);
 
@@ -64,6 +64,7 @@ GLvoid GameApp::init() {
 	glMatrixMode(GL_PROJECTION);
 	glOrtho(-ASPECT_RATIO_X, ASPECT_RATIO_X, -ASPECT_RATIO_Y, ASPECT_RATIO_Y, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
+	Entity::world = this;
 }
 
 GameApp::~GameApp()
@@ -117,6 +118,7 @@ GLboolean GameApp::updateAndRender() {
 
 		switch (state){
 		case STATE_MAIN_MENU:
+			#pragma region Main Menu
 			if (event.type == SDL_KEYDOWN){
 				if (event.key.keysym.scancode == SDL_SCANCODE_S){
 					mainList->selectionDown();
@@ -134,7 +136,7 @@ GLboolean GameApp::updateAndRender() {
 					}
 				}
 			}
-			
+
 			//UP and DOWN the main menu
 			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 1 && controllerCooldown > 0.1f) {
 
@@ -178,14 +180,22 @@ GLboolean GameApp::updateAndRender() {
 				}
 			}
 			break;
+		#pragma endregion
+
 		case STATE_GAME_LEVEL:
+			#pragma region Game Level
+			if (event.type == SDL_KEYDOWN){
+				if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE){
+					state = STATE_GAME_PAUSE;
+				}
+			}
 
 			if (event.type == SDL_JOYAXISMOTION){
 				players[event.jaxis.which].axisValues[event.jaxis.axis] = event.jaxis.value;
 				if (event.jaxis.axis > 3)
-					cout <<to_string(event.jaxis.axis) << ": " << to_string(event.jaxis.value) << endl;
+					cout << to_string(event.jaxis.axis) << ": " << to_string(event.jaxis.value) << endl;
 			}
-			
+
 
 			if (event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 10){
 				Mix_PlayChannel(-1, jump, 0);
@@ -195,7 +205,16 @@ GLboolean GameApp::updateAndRender() {
 				state = STATE_GAME_PAUSE;
 			}
 			break;
+#pragma endregion
+
 		case STATE_GAME_PAUSE:
+			#pragma region Game Pause
+			if (event.type == SDL_KEYDOWN){
+				if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE){
+					state = STATE_GAME_LEVEL;
+				}
+			}
+			
 			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 1 && controllerCooldown > 0.1f) {
 
 				if (event.jaxis.value > CONTROLER_DEAD_ZONE) {
@@ -211,7 +230,7 @@ GLboolean GameApp::updateAndRender() {
 
 			if (event.type == SDL_JOYBUTTONDOWN){
 				switch (event.jbutton.button){
-				//A button
+					//A button
 				case 10:
 					switch (pauseList->selection){
 					case 0:
@@ -228,6 +247,8 @@ GLboolean GameApp::updateAndRender() {
 				}
 			}
 			break;
+#pragma endregion
+
 		case STATE_GAME_OVER:
 
 			break;
@@ -244,7 +265,12 @@ GLboolean GameApp::updateAndRender() {
 		break;
 	case STATE_GAME_LEVEL:
 
-		if (!players[0].hero->flags.deathMark){
+ 		if (!players[0].hero->flags.deathMark){
+			if (players[0].hero->collision.points[0]){
+				players[0].reviveIndicator->setPosition(players[0].target->position.x - 0.08f, players[0].target->position.y + 0.08f);
+				players[0].reviveIndicator->isVisible = true;
+			}
+			else players[0].reviveIndicator->isVisible = false;
 			if (keys[SDL_SCANCODE_D]){
 				players[0].hero->flags.idle = false;
 				players[0].hero->setRotation(0.0f);
@@ -271,6 +297,40 @@ GLboolean GameApp::updateAndRender() {
 			if (keys[SDL_SCANCODE_F])
 				players[0].hero->shoot();
 		}
+
+		if (!players[1].hero->flags.deathMark){
+			if (players[1].hero->collision.points[0]){
+				players[1].reviveIndicator->setPosition(players[1].target->position.x -0.08f, players[1].target->position.y + 0.08f);
+				players[1].reviveIndicator->isVisible = true;
+			}
+			else players[1].reviveIndicator->isVisible = false;
+			if (keys[SDL_SCANCODE_RIGHT]){
+				players[1].hero->flags.idle = false;
+				players[1].hero->setRotation(0.0f);
+
+			}
+			else if (keys[SDL_SCANCODE_LEFT]){
+				players[1].hero->flags.idle = false;
+				players[1].hero->setRotation(180.0f);
+			}
+
+			else players[1].hero->flags.idle = true;
+
+			if (keys[SDL_SCANCODE_UP] && !players[1].hero->gravity.enabled){
+				players[1].hero->velocity.y = 2.0f;
+			}
+
+			else if (keys[SDL_SCANCODE_DOWN] && !players[1].hero->gravity.enabled){
+				players[1].hero->velocity.y = -2.0f;
+			}
+
+			if (keys[SDL_SCANCODE_M] && players[1].hero->collision.bottom)
+				players[1].hero->velocity.y = 6.0f;
+
+			if (keys[SDL_SCANCODE_N])
+				players[1].hero->shoot();
+		}
+
 		/*for (GLuint i = 0; i < playerCount; i++){
 			if (players[i].axisValues[0] > CONTROLER_DEAD_ZONE){
 				players[i].hero->flags.idle = false;
@@ -311,8 +371,6 @@ GLboolean GameApp::updateAndRender() {
 		break;
 	}
 
-
-
 	Update();
 
 	Render();
@@ -344,11 +402,11 @@ GLvoid GameApp::time(){
 }
 
 GLvoid GameApp::Render() {
-	
 	GLfloat fadeValue;
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
+
 	zoom = 1.0f;
 	switch (state){
 	case STATE_MAIN_MENU:
@@ -360,15 +418,16 @@ GLvoid GameApp::Render() {
 		glLoadIdentity();
 		glOrtho(-ASPECT_RATIO_X * zoom, ASPECT_RATIO_X * zoom, -ASPECT_RATIO_Y * zoom, ASPECT_RATIO_Y * zoom, -1.0f, 1.0f);
 		glMatrixMode(GL_MODELVIEW);
-		
 		followPlayers(players);
+		glMultMatrixf(translateMatrix.ml);
 		Entity::renderAll();
+		UIGame->render();
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glOrtho(-ASPECT_RATIO_X, ASPECT_RATIO_X, -ASPECT_RATIO_Y, ASPECT_RATIO_Y, -1.0f, 1.0f);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		UIstatic->render();
+		UIStatic->render();
 		
 		/*fadeTime += elapsed;
 		fadeValue = mapValue(fadeTime, 0.0f, 2.0f, 0.0f, 1.0f);
@@ -382,6 +441,11 @@ GLvoid GameApp::Render() {
 		UIpause->render();
 		break;
 	case STATE_GAME_OVER:
+		glMultMatrixf(translateMatrix.ml);
+		Entity::renderAll();
+		fadeTime += elapsed;
+		fadeValue = mapValue(fadeTime, 0.0f, 2.0f, 0.0f, 0.7f);
+		tint(fadeValue);
 
 		break;
 	default:
@@ -408,8 +472,11 @@ GLvoid GameApp::initPlayer(int i){
 	Sprite *s;
 	Entity *e;
 
-	s = new Sprite(tileSheet, 99, 16, 8);
+	s = new Sprite(tileSheet, 64, 16, 8);
 	e = new Entity(s, HERO);
+	e->value = i;
+	for (int j = 0; j < 5; j++)
+		e->animation.push_back(new Sprite(tileSheet, j+65, 16, 8));
 
 	s = new Sprite(tileSheet, 21, 16, 8);
 	Weapon *w = new Weapon(s);
@@ -420,6 +487,12 @@ GLvoid GameApp::initPlayer(int i){
 
 	e->position.x = -0.7f + i * 0.5f;
 	players[i].hero = e;
+
+	players[i].reviveIndicator = new UIText("Revive", 0.0f, 0.5f);
+	players[i].reviveIndicator->fontTexture = fontTexture;
+	players[i].reviveIndicator->isVisible = false;
+	UIGame->attach(players[i].reviveIndicator);
+
 	players[i].controller = SDL_JoystickOpen(i);
 }
 
@@ -430,16 +503,17 @@ GLvoid GameApp::gameStart(){
 	Mix_HaltMusic();
 	state = STATE_GAME_LEVEL;
 	
-	Sprite *s;
+	/*Sprite *s;
 	Entity *e;
 	s = new Sprite(tileSheet, 80, 16, 8);
 	e = new Entity(s, SHOOTER, 0.1f, -0.1f);
+	e->animation.push_back(new Sprite(tileSheet, 81, 16, 8));
 	s = new Sprite(tileSheet, 39, 16, 8);
 	Weapon *w = new Weapon(s);
-	w->fireRate = 0.3f;
+	w->fireRate = 0.8f;
 	w->speed = 6.0f;
 	w->damage = 30.0f;
-	e->weapon = w;
+	e->weapon = w;*/
 }
 GLvoid GameApp::buildMainMenu(){
 	Sprite *s;
@@ -480,7 +554,7 @@ GLvoid GameApp::buildPauseMenu(){
 	s = new Sprite(UISheet, 512, 256, 0, 192, 190, 45);
 	UIElement *pauseTitle = new UIElement(s, 0.0f, 1.1f, 0.4f, 0.6f);
 	UIpause->attach(pauseTitle);
-	t = new UIText("PAUSE",0.3f,-0.55f);
+	t = new UIText("PAUSE",-0.55f);
 	t->color = { 1, 1, 1, 1 };
 	pauseTitle->attach(t);
 
@@ -499,31 +573,46 @@ GLvoid GameApp::buildPauseMenu(){
 	t->color = { 1, 1, 1, 1 };
 	pauseList->attach(t);
 }
-GLvoid GameApp::buildUIstatic(){
+GLvoid GameApp::buildGameUI(){
 	Sprite *s;
-	UIText *b;
-
+	UIElement *e;
+	UIText *t;
+	UIGame = new UIElement();
+	UIGame->fontTexture = fontTexture;
+	UIStatic = new UIElement();
 	s = new Sprite(UISheet, 512, 256, 0, 192, 190, 45);
-	UIstatic = new UIElement(s, -1.5f, 0.9f,0.55f, 0.5f);
-	UIstatic->fontTexture = fontTexture;
+	e = new UIElement(s, -1.5f, 0.9f,0.55f, 0.5f);
+	e->fontTexture = fontTexture;
 
-	b = new UIText("Lives: ", 0.3f, -0.75f);
-	b->color = { 1, 1, 1, 1 };
-	UIstatic->attach(b);
+	t = new UIText("Lives: ", -0.75f);
+	t->color = { 1, 1, 1, 1 };
+	e->attach(t);
+
+	UIStatic->attach(e);
 }
 
 GLvoid GameApp::followPlayers(Player *p){
 	GLfloat posX = 0, posY = 0;
+	GLuint alive = 0;
 	for (GLuint i = 0; i < playerCount; i++){
-		if (i!= 1){
+		if (!p[i].hero->flags.deathMark){
 			posX += p[i].hero->position.x;
 			posY += p[i].hero->position.y;
+			alive++;
 		}
 	}
 
-	posX /= playerCount;
-	posY /= playerCount;
-	glTranslatef(-posX, -posY, 0.0f);
+	if (alive == 0){
+		fadeTime = 0.0f;
+		state = STATE_GAME_OVER;
+	}
+
+	if (posX != 0 && posY != 0){
+		posX /= alive;
+		posY /= alive;
+		translateMatrix.m[3][0] = lerp(translateMatrix.m[3][0], -posX, elapsed * 3);
+		translateMatrix.m[3][1] = lerp(translateMatrix.m[3][1], -posY, elapsed * 3);
+	}
 }
 GLvoid GameApp::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){
 	Sprite *sprite;
@@ -548,74 +637,74 @@ GLvoid GameApp::drawLadder(GLfloat length, GLfloat x, GLfloat y){
 // NOT DONE YET, levelData needs to  be created which will have to be on me since i need that for procedural generation
 /*
 void GameApp::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
-	*gridX = (int)((worldX + (WORLD_OFFSET_X)) / TILE_SIZE);
-	*gridY = (int)((-worldY + (WORLD_OFFSET_Y)) / TILE_SIZE);
+*gridX = (int)((worldX + (WORLD_OFFSET_X)) / TILE_SIZE);
+*gridY = (int)((-worldY + (WORLD_OFFSET_Y)) / TILE_SIZE);
 }
 
 float GameApp::checkPointForGridCollisionY(float x, float y) {
-	int gridX, gridY;
-	worldToTileCoordinates(x, y, &gridX, &gridY);
-	if (gridX < 0 || gridX > 100 || gridY < 0 || gridY > 100) {
-		return 0.0f;
-	}
-	if (isSolid(levelData[gridY][gridX])) {
-		float yCoord = (gridY * TILE_SIZE);
-		return -y - yCoord;
-	}
-	return 0.0f;
+int gridX, gridY;
+worldToTileCoordinates(x, y, &gridX, &gridY);
+if (gridX < 0 || gridX > 100 || gridY < 0 || gridY > 100) {
+return 0.0f;
+}
+if (isSolid(levelData[gridY][gridX])) {
+float yCoord = (gridY * TILE_SIZE);
+return -y - yCoord;
+}
+return 0.0f;
 }
 
 float GameApp::checkPointForGridCollisionX(float x, float y) {
-	int gridX, gridY;
-	worldToTileCoordinates(x, y, &gridX, &gridY);
-	if (gridX < 0 || gridX > 100 || gridY < 0 || gridY > 100) {
-		return 0.0f;
-	}
-	if (isSolid(levelData[gridY][gridX])) {
-		float xCoord = (gridX * TILE_SIZE);
-		return -x - xCoord;
-	}
-	return 0.0f;
+int gridX, gridY;
+worldToTileCoordinates(x, y, &gridX, &gridY);
+if (gridX < 0 || gridX > 100 || gridY < 0 || gridY > 100) {
+return 0.0f;
+}
+if (isSolid(levelData[gridY][gridX])) {
+float xCoord = (gridX * TILE_SIZE);
+return -x - xCoord;
+}
+return 0.0f;
 }
 
 void GameApp::doLevelCollisionY(Entity* temp) {
-	float adjust = checkPointForGridCollisionY(temp->position.x, temp->position.y - temp->getHeight() * 0.5f); // do we have a variable for width and height?
-	if (adjust != 0.0f) {
-		temp->position.y += adjust + 0.0001f;
-		temp->velocity.y = 0.0f;
-		temp->collision.bottom =true;
-	}
-	adjust = checkPointForGridCollisionY(temp->position.x, temp->position.y + temp->getHeight() * 0.5f); // same as previous
-	if (adjust != 0.0f) {
-		temp->position.y -= adjust - 0.0001f;
-		temp->velocity.y = 0.0f;
-		temp->collision.top = true;
-	}
+float adjust = checkPointForGridCollisionY(temp->position.x, temp->position.y - temp->getHeight() * 0.5f); // do we have a variable for width and height?
+if (adjust != 0.0f) {
+temp->position.y += adjust + 0.0001f;
+temp->velocity.y = 0.0f;
+temp->collision.bottom =true;
+}
+adjust = checkPointForGridCollisionY(temp->position.x, temp->position.y + temp->getHeight() * 0.5f); // same as previous
+if (adjust != 0.0f) {
+temp->position.y -= adjust - 0.0001f;
+temp->velocity.y = 0.0f;
+temp->collision.top = true;
+}
 }
 
 void GameApp::doLevelCollisionX(Entity* temp) {
-	float adjust = checkPointForGridCollisionX(temp->position.x - temp->getWidth() * 0.5f, temp->position.y); // same as previous
-	if (adjust != 0.0f) {
-		temp->position.x -= adjust * TILE_SIZE *0.008f;
-		temp->velocity.x = 0.0f;
-		temp->collision.left = true;
-	}
-	adjust = checkPointForGridCollisionX(temp->position.x + temp->getWidth() * 0.5f, temp->position.y); // same as previous
-	if (adjust != 0.0f) {
-		temp->position.x += adjust * TILE_SIZE * 0.001;
-		temp->velocity.x = 0.0f;
-		temp->collision.right = true;
-	}
+float adjust = checkPointForGridCollisionX(temp->position.x - temp->getWidth() * 0.5f, temp->position.y); // same as previous
+if (adjust != 0.0f) {
+temp->position.x -= adjust * TILE_SIZE *0.008f;
+temp->velocity.x = 0.0f;
+temp->collision.left = true;
+}
+adjust = checkPointForGridCollisionX(temp->position.x + temp->getWidth() * 0.5f, temp->position.y); // same as previous
+if (adjust != 0.0f) {
+temp->position.x += adjust * TILE_SIZE * 0.001;
+temp->velocity.x = 0.0f;
+temp->collision.right = true;
+}
 }
 
 bool GameApp::isSolid(int tile) {
-	// gotta change this to the spritesheet we are using
-	// make a case for all the solid blocks
-	switch (tile) {
-	case 1:
-		return true;
-		break;
-	}
+// gotta change this to the spritesheet we are using
+// make a case for all the solid blocks
+switch (tile) {
+case 1:
+return true;
+break;
+}
 }
 */
 

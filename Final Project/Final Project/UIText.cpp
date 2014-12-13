@@ -1,6 +1,6 @@
 #include "UIText.h"
 
-UIText::UIText(string text, GLfloat size, GLfloat posX, GLfloat posY)
+UIText::UIText(string text, GLfloat posX, GLfloat posY, GLfloat size)
 	: UIElement(NULL, posX, posY, size, size), text(text) {
 	color = {1,1,1,1};
 	spacing = -0.17f;
@@ -25,7 +25,7 @@ GLvoid UIText::render(){
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		glDepthMask(GL_TRUE);
-		glBindTexture(GL_TEXTURE_2D, parent->fontTexture);
+		glBindTexture(GL_TEXTURE_2D, fontTexture);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glMatrixMode(GL_MODELVIEW);
@@ -56,11 +56,11 @@ GLvoid UIText::render(){
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDrawArrays(GL_QUADS, 0, text.size() * 4);
 		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
 		glDisableClientState(GL_COLOR_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 		glPopMatrix();
 

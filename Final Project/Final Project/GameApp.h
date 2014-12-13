@@ -1,5 +1,4 @@
 #pragma once
-#include "Entity.h"
 #include "UIElement.h"
 #include "UIText.h"
 #include "UIList.h"
@@ -12,6 +11,7 @@
 class GameApp
 {
 public:
+	friend class Entity;
 	GameApp();
 	~GameApp();
 
@@ -19,6 +19,10 @@ public:
 
 	GLvoid Update();
 	GLvoid Render();
+
+protected:
+	Player players[4];
+	GLint score;
 
 private:
 	SDL_Event event;
@@ -37,7 +41,7 @@ private:
 	GLuint loadTexture(const char *image_path, GLint param = GL_LINEAR);
 	GLvoid buildMainMenu();
 	GLvoid buildPauseMenu();
-	GLvoid buildUIstatic();
+	GLvoid buildGameUI();
 	GLvoid initPlayer(int);
 	GLvoid gameStart();
 	GLvoid followPlayers(Player *p);
@@ -50,25 +54,27 @@ private:
 	GLfloat ticks;
 	GLfloat lastFrameTicks;
 	Vector gravity;
-	Matrix scaleMatrix;
+
+	Matrix translateMatrix;
 	GLfloat zoom;
 	GLfloat fadeTime;
 
 	GLuint myVertexBuffer;
 	GLuint charSheet;
+	GLuint buttonSheet;
 	GLuint tileSheet;
 	GLuint UISheet;
 	GLuint fontTexture;
 	GLuint bgTexture;
 
 	GLuint playerCount;
-	Player players[4];
 
 	UIElement *UImain;
 	UIList *mainList;
 	UIElement *UIpause;
 	UIList *pauseList;
-	UIElement *UIstatic;
+	UIElement *UIStatic;
+	UIElement *UIGame;
 
 	// for collision
 	/*void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);

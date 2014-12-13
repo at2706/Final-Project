@@ -12,6 +12,7 @@ UIList::~UIList() {
 
 GLvoid UIList::attach(UIElement *e){
 	e->parent = this;
+	e->fontTexture = fontTexture;
 	e->position.x = (children.size() * spacing.x) + position.x;
 	e->position.y = -(children.size() * spacing.y) + position.y;
 	e->buildMatrix();

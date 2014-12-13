@@ -5,6 +5,7 @@
 class UIElement
 {
 public:
+	UIElement();
 	UIElement(Sprite *sheet, GLfloat posX = 0.0f, GLfloat posY = 0.0f, GLfloat scale_x = 1.0f, GLfloat scale_y = 1.0f);
 	~UIElement();
 

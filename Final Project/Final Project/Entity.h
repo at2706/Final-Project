@@ -1,6 +1,6 @@
 #pragma once
-#include "Sprite.h"
 #include "Utilities.h"
+#include "Sprite.h"
 #include "Matrix.h"
 #include "Weapon.h"
 struct Flags{
@@ -30,14 +30,16 @@ struct Collision{
 	GLboolean points[5];
 	GLfloat distance;
 };
-
 enum EntityType { DEFAULT, HERO, PLATFORM, LADDER, FLYER, PROJECTILE, CRAWLER, SHOOTER };
+
 class Entity {
 public:
+	friend class GameApp;
 	Entity(Sprite *s, float x = 0, float y = 0);
 	Entity(Sprite *s, EntityType t, float x = 0, float y = 0);
 	~Entity();
 
+	static GameApp *world;
 	enum CollisionShape{ BOX, POINT, CIRCLE };
 	GLvoid Update(float elapsed);
 	GLvoid FixedUpdate();
@@ -63,6 +65,7 @@ public:
 	GLvoid moveR();
 	GLvoid decelerateR();
 
+	vector<Sprite*> animation;
 	Sprite *sprite;
 	Weapon *weapon;
 	EntityType type;
@@ -71,8 +74,9 @@ public:
 	Matrix matrix;
 	Matrix translateMatrix;
 	Matrix rotationMatrix;
+	GLuint animationIndex;
 	GLfloat animationElapsed = 0.0f;
-	GLfloat framesPerSecond = 30.0f;
+	GLfloat framesPerSecond = 15.0f;
 
 	Vector position;
 	Vector scale;
@@ -80,6 +84,8 @@ public:
 	Vector velocity;
 	Vector acceleration;
 	Vector friction;
+
+	GLint value;
 
 	Flags flags;
 	Gravity gravity;
