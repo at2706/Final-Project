@@ -852,35 +852,43 @@ bool GameApp::genPath(int x, int y, int length) {
 	// moving onwards to the next part of the path
 	switch (mapLayout[x][y]) {
 	case 1:
-		if (genPath(x, y + 1, length - 1)) // south of x,y
-			return true;
-	case 2:
-		if (genPath(x, y - 1, length - 1)) // north of x,y
-			return true;
-	case 3:
-		if (genPath(x + 1, y, length - 1)) // east of x,y
-			return true;
-	case 4:
-		if (genPath(x - 1, y, length - 1)) // west of x,y
-			return true;
-	case 5:
-		switch (1 + std::rand() % 2) {
-		case 1:
-			if (genPath(x + 1, y, length - 1)) // east of x,y
-				return true;
-		case 2:
-			if (genPath(x - 1, y, length - 1)) // west of x,y
-				return true;
-		}
-	case 6:
-		switch (1 + std::rand() % 2) {
-		case 1:
-			if (genPath(x, y - 1, length - 1)) // north of x,y
-				return true;
-		case 2:
+		if (y + 1 < LAYOUT_Y) {
 			if (genPath(x, y + 1, length - 1)) // south of x,y
 				return true;
 		}
+		else
+			return false;
+	case 2:
+		if (y - 1 > -1) {
+			if (genPath(x, y - 1, length - 1)) // north of x,y
+				return true;
+		}
+		else
+			return false;
+	case 3:
+		if (x + 1 < LAYOUT_X) {
+			if (genPath(x + 1, y, length - 1)) // east of x,y
+				return true;
+		}
+		else
+			return false;
+	case 4:
+		if (x - 1 > -1) {
+			if (genPath(x - 1, y, length - 1)) // west of x,y
+				return true;
+		}
+		else
+			return false;
+	case 5:
+		if (genPath(x + 1, y, length - 1)) // east of x,y
+			return true;
+		else if (genPath(x - 1, y, length - 1)) // west of x,y
+			return true;
+	case 6:
+		if (genPath(x, y - 1, length - 1)) // north of x,y
+			return true;
+		else if (genPath(x, y + 1, length - 1)) // south of x,y
+			return true;
 	case 7:
 		switch (1 + std::rand() % 2) {
 		case 1:
