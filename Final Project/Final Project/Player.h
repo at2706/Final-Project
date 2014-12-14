@@ -1,6 +1,7 @@
 #pragma once
 #include "Utilities.h"
 #include "Entity.h"
+#include "UIText.h"
 class Player
 {
 public:

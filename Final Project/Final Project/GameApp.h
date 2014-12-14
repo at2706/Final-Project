@@ -5,8 +5,11 @@
 #include "Player.h"
 #define LAYOUT_X 5
 #define LAYOUT_Y 5
+#define TRUE_X 250
+#define TRUE_Y 250
 #define WORLD_OFFSET_X 0
 #define WORLD_OFFSET_Y 0
+
 
 class GameApp
 {
@@ -88,7 +91,20 @@ private:
 	void makeGameLevel();
 	bool genPath(int, int, int);
 
+	void readMap(string map, unsigned char **tmpMap);
+	bool readHeader(ifstream&, unsigned char **tmpMap);
+	bool readLayerData(ifstream&, unsigned char **tmpMap);
+	bool readEntityData(ifstream&, unsigned char **tmpMap);
+	void placeEntity(string, float, float);
+
+	void createMap();
+
+	int mapWidth;
+	int mapHeight;
 	int mapLayout[LAYOUT_X][LAYOUT_Y];
+	unsigned char trueMap[TRUE_X][TRUE_Y];
+	Vector startPoint;
+
 	Vector mapGoal;
 	Vector mapStart;
 };
