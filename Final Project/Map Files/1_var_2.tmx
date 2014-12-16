@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="dirt-tiles" tilewidth="16" tileheight="16">
+  <image source="../../../../dirt-tiles.png" width="384" height="256"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztl1EKg0AMROMBeonaXqDrn3r/a3ULu7AE96N/42MGBhGS6CMx6hIRn+qtHctwXi7cY7YhZxY/q5mvV1LcrE7O6V6qn3F/ncHgeAeDg9KPR5hDSZ4rLZlDS+bQEoWDsnfNoSVzaInCQdm7FA7Kf637oSVzaIny/qBwUPYVhYMyV5R95bnSEqUfFA7PlZbcDy1R+kHh8FxpidIPCgflu530fLyq9+pj8Hh+pb3lda/NOX5N9XvMMeT+o3x/vcZvrr4kARyD
+  </data>
+ </layer>
+</map>
