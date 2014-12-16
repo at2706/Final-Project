@@ -75,7 +75,7 @@ GameApp::GameApp() {
 	});
 
 	animHeroJump = new vector < Sprite* >;
-	animHeroJump->push_back(new Sprite(charSheet, 2048.0f, 1024.0f, 195, 454, 72, 110));
+	animHeroJump->push_back(new Sprite(charSheet, 2048.0f, 1024.0f, 195, 454, 92, 110));
 
 	animHeroDead = new vector < Sprite* >;
 	animHeroDead->insert(animHeroDead->end(),
