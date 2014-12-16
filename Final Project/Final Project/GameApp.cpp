@@ -88,6 +88,13 @@ GameApp::GameApp() {
 		new Sprite(charSheet, 2048.0f, 1024.0f, 948, 428, 42, 42),		//6		21
 		new Sprite(charSheet, 2048.0f, 1024.0f, 1560, 777, 42, 42)		//7		18
 	});
+
+	animHeroCrouch = new vector < Sprite* >;
+	animHeroCrouch->insert(animHeroCrouch->end(),
+	{ new Sprite(charSheet, 2048.0f, 1024.0f, 1342, 233, 55, 83),		//0		47
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1341, 488, 55, 83),		//1		51
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1341, 750, 55, 83),		//2		53
+	});
 }
 
 GLvoid GameApp::init() {
@@ -302,7 +309,7 @@ GLboolean GameApp::updateAndRender() {
 		break;
 	case STATE_GAME_LEVEL:
 
- 		if (!players[0].hero->flags.deathMark){
+		if (!players[0].hero->flags.deathMark){
 			if (players[0].hero->collision.points[0]){
 				players[0].reviveIndicator->setPosition(players[0].target->position.x - 0.08f, players[0].target->position.y + 0.08f);
 				players[0].reviveIndicator->isVisible = true;
@@ -337,6 +344,11 @@ GLboolean GameApp::updateAndRender() {
 
 			if (keys[SDL_SCANCODE_F])
 				players[0].hero->shoot();
+
+			if (keys[SDL_SCANCODE_C]){
+				players[0].hero->animation = animHeroCrouch;
+				players[0].hero->flags.idle = true;
+			}
 
 			if (!players[0].hero->collision.bottom)
 				players[0].hero->animation = animHeroJump;

@@ -83,6 +83,7 @@ private:
 	vector<Sprite*> *animHeroIdle;
 	vector<Sprite*> *animHeroRun;
 	vector<Sprite*> *animHeroJump;
+	vector<Sprite*> *animHeroCrouch;
 	vector<Sprite*> *animHeroDead;
 
 

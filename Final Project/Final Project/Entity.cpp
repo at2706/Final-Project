@@ -266,14 +266,14 @@ GLvoid Entity::setPosition(GLfloat x, GLfloat y, GLfloat z){
 }
 
 GLvoid Entity::shoot(){
-	/*if (weapon->cooldown > weapon->fireRate) {
+	if (weapon->cooldown > weapon->fireRate) {
 		Entity *bullet = new Entity(weapon->sprite, PROJECTILE, -0.2f, 0.5f);
 		GLfloat randomish = (0.05f * ((float)rand() / (float)RAND_MAX) - 0.025f);
-		bullet->setPosition(((sprite->size.x + 0.0005f + (fabs(velocity.x) *0.05f)) * cos(rotation.y) / 2) + position.x, position.y + randomish);
+		bullet->setPosition(((sprite->size.x + 0.1f + (fabs(velocity.x) *0.05f)) * cos(rotation.y) / 2) + position.x, position.y + randomish);
 		bullet->health = weapon->damage;
 		bullet->velocity.x = weapon->speed * cos(rotation.y);
 		weapon->cooldown = 0.0f;
-	}*/
+	}
 }
 GLvoid Entity::suicide(){
 	if (!flags.deathMark){
