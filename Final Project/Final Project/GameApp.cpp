@@ -29,7 +29,7 @@ GameApp::GameApp() {
 	// initialize mapLayout
 	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
 		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-			mapLayout[i][j] = 0;
+			mapLayout[j][i] = 0;
 		}
 	}
 	// for level generation
@@ -47,7 +47,7 @@ GameApp::GameApp() {
 	makeGameLevel();
 	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
 		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-			std::cout << mapLayout[i][j] << " ";
+			std::cout << mapLayout[j][i] << " ";
 		}
 		std::cout << endl;
 	}
@@ -731,10 +731,8 @@ void GameApp::makeGameLevel() {
 }
 
 bool GameApp::genPath(int x, int y, int length) {
-	// first part of procedural generation
-	// I HAVE NOT TESTED THIS, THIS WAS MADE BASED OFF OF PSEUDOCODE
 	cout << "x = " << x << " y = " << y << endl;
-	if (length < 0)
+	if (length < 0 || x == LAYOUT_X || y == LAYOUT_Y)
 		return false;
 	if (mapLayout[x][y] == 0 && length == 0) {
 		if (y + 1 < LAYOUT_Y - 1) {
@@ -1132,17 +1130,13 @@ void GameApp::placeEntity(string type, float placeX, float placeY) {
 }
 
 void GameApp::createMap() {
-	unsigned char** unwalkable;
-	unsigned char** firstRoom;
-	unsigned char** secondRoom;
-	unsigned char** thirdRoom;
-	unsigned char** fourthRoom;
-	unsigned char** fifthRoom;
-	unsigned char** sixthRoom;
-	unsigned char** seventhRoom;
-	unsigned char** eigthRoom;
-	unsigned char** ninthRoom;
-	unsigned char** tenthRoom;
+	int xOffset = 0;
+	int yOffset = 0;
+
+	unsigned char** unwalkable = NULL;
+	unsigned char** tmp = NULL;
+	// filling in the case 0 room
+	readMap("0.txt", unwalkable);
 
 	vector<string> firstRoomVariation;
 	vector<string> secondRoomVariation;
@@ -1154,87 +1148,100 @@ void GameApp::createMap() {
 	vector<string> eigthRoomVariation;
 	vector<string> ninthRoomVariation;
 	vector<string> tenthRoomVariation;
-	vector<vector<string>> chooseFrom;
-	vector<string> tenRooms;
 
 	for (int i = 1; i < 5; ++i) {
-		firstRoomVariation.push_back("1_var_" + to_string(i));
+		firstRoomVariation.push_back("1_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		secondRoomVariation.push_back("2_var_" + to_string(i));
+		secondRoomVariation.push_back("2_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		thirdRoomVariation.push_back("3_var_" + to_string(i));
+		thirdRoomVariation.push_back("3_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		fourthRoomVariation.push_back("4_var_" + to_string(i));
+		fourthRoomVariation.push_back("4_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		fifthRoomVariation.push_back("5_var_" + to_string(i));
+		fifthRoomVariation.push_back("5_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		sixthRoomVariation.push_back("6_var_" + to_string(i));
+		sixthRoomVariation.push_back("6_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		seventhRoomVariation.push_back("7_var_" + to_string(i));
+		seventhRoomVariation.push_back("7_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		eigthRoomVariation.push_back("8_var_" + to_string(i));
+		eigthRoomVariation.push_back("8_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		ninthRoomVariation.push_back("9_var_" + to_string(i));
+		ninthRoomVariation.push_back("9_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		tenthRoomVariation.push_back("10_var_" + to_string(i));
+		tenthRoomVariation.push_back("10_var_" + to_string(i) + ".txt");
 	}
-	// to fill the 0th index
-	vector<string> filler;
-	chooseFrom.push_back(firstRoomVariation);
-	chooseFrom.push_back(secondRoomVariation);
-	chooseFrom.push_back(thirdRoomVariation);
-	chooseFrom.push_back(fourthRoomVariation);
-	chooseFrom.push_back(fifthRoomVariation);
-	chooseFrom.push_back(sixthRoomVariation);
-	chooseFrom.push_back(seventhRoomVariation);
-	chooseFrom.push_back(eigthRoomVariation);
-	chooseFrom.push_back(ninthRoomVariation);
-	chooseFrom.push_back(tenthRoomVariation);
 
 	// rooms will be assigned from left to right, top to bottom of mapLayout, NOT BASED ON START TO END
-	// choose the room
-	string realFirstRoom = firstRoomVariation[rand() % 5 + 1];
-	string realSecondRoom = secondRoomVariation[rand() % 5 + 1];
-	string realThirdRoom = thirdRoomVariation[rand() % 5 + 1];
-	string realFourthRoom = fourthRoomVariation[rand() % 5 + 1];
-	string realFifthRoom = fifthRoomVariation[rand() % 5 + 1];
-	string realSixthRoom = sixthRoomVariation[rand() % 5 + 1];
-	string realSeventhRoom = seventhRoomVariation[rand() % 5 + 1];
-	string realEigthRoom = eigthRoomVariation[rand() % 5 + 1];
-	string realNinthRoom = ninthRoomVariation[rand() % 5 + 1];
-	string realTenthRoom = tenthRoomVariation[rand() % 5 + 1];
+	int counter = 0;
 	for (int i = 0; i < LAYOUT_X; ++i) {
 		for (int j = 0; j < LAYOUT_Y; ++j) {
-			if (mapLayout[i][j] != 0) {
-				switch (mapLayout[i][j]) {
+			if (mapLayout[j][i] != 0) {
+				switch (mapLayout[j][i]) {
 				case 1:
-					tenRooms.push_back(firstRoomVariation[rand() % 5 + 1]);
+					readMap(firstRoomVariation[rand() % 5 + 1], tmp);
+					fillLargeArray(tmp, xOffset, yOffset);
+					break;
+				case 2:
+					readMap(secondRoomVariation[rand() % 5 + 1], tmp);
+					fillLargeArray(tmp, xOffset, yOffset);
+					break;
+				case 3:
+					readMap(thirdRoomVariation[rand() % 5 + 1], tmp);
+					fillLargeArray(tmp, xOffset, yOffset);
+					break;
+				case 4:
+					readMap(fourthRoomVariation[rand() % 5 + 1], tmp);
+					fillLargeArray(tmp, xOffset, yOffset);
+					break;
+				case 5:
+					readMap(fifthRoomVariation[rand() % 5 + 1], tmp);
+					fillLargeArray(tmp, xOffset, yOffset);
+					break;
+				case 6:
+					readMap(sixthRoomVariation[rand() % 5 + 1], tmp);
+					fillLargeArray(tmp, xOffset, yOffset);
+					break;
+				case 7:
+					readMap(seventhRoomVariation[rand() % 5 + 1], tmp);
+					fillLargeArray(tmp, xOffset, yOffset);
+					break;
+				case 8:
+					readMap(eigthRoomVariation[rand() % 5 + 1], tmp);
+					fillLargeArray(tmp, xOffset, yOffset);
+					break;
+				case 9:
+					readMap(ninthRoomVariation[rand() % 5 + 1], tmp);
+					fillLargeArray(tmp, xOffset, yOffset);
+					break;
+				case 10:
+					readMap(tenthRoomVariation[rand() % 5 + 1], tmp);
+					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				}
+				xOffset += 50;
+			}
+			else {
+				fillLargeArray(unwalkable, xOffset, yOffset);
+				xOffset += 50;
 			}
 		}
+		yOffset += 50;
 	}
+}
 
-	/*
-	readMap(realFirstRoom, firstRoom);
-	readMap(realSecondRoom, secondRoom);
-	readMap(realThirdRoom, thirdRoom);
-	readMap(realFourthRoom, fourthRoom);
-	readMap(realFifthRoom, fifthRoom);
-	readMap(realSixthRoom, sixthRoom);
-	readMap(realSeventhRoom, seventhRoom);
-	readMap(realEigthRoom, eigthRoom);
-	readMap(realNinthRoom, ninthRoom);
-	readMap(realTenthRoom, tenthRoom);
-	*/
-	// at this point firstRoom - tenthRoom should have the map info stored
+void GameApp::fillLargeArray(unsigned char** small, int xOffset, int yOffset) {
+	for (int i = 0; i < LAYOUT_X; ++i) {
+		for (int j = 0; j < LAYOUT_Y; ++j) {
+			trueMap[xOffset + j][yOffset + i] = small[j][i];
+		}
+	}
 }

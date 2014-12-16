@@ -98,11 +98,12 @@ private:
 	void placeEntity(string, float, float);
 
 	void createMap();
+	void fillLargeArray(unsigned char** small, int xOffset, int yOffset);
 
 	int mapWidth;
 	int mapHeight;
 	int mapLayout[LAYOUT_X][LAYOUT_Y];
-	unsigned char trueMap[TRUE_X][TRUE_Y];
+	unsigned char trueMap[TRUE_Y][TRUE_X];
 	Vector startPoint;
 
 	Vector mapGoal;
