@@ -21,8 +21,8 @@ GameApp::GameApp() {
 	buildPauseMenu();
 	buildGameUI();
 	
-	drawLadder(8, 0.0f, -0.3f);
-	drawPlatformHorizontal(26,0.0f,-0.5f);
+	drawLadder(16, 0.0f, 0.0f);
+	drawPlatformHorizontal(42,0.0f,-0.5f);
 	drawPlatformHorizontal(8, 0.62f, 0.45f);
 
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
@@ -54,7 +54,7 @@ GameApp::GameApp() {
 
 	animHeroRun = new vector < Sprite* >;
 	animHeroRun->insert(animHeroRun->end(),
-		{new Sprite(charSheet, 2048.0f, 1024.0f, 97, 770, 95, 110),	//1		114
+	{	new Sprite(charSheet, 2048.0f, 1024.0f, 97, 770, 95, 110),	//1		114
 		new Sprite(charSheet, 2048.0f, 1024.0f, 719, 344, 77, 110),	//2		120
 		new Sprite(charSheet, 2048.0f, 1024.0f, 555, 348, 82, 112),	//3		172
 		new Sprite(charSheet, 2048.0f, 1024.0f, 195, 454, 92, 110),	//4		121
@@ -68,11 +68,25 @@ GameApp::GameApp() {
 
 	animHeroIdle = new vector < Sprite* >;
 	animHeroIdle->insert(animHeroIdle->end(),
-	{	//new Sprite(charSheet, 2048.0f, 1024.0f, 947, 486, 68, 110),	//1		111
-	new Sprite(charSheet, 2048.0f, 1024.0f, 1019, 206, 67, 110),	//2		117
-	new Sprite(charSheet, 2048.0f, 1024.0f, 1017, 876, 68, 109),	//3		141
-	new Sprite(charSheet, 2048.0f, 1024.0f, 1087, 542, 67, 110),	//4		155
-	new Sprite(charSheet, 2048.0f, 1024.0f, 876, 0, 67, 110)		//5		156
+	{	new Sprite(charSheet, 2048.0f, 1024.0f, 1019, 206, 67, 110),	//2		117
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1017, 876, 68, 109),	//3		141
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1087, 542, 67, 110),	//4		155
+		new Sprite(charSheet, 2048.0f, 1024.0f, 876, 0, 67, 110)		//5		156
+	});
+
+	animHeroJump = new vector < Sprite* >;
+	animHeroJump->push_back(new Sprite(charSheet, 2048.0f, 1024.0f, 195, 454, 72, 110));
+
+	animHeroDead = new vector < Sprite* >;
+	animHeroDead->insert(animHeroDead->end(),
+	{ new Sprite(charSheet, 2048.0f, 1024.0f, 1509, 469, 42, 42),		//0		17
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1509, 425, 42, 42),		//1		06
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1609, 925, 42, 42),		//2		24
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1610, 166, 42, 42),		//3		25
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1609, 969, 42, 42),		//4		23
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1609, 881, 42, 42),		//5		19
+		new Sprite(charSheet, 2048.0f, 1024.0f, 948, 428, 42, 42),		//6		21
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1560, 777, 42, 42)		//7		18
 	});
 }
 
@@ -161,26 +175,26 @@ GLboolean GameApp::updateAndRender() {
 			}
 
 			//UP and DOWN the main menu
-			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 1 && controllerCooldown > 0.1f) {
+			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 1 && cooldown > 0.1f) {
 
 				if (event.jaxis.value > CONTROLER_DEAD_ZONE) {
 					mainList->selectionDown();
-					controllerCooldown = 0;
+					cooldown = 0;
 				}
 
 				else if (event.jaxis.value < -CONTROLER_DEAD_ZONE) {
 					mainList->selectionUp();
-					controllerCooldown = 0;
+					cooldown = 0;
 				}
 			}
 			//LEFT and RIGHT for picking the amount of players
-			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 0 && controllerCooldown > 0.3f) {
+			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 0 && cooldown > 0.3f) {
 				if (mainList->selection == 1 && event.jaxis.value < -CONTROLER_DEAD_ZONE) {
 					if (playerCount > 1){
 						playerCount--;
 						UIText *t = static_cast<UIText*>(mainList->children[1]);
 						t->text = "Players: " + to_string(playerCount);
-						controllerCooldown = 0;
+						cooldown = 0;
 					}
 				}
 				else if (mainList->selection == 1 && event.jaxis.value > CONTROLER_DEAD_ZONE) {
@@ -188,7 +202,7 @@ GLboolean GameApp::updateAndRender() {
 						playerCount++;
 						UIText *t = static_cast<UIText*>(mainList->children[1]);
 						t->text = "Players:" + to_string(playerCount);
-						controllerCooldown = 0;
+						cooldown = 0;
 					}
 				}
 			}
@@ -238,16 +252,16 @@ GLboolean GameApp::updateAndRender() {
 				}
 			}
 			
-			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 1 && controllerCooldown > 0.1f) {
+			if (event.type == SDL_JOYAXISMOTION && event.jaxis.axis == 1 && cooldown > 0.1f) {
 
 				if (event.jaxis.value > CONTROLER_DEAD_ZONE) {
 					pauseList->selectionDown();
-					controllerCooldown = 0;
+					cooldown = 0;
 				}
 
 				else if (event.jaxis.value < -CONTROLER_DEAD_ZONE) {
 					pauseList->selectionUp();
-					controllerCooldown = 0;
+					cooldown = 0;
 				}
 			}
 
@@ -284,7 +298,7 @@ GLboolean GameApp::updateAndRender() {
 
 	switch (state){
 	case STATE_MAIN_MENU:
-		controllerCooldown += elapsed;
+		cooldown += elapsed;
 		break;
 	case STATE_GAME_LEVEL:
 
@@ -311,18 +325,21 @@ GLboolean GameApp::updateAndRender() {
 			}
 
 			if (keys[SDL_SCANCODE_W] && !players[0].hero->gravity.enabled){
-				players[0].hero->velocity.y = 2.0f;
+				players[0].hero->velocity.y = 1.0f;
 			}
 
 			else if (keys[SDL_SCANCODE_S] && !players[0].hero->gravity.enabled){
-				players[0].hero->velocity.y = -2.0f;
+				players[0].hero->velocity.y = -1.0f;
 			}
 
 			if (keys[SDL_SCANCODE_SPACE] && players[0].hero->collision.bottom)
-				players[0].hero->velocity.y = 6.0f;
+				players[0].hero->velocity.y = 4.0f;
 
 			if (keys[SDL_SCANCODE_F])
 				players[0].hero->shoot();
+
+			if (!players[0].hero->collision.bottom)
+				players[0].hero->animation = animHeroJump;
 		}
 
 		if (!players[1].hero->flags.deathMark){
@@ -389,9 +406,17 @@ GLboolean GameApp::updateAndRender() {
 			players[1].hero->velocity.y = 2.0f;
 		}*/
 
+		for (GLuint i = 0; i < playerCount; i++){
+			if (!players[i].hero->flags.deathMark){
+				players[i].label->setPosition(players[i].hero->position.x - 0.01f, players[i].hero->position.y +0.175f);
+				players[i].label->isVisible = true;
+			}
+			else players[i].label->isVisible = false;
+		}
+
 		break;
 	case STATE_GAME_PAUSE:
-		controllerCooldown += elapsed;
+		cooldown += elapsed;
 		break;
 	case STATE_GAME_OVER:
 
@@ -406,6 +431,8 @@ GLboolean GameApp::updateAndRender() {
 }
 GLvoid GameApp::Update() {
 	time();
+
+	
 }
 
 GLvoid GameApp::time(){
@@ -502,8 +529,8 @@ GLvoid GameApp::initPlayer(int i){
 	s = new Sprite(tileSheet, 64, 16, 8);
 	e = new Entity(animHeroIdle, HERO);
 	e->value = i;
-	e->scale.x = 2;
-	e->scale.y = 2;
+	e->scale.x = 1.75f;
+	e->scale.y = 1.75f;
 
 	s = new Sprite(tileSheet, 21, 16, 8);
 	Weapon *w = new Weapon(s);
@@ -518,7 +545,18 @@ GLvoid GameApp::initPlayer(int i){
 	players[i].reviveIndicator = new UIText("Revive", 0.0f, 0.5f);
 	players[i].reviveIndicator->fontTexture = fontTexture;
 	players[i].reviveIndicator->isVisible = false;
+
+	players[i].label = new UIText("P" + to_string(i + 1), 0.0f, 0.5f, 0.25f);
+	players[i].label->fontTexture = fontTexture;
+	players[i].label->spacing = -0.1f;
+
+	s = new Sprite(charSheet, 2048.0f, 1024.0f, 1656, 0, 128, 128);
+	players[i].positionLabel = new UIElement(s);
+	players[i].positionLabel->setScale(0.75f, 0.75f);
+
 	UIGame->attach(players[i].reviveIndicator);
+	UIGame->attach(players[i].label);
+	UIStatic->attach(players[i].positionLabel);
 
 	players[i].controller = SDL_JoystickOpen(i);
 }
@@ -603,28 +641,43 @@ GLvoid GameApp::buildPauseMenu(){
 GLvoid GameApp::buildGameUI(){
 	Sprite *s;
 	UIElement *e;
+	UIElement *e2;
 	UIText *t;
 	UIGame = new UIElement();
 	UIGame->fontTexture = fontTexture;
 	UIStatic = new UIElement();
 	s = new Sprite(UISheet, 512, 256, 0, 192, 190, 45);
-	e = new UIElement(s, -1.5f, 0.9f,0.55f, 0.5f);
+	e = new UIElement(s, -1.60f, 0.9f,0.31f, 0.5f);
 	e->fontTexture = fontTexture;
 
-	t = new UIText("Lives: ", -0.75f);
+	s = new Sprite(charSheet, 2048.0f, 1024.0f, 1656, 0, 128, 128);
+	e2 = new UIElement(s, -0.75f);
+
+	t = new UIText("x" + to_string(lives));
 	t->color = { 1, 1, 1, 1 };
+	e->attach(e2);
 	e->attach(t);
 
 	UIStatic->attach(e);
+
 }
 
+
+bool sortPositionX(Entity *e1, Entity *e2){
+	return e1->position.x < e2->position.x;
+}
+bool sortPositionY(Entity *e1, Entity *e2){
+	return e1->position.y < e2->position.y;
+}
 GLvoid GameApp::followPlayers(Player *p){
-	GLfloat posX = 0, posY = 0;
+	GLfloat avgX = 0, avgY = 0;
 	GLuint alive = 0;
+	deque<Entity*> heroes;
+	vector<Entity*> outOfBounds;
 	for (GLuint i = 0; i < playerCount; i++){
+		p[i].positionLabel->isVisible = false;
+		heroes.push_back(p[i].hero);
 		if (!p[i].hero->flags.deathMark){
-			posX += p[i].hero->position.x;
-			posY += p[i].hero->position.y;
 			alive++;
 		}
 	}
@@ -633,12 +686,78 @@ GLvoid GameApp::followPlayers(Player *p){
 		fadeTime = 0.0f;
 		state = STATE_GAME_OVER;
 	}
+	if (alive > 1) {
+		sort(heroes.begin(), heroes.end(), sortPositionX);
+		GLfloat distanceX = fabs(heroes.back()->position.x - heroes.front()->position.x);
+		cooldown += elapsed;
+		if (distanceX > 2.5f){
+			GLfloat distance1 = fabs(heroes.begin()[1]->position.x - heroes.front()->position.x);
+			GLfloat distance2 = fabs(heroes.back()->position.x - heroes.rbegin()[1]->position.x);
+			if (distance1 > distance2){
+				if (cooldown > 2){
+					heroes.front()->modHealth(-15);
+					cooldown = 0.0f;
+				}
+				outOfBounds.push_back(heroes.front());
+				heroes.pop_front();
+			}
+			else{
+				if (cooldown > 2){
+					heroes.back()->modHealth(-15);
+					cooldown = 0.0f;
+				}
+				outOfBounds.push_back(heroes.back());
+				heroes.pop_back();
+			}
+		}
 
-	if (posX != 0 && posY != 0){
-		posX /= alive;
-		posY /= alive;
-		translateMatrix.m[3][0] = lerp(translateMatrix.m[3][0], -posX, elapsed * 3);
-		translateMatrix.m[3][1] = lerp(translateMatrix.m[3][1], -posY, elapsed * 3);
+		sort(heroes.begin(), heroes.end(), sortPositionY);
+		GLfloat distanceY = fabs(heroes.back()->position.y - heroes.front()->position.y);
+		if (distanceY > 1.8f){
+			GLfloat distance1 = fabs(heroes.begin()[1]->position.y - heroes.front()->position.y);
+			GLfloat distance2 = fabs(heroes.back()->position.y - heroes.rbegin()[1]->position.y);
+			if (distance1 > distance2){
+				if (cooldown > 2){
+					heroes.front()->modHealth(-15);
+					cooldown = 0.0f;
+				}
+				outOfBounds.push_back(heroes.front());
+				heroes.pop_front();
+			}
+			else{
+				if (cooldown > 2){
+					heroes.back()->modHealth(-15);
+					cooldown = 0.0f;
+				}
+				outOfBounds.push_back(heroes.back());
+				heroes.pop_back();
+			}
+		}
+	}
+
+	for (vector<Entity*>::iterator it = outOfBounds.begin(); it != outOfBounds.end(); ++it){
+		p[(*it)->value].positionLabel->isVisible = true;
+		GLfloat LabelX = (*it)->position.x + translateMatrix.m[3][0];
+		if (LabelX > ASPECT_RATIO_X - 0.08f) LabelX = ASPECT_RATIO_X - 0.08f;
+		else if (LabelX < -ASPECT_RATIO_X + 0.08f) LabelX = -ASPECT_RATIO_X + 0.08f;
+		GLfloat LabelY = (*it)->position.y + translateMatrix.m[3][1];
+		if (LabelY > ASPECT_RATIO_Y - 0.08f) LabelY = ASPECT_RATIO_Y - 0.08f;
+		else if (LabelY < -ASPECT_RATIO_Y + 0.08f) LabelY = -ASPECT_RATIO_Y + 0.08f;
+		p[(*it)->value].positionLabel->setPosition(LabelX, LabelY);
+	}
+
+	for (GLuint i = 0; i < heroes.size(); i++){
+		if (!heroes[i]->flags.deathMark){
+			avgX += heroes[i]->position.x;
+			avgY += heroes[i]->position.y;
+		}
+	}
+
+	if (avgX != 0 && avgY != 0){
+		avgX /= alive;
+		avgY /= alive;
+		translateMatrix.m[3][0] = lerp(translateMatrix.m[3][0], -avgX, elapsed * 4);
+		translateMatrix.m[3][1] = lerp(translateMatrix.m[3][1], -avgY, elapsed * 4);
 	}
 }
 GLvoid GameApp::drawPlatformHorizontal(GLfloat length, GLfloat x, GLfloat y){

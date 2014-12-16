@@ -228,4 +228,5 @@
 	<SubTexture name="font97_.png" x="469" y="806" width="83" height="107"/>
 	<SubTexture name="font98_.png" x="1559" y="425" width="48" height="107"/>
 	<SubTexture name="font99_.png" x="1220" y="221" width="60" height="107"/>
+	<SubTexture name="icon.png" x="1656" y="0" width="128" height="128"/>
 </TextureAtlas>

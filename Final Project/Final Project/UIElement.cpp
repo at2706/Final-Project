@@ -1,7 +1,7 @@
 #include "UIElement.h"
 
 UIElement::UIElement()
-	: position(0,0,0),scale(1,1,0){
+	: position(0,0,0),scale(1,1,0),isVisible(true){
 }
 
 UIElement::UIElement(Sprite *sheet, GLfloat posX, GLfloat posY, GLfloat scale_x, GLfloat scale_y)
@@ -29,16 +29,19 @@ GLvoid UIElement::attach(UIElement *e){
 
 GLvoid UIElement::render(){
 	if (isVisible){
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glMultMatrixf(matrix.ml);
-		sprite->render();
-		
-		glPopMatrix();
+		if (sprite != nullptr) {
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			glMultMatrixf(matrix.ml);
+			sprite->render();
+
+			glPopMatrix();
+		}
+		for (vector<UIElement*>::iterator it = children.begin(); it != children.end(); ++it)
+			(*it)->render();
 	}
 	
-	for (vector<UIElement*>::iterator it = children.begin(); it != children.end(); ++it)
-		(*it)->render();
+	
 }
 
 GLvoid UIElement::buildMatrix(){
@@ -56,6 +59,10 @@ GLvoid UIElement::buildMatrix(){
 
 GLvoid UIElement::setPosition(GLfloat x, GLfloat y){
 	position = Vector(x, y);
+	for (vector<UIElement*>::iterator it = children.begin(); it != children.end(); ++it){
+		(*it)->setPosition(((*it)->position.x * (sprite->size.x / 2) * scale.x) + position.x,
+							((*it)->position.y * (sprite->size.y / 2) * scale.y) + position.y);
+	}
 	buildMatrix();
 }
 

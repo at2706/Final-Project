@@ -60,12 +60,12 @@ Entity::Entity(vector<Sprite*> *a, EntityType t, float x, float y){
 GLvoid Entity::presets(EntityType t){
 	switch (t){
 	case HERO:
-		healthMax = 50;
-		health = 50;
-		speed = 2;
-		acceleration.x = 4;
-		friction.x = 4;
-		friction.y = 4;
+		healthMax = 200;
+		health = 15;
+		speed = 3;
+		acceleration.x = 8;
+		friction.x = 8;
+		friction.y = 2;
 
 		flags.revivable = true;
 		gravity.enabled = true;
@@ -74,8 +74,9 @@ GLvoid Entity::presets(EntityType t){
 		flags.idle = true;
 		break;
 
-	case PLATFORM:
 	case LADDER:
+		shape = POINT;
+	case PLATFORM:
 		flags.moveable = false;
 		collision.enabled = true;
 		break;
@@ -349,7 +350,7 @@ GLvoid Entity::collisionCheckPoints(Entity *e){
 	case HERO:
 		if (!collision.points[0] && e->flags.deathMark && e->type == HERO){
 			GLfloat direction = (((sprite->size.x) / 2) + 0.02f) * cos(rotation.y) + position.x;
-			collision.points[0] = e->collidesWith(direction, position.y);
+			collision.points[0] = e->collidesWith(direction, position.y) || collidesWith(e);
 			if (collision.points[0])
 				world->players[value].target = e;
 		}
@@ -491,7 +492,7 @@ GLvoid Entity::collisionEffectY(Entity *e){
 GLvoid Entity::deathEffect(){
 	switch (type){
 	case HERO:
-
+		animation = world->animHeroDead;
 		break;
 
 	default:
@@ -551,7 +552,7 @@ GLvoid Entity::moveY(){
 	velocity.y += acceleration.y * FIXED_TIMESTEP * sin(rotation.y);
 
 	//Speed Limit for y, but it makes gravity weird
-	//if (velocity.y > speed * sin(rotation.z)) velocity.y = speed * sin(rotation.z);
+	//if (velocity.y > 6) velocity.y = 6;
 	//else if (velocity.y < -speed * fabs(sin(rotation.z))) velocity.y = -speed * fabs(sin(rotation.z));
 }
 GLvoid Entity::decelerateX(){
@@ -569,11 +570,11 @@ GLvoid Entity::renderHealthBar(){
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	Color color = { 1 - (health / healthMax), (health / healthMax), 0, 1 };
-	GLfloat vertexData[] = { -sprite->size.x / 2, 0.1f,
-		-sprite->size.x / 2, 0.08f,
-		sprite->size.x / 2, 0.08f,
-		sprite->size.x / 2, 0.1f };
+	Color color = { 1.2f - (health / healthMax), (health / healthMax), 0, 1 };
+	GLfloat vertexData[] = { -0.0725f / 2, 0.085f,
+		-0.0725f / 2, 0.07f,
+		0.0725f / 2, 0.07f,
+		0.0725f / 2, 0.085f };
 
 	GLfloat colorData[] = { color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a, color.r, color.g, color.b, color.a };
 
@@ -583,10 +584,10 @@ GLvoid Entity::renderHealthBar(){
 	glLineWidth(2.0f);
 	glDrawArrays(GL_LINE_LOOP, 0, 4);
 
-	GLfloat vertexData2[] = { (-sprite->size.x / 2), 0.1f,
-		(-sprite->size.x / 2), 0.08f,
-		-(sprite->size.x / 2) + ((sprite->size.x) * (health / healthMax)), 0.08f,
-		-(sprite->size.x / 2) + ((sprite->size.x) * (health / healthMax)), 0.1f };
+	GLfloat vertexData2[] = { (-0.0725f / 2), 0.085f,
+		(-0.0725f / 2), 0.07f,
+		-(0.0725f / 2) + (0.0725f * (health / healthMax)), 0.07f,
+		-(0.0725f / 2) + (0.0725f * (health / healthMax)), 0.085f };
 
 	glColorPointer(4, GL_FLOAT, 0, colorData);
 	glVertexPointer(2, GL_FLOAT, 0, vertexData2);

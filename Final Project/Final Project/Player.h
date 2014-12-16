@@ -13,5 +13,7 @@ public:
 	SDL_Joystick *controller;
 	GLfloat axisValues[6];
 	UIText *reviveIndicator;
+	UIText *label;
+	UIElement *positionLabel;
 };
 

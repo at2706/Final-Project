@@ -25,7 +25,8 @@ public:
 
 protected:
 	Player players[4];
-	GLint score;
+	GLint score = 0;
+	GLint lives = 10;
 
 private:
 	SDL_Event event;
@@ -37,7 +38,7 @@ private:
 	Mix_Chunk *menuMove;
 	Mix_Chunk *jump;
 
-	GLfloat controllerCooldown;
+	GLfloat cooldown;
 
 	GLvoid init();
 	GLvoid time();
@@ -82,6 +83,7 @@ private:
 	vector<Sprite*> *animHeroIdle;
 	vector<Sprite*> *animHeroRun;
 	vector<Sprite*> *animHeroJump;
+	vector<Sprite*> *animHeroDead;
 
 
 
