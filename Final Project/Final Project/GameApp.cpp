@@ -3,7 +3,7 @@
 GameApp::GameApp() {
 	init();
 	srand(std::time(NULL));
-	charSheet = loadTexture("sheet.png");
+	charSheet = loadTexture("Samus.png");
 	tileSheet = loadTexture("arne_sprites.png", GL_NEAREST);
 	UISheet = loadTexture("greenSheet.png", GL_NEAREST);
 	fontTexture = loadTexture("font1.png");
@@ -27,30 +27,53 @@ GameApp::GameApp() {
 
 	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
 	// initialize mapLayout
-	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
-		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-			mapLayout[j][i] = 0;
-		}
-	}
-	// for level generation
-	mapStart.x = (std::rand() % (4));
-	mapStart.y = (std::rand() % (4));
-	mapGoal.x = (std::rand() % (4));
-	mapGoal.y = (std::rand() % (4));
-	// to ensure theres enough space between the start and end point
-	while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 4) {
-		mapStart.x = (std::rand() % (4));
-		mapStart.y = (std::rand() % (4));
-		mapGoal.x = (std::rand() % (4));
-		mapGoal.y = (std::rand() % (4));
-	}
-	makeGameLevel();
-	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
-		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-			std::cout << mapLayout[j][i] << " ";
-		}
-		std::cout << endl;
-	}
+	//for (unsigned int i = 0; i < LAYOUT_X; ++i) {
+	//	for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
+	//		mapLayout[j][i] = 0;
+	//	}
+	//}
+	//// for level generation
+	//mapStart.x = (std::rand() % (4));
+	//mapStart.y = (std::rand() % (4));
+	//mapGoal.x = (std::rand() % (4));
+	//mapGoal.y = (std::rand() % (4));
+	//// to ensure theres enough space between the start and end point
+	//while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 4) {
+	//	mapStart.x = (std::rand() % (4));
+	//	mapStart.y = (std::rand() % (4));
+	//	mapGoal.x = (std::rand() % (4));
+	//	mapGoal.y = (std::rand() % (4));
+	//}
+	//makeGameLevel();
+	//for (unsigned int i = 0; i < LAYOUT_X; ++i) {
+	//	for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
+	//		std::cout << mapLayout[j][i] << " ";
+	//	}
+	//	std::cout << endl;
+	//}
+
+	animHeroRun = new vector < Sprite* >;
+	animHeroRun->insert(animHeroRun->end(),
+		{new Sprite(charSheet, 2048.0f, 1024.0f, 97, 770, 95, 110),	//1		114
+		new Sprite(charSheet, 2048.0f, 1024.0f, 719, 344, 77, 110),	//2		120
+		new Sprite(charSheet, 2048.0f, 1024.0f, 555, 348, 82, 112),	//3		172
+		new Sprite(charSheet, 2048.0f, 1024.0f, 195, 454, 92, 110),	//4		121
+		new Sprite(charSheet, 2048.0f, 1024.0f, 0, 104, 100, 110),	//5		123
+		new Sprite(charSheet, 2048.0f, 1024.0f, 0, 658, 97, 110),	//6		124
+		new Sprite(charSheet, 2048.0f, 1024.0f, 720, 567, 75, 110),	//7		126
+		new Sprite(charSheet, 2048.0f, 1024.0f, 469, 694, 85, 110),	//8		127
+		new Sprite(charSheet, 2048.0f, 1024.0f, 195, 228, 92, 110),	//9		125
+		new Sprite(charSheet, 2048.0f, 1024.0f, 0, 437, 98, 110)	//10	109
+	});
+
+	animHeroIdle = new vector < Sprite* >;
+	animHeroIdle->insert(animHeroIdle->end(),
+	{	//new Sprite(charSheet, 2048.0f, 1024.0f, 947, 486, 68, 110),	//1		111
+	new Sprite(charSheet, 2048.0f, 1024.0f, 1019, 206, 67, 110),	//2		117
+	new Sprite(charSheet, 2048.0f, 1024.0f, 1017, 876, 68, 109),	//3		141
+	new Sprite(charSheet, 2048.0f, 1024.0f, 1087, 542, 67, 110),	//4		155
+	new Sprite(charSheet, 2048.0f, 1024.0f, 876, 0, 67, 110)		//5		156
+	});
 }
 
 GLvoid GameApp::init() {
@@ -274,14 +297,18 @@ GLboolean GameApp::updateAndRender() {
 			if (keys[SDL_SCANCODE_D]){
 				players[0].hero->flags.idle = false;
 				players[0].hero->setRotation(0.0f);
-
+				players[0].hero->animation = animHeroRun;
 			}
 			else if (keys[SDL_SCANCODE_A]){
 				players[0].hero->flags.idle = false;
 				players[0].hero->setRotation(180.0f);
+				players[0].hero->animation = animHeroRun;
 			}
 
-			else players[0].hero->flags.idle = true;
+			else{
+				players[0].hero->flags.idle = true;
+				players[0].hero->animation = animHeroIdle;
+			}
 
 			if (keys[SDL_SCANCODE_W] && !players[0].hero->gravity.enabled){
 				players[0].hero->velocity.y = 2.0f;
@@ -473,10 +500,10 @@ GLvoid GameApp::initPlayer(int i){
 	Entity *e;
 
 	s = new Sprite(tileSheet, 64, 16, 8);
-	e = new Entity(s, HERO);
+	e = new Entity(animHeroIdle, HERO);
 	e->value = i;
-	for (int j = 0; j < 5; j++)
-		e->animation.push_back(new Sprite(tileSheet, j+65, 16, 8));
+	e->scale.x = 2;
+	e->scale.y = 2;
 
 	s = new Sprite(tileSheet, 21, 16, 8);
 	Weapon *w = new Weapon(s);

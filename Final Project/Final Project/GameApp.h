@@ -79,6 +79,12 @@ private:
 	UIElement *UIStatic;
 	UIElement *UIGame;
 
+	vector<Sprite*> *animHeroIdle;
+	vector<Sprite*> *animHeroRun;
+	vector<Sprite*> *animHeroJump;
+
+
+
 	// for collision
 	/*void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
 	void doLevelCollisionY(Entity* temp);

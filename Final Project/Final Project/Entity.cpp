@@ -4,9 +4,9 @@
 GameApp *Entity::world = nullptr;
 list<Entity*> Entity::entities;
 vector<Entity*> Entity::killQueue;
-Entity::Entity(Sprite *s, float x, float y) {
-	animation.push_back(s);
-	sprite = s;
+Entity::Entity(vector<Sprite*> *a, float x, float y) {
+	animation = a;
+	sprite = animation->at(0);
 	
 	setScale();
 	setPosition(x, y);
@@ -25,7 +25,7 @@ Entity::Entity(Sprite *s, float x, float y) {
 	it = --entities.end();
 }
 Entity::Entity(Sprite *s, EntityType t, float x, float y){
-	animation.push_back(s);
+	animation = nullptr;
 	sprite = s;
 	setScale();
 	setPosition(x, y);
@@ -35,6 +35,29 @@ Entity::Entity(Sprite *s, EntityType t, float x, float y){
 	gravity.y = GRAVITY;
 	type = t;
 
+	presets(t);
+
+	entities.push_back(this);
+	it = --entities.end();
+}
+Entity::Entity(vector<Sprite*> *a, EntityType t, float x, float y){
+	animation = a;
+	sprite = animation->at(0);
+	setScale();
+	setPosition(x, y);
+	flags.visible = true;
+	flags.healthBar = true;
+	flags.moveable = true;
+	gravity.y = GRAVITY;
+	type = t;
+
+	presets(t);
+
+	entities.push_back(this);
+	it = --entities.end();
+}
+
+GLvoid Entity::presets(EntityType t){
 	switch (t){
 	case HERO:
 		healthMax = 50;
@@ -49,7 +72,7 @@ Entity::Entity(Sprite *s, EntityType t, float x, float y){
 		collision.enabled = true;
 		flags.healthBar = true;
 		flags.idle = true;
-	break;
+		break;
 
 	case PLATFORM:
 	case LADDER:
@@ -81,9 +104,6 @@ Entity::Entity(Sprite *s, EntityType t, float x, float y){
 		flags.healthBar = true;
 		break;
 	}
-
-	entities.push_back(this);
-	it = --entities.end();
 }
 
 Entity::~Entity(){
@@ -123,14 +143,16 @@ GLvoid Entity::FixedUpdate() {
 	collision.right = false;
 	memset(collision.points, 0, sizeof collision.points);
 	animationElapsed += FIXED_TIMESTEP;
-	if (animationElapsed > 1.0 / framesPerSecond) {
-		sprite = animation[animationIndex];
-		animationIndex++;
-		animationElapsed = 0.0;
-		if (animationIndex > animation.size() - 1) {
-			animationIndex = 0;
+	if (animation != nullptr){
+		if (animationIndex >= animation->size()) animationIndex = 0.0f;
+		if (animationElapsed > 1.0 / framesPerSecond) {
+			sprite = animation->at(animationIndex);
+			animationIndex++;
+			animationElapsed = 0.0;
+			if (animationIndex > animation->size() - 1) {
+				animationIndex = 0;
+			}
 		}
-		
 	}
 
 	if (flags.moveable){
@@ -243,14 +265,14 @@ GLvoid Entity::setPosition(GLfloat x, GLfloat y, GLfloat z){
 }
 
 GLvoid Entity::shoot(){
-	if (weapon->cooldown > weapon->fireRate) {
+	/*if (weapon->cooldown > weapon->fireRate) {
 		Entity *bullet = new Entity(weapon->sprite, PROJECTILE, -0.2f, 0.5f);
 		GLfloat randomish = (0.05f * ((float)rand() / (float)RAND_MAX) - 0.025f);
 		bullet->setPosition(((sprite->size.x + 0.0005f + (fabs(velocity.x) *0.05f)) * cos(rotation.y) / 2) + position.x, position.y + randomish);
 		bullet->health = weapon->damage;
 		bullet->velocity.x = weapon->speed * cos(rotation.y);
 		weapon->cooldown = 0.0f;
-	}
+	}*/
 }
 GLvoid Entity::suicide(){
 	if (!flags.deathMark){
@@ -263,21 +285,21 @@ GLboolean Entity::collidesWith(Entity *e){
 	if (!collision.enabled || !e->collision.enabled) return false;
 
 	if (shape == BOX){
-		GLfloat top = position.y + ((sprite->size.y) / 2);
-		GLfloat bot = position.y - ((sprite->size.y) / 2);
-		GLfloat left = position.x - ((sprite->size.x) / 2);
-		GLfloat right = position.x + ((sprite->size.x) / 2);
+		GLfloat top = position.y + (scale.y * (sprite->size.y) / 2);
+		GLfloat bot = position.y - (scale.y * (sprite->size.y) / 2);
+		GLfloat left = position.x - (scale.x * (sprite->size.x) / 2);
+		GLfloat right = position.x + (scale.x * (sprite->size.x) / 2);
 		if (e->shape == BOX){
-			GLfloat etop = e->position.y + ((e->sprite->size.y) / 2);
-			GLfloat ebot = e->position.y - ((e->sprite->size.y) / 2);
-			GLfloat eleft = e->position.x - ((e->sprite->size.x) / 2);
-			GLfloat eright = e->position.x + ((e->sprite->size.x) / 2);
+			GLfloat etop = e->position.y + (e->scale.y * (e->sprite->size.y) / 2);
+			GLfloat ebot = e->position.y - (e->scale.y * (e->sprite->size.y) / 2);
+			GLfloat eleft = e->position.x - (e->scale.x * (e->sprite->size.x) / 2);
+			GLfloat eright = e->position.x + (e->scale.x * (e->sprite->size.x) / 2);
 
 			return !(bot > etop || top < ebot || left > eright || right < eleft);
 		}
 		else if (e->shape == CIRCLE){
 			GLfloat d1 = distance(position, e->position);
-			GLfloat radius = distance(e->position, Vector(e->sprite->size.x, e->sprite->size.y));
+			GLfloat radius = distance(e->position, Vector(e->scale.x *sprite->size.x, e->scale.y * e->sprite->size.y));
 			return d1 < radius;
 		}
 		else if (e->shape == POINT){
@@ -292,21 +314,21 @@ GLboolean Entity::collidesWith(Entity *e){
 	}
 	else if (shape == POINT){
 		if (e->shape == BOX){
-			GLfloat etop = e->position.y + ((e->sprite->size.y) / 2);
-			GLfloat ebot = e->position.y - ((e->sprite->size.y) / 2);
-			GLfloat eleft = e->position.x - ((e->sprite->size.x) / 2);
-			GLfloat eright = e->position.x + ((e->sprite->size.x) / 2);
+			GLfloat etop = e->position.y + (e->scale.y * (e->sprite->size.y) / 2);
+			GLfloat ebot = e->position.y - (e->scale.y * (e->sprite->size.y) / 2);
+			GLfloat eleft = e->position.x - (e->scale.x * (e->sprite->size.x) / 2);
+			GLfloat eright = e->position.x + (e->scale.x * (e->sprite->size.x) / 2);
 			return ((position.x > eleft && position.x < eright)
 				&& (position.y > ebot && position.y < etop));
 		}
 		else if (e->shape == CIRCLE){
 			GLfloat d1 = distance(position, e->position);
-			GLfloat radius = distance(e->position, Vector(e->sprite->size.x, e->sprite->size.y));
+			GLfloat radius = distance(e->position, Vector(e->scale.x *sprite->size.x, e->scale.y * e->sprite->size.y));
 			return d1 < radius;
 		}
 		else if (e->shape == POINT){
 			GLfloat d1 = distance(position, e->position);
-			return d1 > 0.0001f;
+			return d1 < 0.001f;
 		}
 	}
 	

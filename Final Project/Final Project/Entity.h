@@ -35,8 +35,10 @@ enum EntityType { DEFAULT, HERO, PLATFORM, LADDER, FLYER, PROJECTILE, CRAWLER, S
 class Entity {
 public:
 	friend class GameApp;
-	Entity(Sprite *s, float x = 0, float y = 0);
+	Entity(vector<Sprite*> *a, float x = 0, float y = 0);
 	Entity(Sprite *s, EntityType t, float x = 0, float y = 0);
+	Entity(vector<Sprite*> *a, EntityType t, float x = 0, float y = 0);
+	GLvoid presets(EntityType);
 	~Entity();
 
 	static GameApp *world;
@@ -65,7 +67,7 @@ public:
 	GLvoid moveR();
 	GLvoid decelerateR();
 
-	vector<Sprite*> animation;
+	vector<Sprite*> *animation;
 	Sprite *sprite;
 	Weapon *weapon;
 	EntityType type;

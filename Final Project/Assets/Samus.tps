@@ -38,7 +38,7 @@
         <key>dataFormat</key>
         <string>xml</string>
         <key>textureFileName</key>
-        <filename>../../../Users/Andy/Desktop/Samus.png</filename>
+        <filename>Samus.png</filename>
         <key>flipPVR</key>
         <false/>
         <key>pvrCompressionQuality</key>
@@ -86,9 +86,9 @@
         <key>maxTextureSize</key>
         <QSize>
             <key>width</key>
-            <int>1024</int>
+            <int>2048</int>
             <key>height</key>
-            <int>1024</int>
+            <int>2048</int>
         </QSize>
         <key>fixedTextureSize</key>
         <QSize>
@@ -102,7 +102,7 @@
         <key>algorithmSettings</key>
         <struct type="AlgorithmSettings">
             <key>algorithm</key>
-            <enum type="AlgorithmSettings::AlgorithmId">Basic</enum>
+            <enum type="AlgorithmSettings::AlgorithmId">MaxRects</enum>
             <key>freeSizeMode</key>
             <enum type="AlgorithmSettings::AlgorithmFreeSizeMode">Best</enum>
             <key>sizeConstraints</key>
@@ -145,7 +145,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../../../Users/Andy/Desktop/Samus.xml</filename>
+                <filename>Samus.xml</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -188,6 +188,43 @@
         </struct>
         <key>fileList</key>
         <array>
+            <filename>Samus/font193_.png</filename>
+            <filename>Samus/font194_.png</filename>
+            <filename>Samus/font195_.png</filename>
+            <filename>Samus/font196_.png</filename>
+            <filename>Samus/font197_.png</filename>
+            <filename>Samus/font198_.png</filename>
+            <filename>Samus/font199_.png</filename>
+            <filename>Samus/font200_.png</filename>
+            <filename>Samus/font201_.png</filename>
+            <filename>Samus/font202_.png</filename>
+            <filename>Samus/font203_.png</filename>
+            <filename>Samus/font204_.png</filename>
+            <filename>Samus/font205_.png</filename>
+            <filename>Samus/font206_.png</filename>
+            <filename>Samus/font207_.png</filename>
+            <filename>Samus/font208_.png</filename>
+            <filename>Samus/font209_.png</filename>
+            <filename>Samus/font210_.png</filename>
+            <filename>Samus/font211_.png</filename>
+            <filename>Samus/font212_.png</filename>
+            <filename>Samus/font213_.png</filename>
+            <filename>Samus/font214_.png</filename>
+            <filename>Samus/font215_.png</filename>
+            <filename>Samus/font216_.png</filename>
+            <filename>Samus/font217_.png</filename>
+            <filename>Samus/font218_.png</filename>
+            <filename>Samus/font219_.png</filename>
+            <filename>Samus/font220_.png</filename>
+            <filename>Samus/font221_.png</filename>
+            <filename>Samus/font222_.png</filename>
+            <filename>Samus/font223_.png</filename>
+            <filename>Samus/font224_.png</filename>
+            <filename>Samus/font225_.png</filename>
+            <filename>Samus/font226_.png</filename>
+            <filename>Samus/font227_.png</filename>
+            <filename>Samus/font228_.png</filename>
+            <filename>Samus/font229_.png</filename>
             <filename>Samus/font01_a.png</filename>
             <filename>Samus/font02_b.png</filename>
             <filename>Samus/font03_c.png</filename>
@@ -380,70 +417,6 @@
             <filename>Samus/font190_.png</filename>
             <filename>Samus/font191_.png</filename>
             <filename>Samus/font192_.png</filename>
-            <filename>Samus/font193_.png</filename>
-            <filename>Samus/font194_.png</filename>
-            <filename>Samus/font195_.png</filename>
-            <filename>Samus/font196_.png</filename>
-            <filename>Samus/font197_.png</filename>
-            <filename>Samus/font198_.png</filename>
-            <filename>Samus/font199_.png</filename>
-            <filename>Samus/font200_.png</filename>
-            <filename>Samus/font201_.png</filename>
-            <filename>Samus/font202_.png</filename>
-            <filename>Samus/font203_.png</filename>
-            <filename>Samus/font204_.png</filename>
-            <filename>Samus/font205_.png</filename>
-            <filename>Samus/font206_.png</filename>
-            <filename>Samus/font207_.png</filename>
-            <filename>Samus/font208_.png</filename>
-            <filename>Samus/font209_.png</filename>
-            <filename>Samus/font210_.png</filename>
-            <filename>Samus/font211_.png</filename>
-            <filename>Samus/font212_.png</filename>
-            <filename>Samus/font213_.png</filename>
-            <filename>Samus/font214_.png</filename>
-            <filename>Samus/font215_.png</filename>
-            <filename>Samus/font216_.png</filename>
-            <filename>Samus/font217_.png</filename>
-            <filename>Samus/font218_.png</filename>
-            <filename>Samus/font219_.png</filename>
-            <filename>Samus/font220_.png</filename>
-            <filename>Samus/font221_.png</filename>
-            <filename>Samus/font222_.png</filename>
-            <filename>Samus/font223_.png</filename>
-            <filename>Samus/font224_.png</filename>
-            <filename>Samus/font225_.png</filename>
-            <filename>Samus/font226_.png</filename>
-            <filename>Samus/font227_.png</filename>
-            <filename>Samus/font228_.png</filename>
-            <filename>Samus/font229_.png</filename>
-            <filename>Samus/font230_.png</filename>
-            <filename>Samus/font231_.png</filename>
-            <filename>Samus/font232_.png</filename>
-            <filename>Samus/font233_.png</filename>
-            <filename>Samus/font234_.png</filename>
-            <filename>Samus/font235_.png</filename>
-            <filename>Samus/font236_.png</filename>
-            <filename>Samus/font237_.png</filename>
-            <filename>Samus/font238_.png</filename>
-            <filename>Samus/font239_.png</filename>
-            <filename>Samus/font240_.png</filename>
-            <filename>Samus/font241_.png</filename>
-            <filename>Samus/font242_.png</filename>
-            <filename>Samus/font243_.png</filename>
-            <filename>Samus/font244_.png</filename>
-            <filename>Samus/font245_.png</filename>
-            <filename>Samus/font246_.png</filename>
-            <filename>Samus/font247_.png</filename>
-            <filename>Samus/font248_.png</filename>
-            <filename>Samus/font249_.png</filename>
-            <filename>Samus/font250_.png</filename>
-            <filename>Samus/font251_.png</filename>
-            <filename>Samus/font252_.png</filename>
-            <filename>Samus/font253_.png</filename>
-            <filename>Samus/font254_.png</filename>
-            <filename>Samus/font255_.png</filename>
-            <filename>Samus/font256_.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
