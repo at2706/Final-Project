@@ -1,4 +1,5 @@
 #pragma once
+#include <GL/glew.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <SDL_image.h>
@@ -31,7 +32,7 @@
 #define CONTROLER_DEAD_ZONE 10000
 #define LEVEL_HEIGHT 22
 #define LEVEL_WIDTH 32
-#define TILE_SIZE 0.125f
+#define TILE_SIZE 0.15f
 #define SPRITE_COUNT_X 16
 #define SPRITE_COUNT_Y 8
 

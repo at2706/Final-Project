@@ -6,6 +6,7 @@ GameApp::GameApp() {
 	charSheet = loadTexture("Samus.png");
 	tileSheet = loadTexture("arne_sprites.png", GL_NEAREST);
 	UISheet = loadTexture("greenSheet.png", GL_NEAREST);
+	gameTile = loadTexture("dirt-tiles.png", GL_NEAREST);
 	fontTexture = loadTexture("font1.png");
 	state = STATE_MAIN_MENU;
 	introMusic = Mix_LoadMUS("introMusic.mp3");
@@ -20,37 +21,44 @@ GameApp::GameApp() {
 	buildMainMenu();
 	buildPauseMenu();
 	buildGameUI();
-	
-	drawLadder(16, 0.0f, 0.0f);
-	drawPlatformHorizontal(42,0.0f,-0.5f);
-	drawPlatformHorizontal(8, 0.62f, 0.45f);
 
-	// keep in mind each tile inside the maplayout is a box of 100x100, so entire game level will be 500x500
+
+	// keep in mind each tile inside the maplayout is a box of 50x50, so entire game level will be 250x250
 	// initialize mapLayout
-	//for (unsigned int i = 0; i < LAYOUT_X; ++i) {
-	//	for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-	//		mapLayout[j][i] = 0;
-	//	}
-	//}
-	//// for level generation
-	//mapStart.x = (std::rand() % (4));
-	//mapStart.y = (std::rand() % (4));
-	//mapGoal.x = (std::rand() % (4));
-	//mapGoal.y = (std::rand() % (4));
-	//// to ensure theres enough space between the start and end point
-	//while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 4) {
-	//	mapStart.x = (std::rand() % (4));
-	//	mapStart.y = (std::rand() % (4));
-	//	mapGoal.x = (std::rand() % (4));
-	//	mapGoal.y = (std::rand() % (4));
-	//}
-	//makeGameLevel();
-	//for (unsigned int i = 0; i < LAYOUT_X; ++i) {
-	//	for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-	//		std::cout << mapLayout[j][i] << " ";
-	//	}
-	//	std::cout << endl;
-	//}
+	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
+		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
+			mapLayout[j][i] = 0;
+		}
+	}
+	// for level generation
+	mapStart.x = (std::rand() % (4));
+	mapStart.y = (std::rand() % (4));
+	mapGoal.x = (std::rand() % (4));
+	mapGoal.y = (std::rand() % (4));
+	// to ensure theres enough space between the start and end point
+	while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 4) {
+		mapStart.x = (std::rand() % (4));
+		mapStart.y = (std::rand() % (4));
+		mapGoal.x = (std::rand() % (4));
+		mapGoal.y = (std::rand() % (4));
+	}
+	makeGameLevel();
+	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
+		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
+			std::cout << mapLayout[j][i] << " ";
+		}
+		std::cout << endl;
+	}
+
+	createMap();
+
+	glGenBuffers(1, &myVertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, myVertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, TRUE_X * TRUE_Y * sizeof(float), trueMap,	GL_STATIC_DRAW);
+
+	drawLadder(16, startPoint.x, startPoint.y);
+	drawPlatformHorizontal(42, startPoint.x, startPoint.y - 0.5f);
+	drawPlatformHorizontal(8, startPoint.x + 0.65f, startPoint.y + 0.45f);
 
 	animHeroRun = new vector < Sprite* >;
 	animHeroRun->insert(animHeroRun->end(),
@@ -102,6 +110,7 @@ GLvoid GameApp::init() {
 	glOrtho(-ASPECT_RATIO_X, ASPECT_RATIO_X, -ASPECT_RATIO_Y, ASPECT_RATIO_Y, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
 	Entity::world = this;
+	glewInit();
 }
 
 GameApp::~GameApp()
@@ -113,6 +122,8 @@ GameApp::~GameApp()
 	Mix_FreeMusic(introMusic);
 	Mix_FreeChunk(menuMove);
 	Mix_FreeChunk(jump);
+
+	glDeleteBuffers(1, &myVertexBuffer);
 
 	SDL_Quit();
 }
@@ -467,13 +478,15 @@ GLvoid GameApp::Render() {
 		UImain->render();
 
 		break;
-	case STATE_GAME_LEVEL:
+	case STATE_GAME_LEVEL: {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glOrtho(-ASPECT_RATIO_X * zoom, ASPECT_RATIO_X * zoom, -ASPECT_RATIO_Y * zoom, ASPECT_RATIO_Y * zoom, -1.0f, 1.0f);
 		glMatrixMode(GL_MODELVIEW);
 		followPlayers(players);
 		glMultMatrixf(translateMatrix.ml);
+		//renderGameLevel();
+		vboRender();
 		Entity::renderAll();
 		UIGame->render();
 		glMatrixMode(GL_PROJECTION);
@@ -482,12 +495,13 @@ GLvoid GameApp::Render() {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		UIStatic->render();
-		
+
 		/*fadeTime += elapsed;
 		fadeValue = mapValue(fadeTime, 0.0f, 2.0f, 0.0f, 1.0f);
 		tint(1 - fadeValue);*/
-		
+
 		break;
+	}
 	case STATE_GAME_PAUSE:
 		followPlayers(players);
 		Entity::renderAll();
@@ -539,7 +553,8 @@ GLvoid GameApp::initPlayer(int i){
 	w->damage = 5.0f;
 	e->weapon = w;
 
-	e->position.x = -0.7f + i * 0.5f;
+	e->position.x = startPoint.x -0.7f + i * 0.5f;
+	e->position.y = startPoint.y;
 	players[i].hero = e;
 
 	players[i].reviveIndicator = new UIText("Revive", 0.0f, 0.5f);
@@ -778,81 +793,6 @@ GLvoid GameApp::drawLadder(GLfloat length, GLfloat x, GLfloat y){
 		ladder = new Entity(sprite, LADDER, x, y + (sprite->size.y * i));
 	}
 }
-
-// collision stuff that i used
-// NOT DONE YET, levelData needs to  be created which will have to be on me since i need that for procedural generation
-/*
-void GameApp::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
-*gridX = (int)((worldX + (WORLD_OFFSET_X)) / TILE_SIZE);
-*gridY = (int)((-worldY + (WORLD_OFFSET_Y)) / TILE_SIZE);
-}
-
-float GameApp::checkPointForGridCollisionY(float x, float y) {
-int gridX, gridY;
-worldToTileCoordinates(x, y, &gridX, &gridY);
-if (gridX < 0 || gridX > 100 || gridY < 0 || gridY > 100) {
-return 0.0f;
-}
-if (isSolid(levelData[gridY][gridX])) {
-float yCoord = (gridY * TILE_SIZE);
-return -y - yCoord;
-}
-return 0.0f;
-}
-
-float GameApp::checkPointForGridCollisionX(float x, float y) {
-int gridX, gridY;
-worldToTileCoordinates(x, y, &gridX, &gridY);
-if (gridX < 0 || gridX > 100 || gridY < 0 || gridY > 100) {
-return 0.0f;
-}
-if (isSolid(levelData[gridY][gridX])) {
-float xCoord = (gridX * TILE_SIZE);
-return -x - xCoord;
-}
-return 0.0f;
-}
-
-void GameApp::doLevelCollisionY(Entity* temp) {
-float adjust = checkPointForGridCollisionY(temp->position.x, temp->position.y - temp->getHeight() * 0.5f); // do we have a variable for width and height?
-if (adjust != 0.0f) {
-temp->position.y += adjust + 0.0001f;
-temp->velocity.y = 0.0f;
-temp->collision.bottom =true;
-}
-adjust = checkPointForGridCollisionY(temp->position.x, temp->position.y + temp->getHeight() * 0.5f); // same as previous
-if (adjust != 0.0f) {
-temp->position.y -= adjust - 0.0001f;
-temp->velocity.y = 0.0f;
-temp->collision.top = true;
-}
-}
-
-void GameApp::doLevelCollisionX(Entity* temp) {
-float adjust = checkPointForGridCollisionX(temp->position.x - temp->getWidth() * 0.5f, temp->position.y); // same as previous
-if (adjust != 0.0f) {
-temp->position.x -= adjust * TILE_SIZE *0.008f;
-temp->velocity.x = 0.0f;
-temp->collision.left = true;
-}
-adjust = checkPointForGridCollisionX(temp->position.x + temp->getWidth() * 0.5f, temp->position.y); // same as previous
-if (adjust != 0.0f) {
-temp->position.x += adjust * TILE_SIZE * 0.001;
-temp->velocity.x = 0.0f;
-temp->collision.right = true;
-}
-}
-
-bool GameApp::isSolid(int tile) {
-// gotta change this to the spritesheet we are using
-// make a case for all the solid blocks
-switch (tile) {
-case 1:
-return true;
-break;
-}
-}
-*/
 
 // THIS STUFF IS FOR LEVEL GENERATION
 void GameApp::makeGameLevel() {
@@ -1163,7 +1103,7 @@ bool GameApp::genPath(int x, int y, int length) {
 	return false;
 }
 
-void GameApp::readMap(string map, unsigned char **tmpMap) {
+void GameApp::readMap(string map, unsigned int **&tmpMap, int xOffset, int yOffset) {
 	ifstream infile(map);
 	string line;
 	while (getline(infile, line)) {
@@ -1175,13 +1115,13 @@ void GameApp::readMap(string map, unsigned char **tmpMap) {
 		else if (line == "[layer]") {
 			readLayerData(infile, tmpMap);
 		}
-		else if (line == "[Objects]") {
-			readEntityData(infile, tmpMap);
+		else if (line == "[Object Layer]") {
+			readEntityData(infile, tmpMap, xOffset, yOffset);
 		}
 	}
 }
 
-bool GameApp::readHeader(ifstream& stream, unsigned char **tmpMap) {
+bool GameApp::readHeader(ifstream& stream, unsigned int **&tmpMap) {
 	string line;
 	mapWidth = -1;
 	mapHeight = -1;
@@ -1205,15 +1145,15 @@ bool GameApp::readHeader(ifstream& stream, unsigned char **tmpMap) {
 		return false;
 	}
 	else { // allocate our map data
-		tmpMap = new unsigned char*[mapHeight];
+		tmpMap = new unsigned int*[mapHeight];
 		for (int i = 0; i < mapHeight; ++i) {
-			tmpMap[i] = new unsigned char[mapWidth];
+			tmpMap[i] = new unsigned int[mapWidth];
 		}
 		return true;
 	}
 }
 
-bool GameApp::readLayerData(ifstream& stream, unsigned char **tmpMap) {
+bool GameApp::readLayerData(ifstream& stream, unsigned int **&tmpMap) {
 	string line;
 	while (getline(stream, line)) {
 		if (line == "") { break; }
@@ -1228,13 +1168,13 @@ bool GameApp::readLayerData(ifstream& stream, unsigned char **tmpMap) {
 				string tile;
 				for (int x = 0; x < mapWidth; x++) {
 					getline(lineStream, tile, ',');
-					unsigned char val = (unsigned char)atoi(tile.c_str());
+					unsigned int val = atoi(tile.c_str());
 					if (val > 0) {
 						// be careful, the tiles in this format are indexed from 1 not 0
 						tmpMap[y][x] = val - 1;
 					}
 					else {
-						tmpMap[y][x] = 12;
+						tmpMap[y][x] = 404;
 					}
 				}
 			}
@@ -1243,7 +1183,7 @@ bool GameApp::readLayerData(ifstream& stream, unsigned char **tmpMap) {
 	return true;
 }
 
-bool GameApp::readEntityData(ifstream& stream, unsigned char **tmpMap) {
+bool GameApp::readEntityData(ifstream& stream, unsigned int **&tmpMap, int xOffset, int yOffset) {
 	string line;
 	string type;
 	while (getline(stream, line)) {
@@ -1262,16 +1202,16 @@ bool GameApp::readEntityData(ifstream& stream, unsigned char **tmpMap) {
 			getline(lineStream, yPosition, ',');
 			float placeX = atoi(xPosition.c_str()) / 16 * TILE_SIZE;
 			float placeY = atoi(yPosition.c_str()) / 16 * -TILE_SIZE;
-			placeEntity(type, placeX, placeY);
+			placeEntity(type, placeX, placeY, xOffset, yOffset);
 		}
 	}
 	return true;
 }
 
-void GameApp::placeEntity(string type, float placeX, float placeY) {
+void GameApp::placeEntity(string type, float placeX, float placeY, int xOffset, int yOffset) {
 	if (type == "Start")  {
-		startPoint.x = placeX;
-		startPoint.y = placeY;
+		startPoint.x = xOffset + placeX;
+		startPoint.y = yOffset + placeY;
 	}
 }
 
@@ -1279,10 +1219,8 @@ void GameApp::createMap() {
 	int xOffset = 0;
 	int yOffset = 0;
 
-	unsigned char** unwalkable = NULL;
-	unsigned char** tmp = NULL;
 	// filling in the case 0 room
-	readMap("0.txt", unwalkable);
+	readMap("Map Files/0.txt", unwalkable, 0, 0);
 
 	vector<string> firstRoomVariation;
 	vector<string> secondRoomVariation;
@@ -1296,80 +1234,78 @@ void GameApp::createMap() {
 	vector<string> tenthRoomVariation;
 
 	for (int i = 1; i < 5; ++i) {
-		firstRoomVariation.push_back("1_var_" + to_string(i) + ".txt");
+		firstRoomVariation.push_back("Map Files/1_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		secondRoomVariation.push_back("2_var_" + to_string(i) + ".txt");
+		secondRoomVariation.push_back("Map Files/2_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		thirdRoomVariation.push_back("3_var_" + to_string(i) + ".txt");
+		thirdRoomVariation.push_back("Map Files/3_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		fourthRoomVariation.push_back("4_var_" + to_string(i) + ".txt");
+		fourthRoomVariation.push_back("Map Files/4_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		fifthRoomVariation.push_back("5_var_" + to_string(i) + ".txt");
+		fifthRoomVariation.push_back("Map Files/5_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		sixthRoomVariation.push_back("6_var_" + to_string(i) + ".txt");
+		sixthRoomVariation.push_back("Map Files/6_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		seventhRoomVariation.push_back("7_var_" + to_string(i) + ".txt");
+		seventhRoomVariation.push_back("Map Files/7_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		eigthRoomVariation.push_back("8_var_" + to_string(i) + ".txt");
+		eigthRoomVariation.push_back("Map Files/8_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		ninthRoomVariation.push_back("9_var_" + to_string(i) + ".txt");
+		ninthRoomVariation.push_back("Map Files/9_var_" + to_string(i) + ".txt");
 	}
 	for (int i = 1; i < 5; ++i) {
-		tenthRoomVariation.push_back("10_var_" + to_string(i) + ".txt");
+		tenthRoomVariation.push_back("Map Files/10_var_" + to_string(i) + ".txt");
 	}
 
-	// rooms will be assigned from left to right, top to bottom of mapLayout, NOT BASED ON START TO END
-	int counter = 0;
 	for (int i = 0; i < LAYOUT_X; ++i) {
 		for (int j = 0; j < LAYOUT_Y; ++j) {
 			if (mapLayout[j][i] != 0) {
 				switch (mapLayout[j][i]) {
 				case 1:
-					readMap(firstRoomVariation[rand() % 5 + 1], tmp);
+					readMap(firstRoomVariation[rand() % 4], tmp, xOffset, yOffset);
 					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				case 2:
-					readMap(secondRoomVariation[rand() % 5 + 1], tmp);
+					readMap(secondRoomVariation[rand() % 4], tmp, xOffset, yOffset);
 					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				case 3:
-					readMap(thirdRoomVariation[rand() % 5 + 1], tmp);
+					readMap(thirdRoomVariation[rand() % 4], tmp, xOffset, yOffset);
 					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				case 4:
-					readMap(fourthRoomVariation[rand() % 5 + 1], tmp);
+					readMap(fourthRoomVariation[rand() % 4], tmp, xOffset, yOffset);
 					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				case 5:
-					readMap(fifthRoomVariation[rand() % 5 + 1], tmp);
+					readMap(fifthRoomVariation[rand() % 4], tmp, xOffset, yOffset);
 					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				case 6:
-					readMap(sixthRoomVariation[rand() % 5 + 1], tmp);
+					readMap(sixthRoomVariation[rand() % 4], tmp, xOffset, yOffset);
 					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				case 7:
-					readMap(seventhRoomVariation[rand() % 5 + 1], tmp);
+					readMap(seventhRoomVariation[rand() % 4], tmp, xOffset, yOffset);
 					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				case 8:
-					readMap(eigthRoomVariation[rand() % 5 + 1], tmp);
+					readMap(eigthRoomVariation[rand() % 4], tmp, xOffset, yOffset);
 					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				case 9:
-					readMap(ninthRoomVariation[rand() % 5 + 1], tmp);
+					readMap(ninthRoomVariation[rand() % 4], tmp, xOffset, yOffset);
 					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				case 10:
-					readMap(tenthRoomVariation[rand() % 5 + 1], tmp);
+					readMap(tenthRoomVariation[rand() % 4], tmp, xOffset, yOffset);
 					fillLargeArray(tmp, xOffset, yOffset);
 					break;
 				}
@@ -1381,13 +1317,63 @@ void GameApp::createMap() {
 			}
 		}
 		yOffset += 50;
+		xOffset = 0;
 	}
 }
 
-void GameApp::fillLargeArray(unsigned char** small, int xOffset, int yOffset) {
-	for (int i = 0; i < LAYOUT_X; ++i) {
-		for (int j = 0; j < LAYOUT_Y; ++j) {
+void GameApp::fillLargeArray(unsigned int** &small, int xOffset, int yOffset) {
+	for (int i = 0; i < 50; ++i) {
+		for (int j = 0; j < 50; ++j) {
 			trueMap[xOffset + j][yOffset + i] = small[j][i];
 		}
 	}
+}
+
+void GameApp::renderGameLevel() {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, gameTile);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	vector<float> vertexData;
+	vector<float> texCoordData;
+	for (int y = 0; y < 250; y++) {
+		for (int x = 0; x < 250; x++) {
+			if (trueMap[y][x] != 404) {
+				float u = (float)(((int)trueMap[y][x]) % spriteCountX) / (float)spriteCountX;
+				float v = (float)(((int)trueMap[y][x]) / spriteCountX) / (float)spriteCountY;
+				float spriteWidth = 1.0f / (float)spriteCountX;
+				float spriteHeight = 1.0f / (float)spriteCountY;
+				vertexData.insert(vertexData.end(), {
+					TILE_SIZE * x, -TILE_SIZE * y,
+					TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y
+				});
+				texCoordData.insert(texCoordData.end(), { u, v,
+					u, v + (spriteHeight),
+					u + spriteWidth, v + (spriteHeight),
+					u + spriteWidth, v
+				});
+			}
+		}
+	}
+	glVertexPointer(2, GL_FLOAT, 0, vertexData.data());
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glTexCoordPointer(2, GL_FLOAT, 0, texCoordData.data());
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDrawArrays(GL_QUADS, 0, mapWidth * mapHeight * 4);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisable(GL_TEXTURE_2D);
+}
+
+void GameApp::vboRender() {
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glBindBuffer(GL_ARRAY_BUFFER, myVertexBuffer);
+	glVertexPointer(2, GL_FLOAT, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glDrawArrays(GL_QUADS, 0, TRUE_X * TRUE_Y);
 }

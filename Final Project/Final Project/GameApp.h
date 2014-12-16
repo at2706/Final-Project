@@ -9,6 +9,8 @@
 #define TRUE_Y 250
 #define WORLD_OFFSET_X 0
 #define WORLD_OFFSET_Y 0
+#define spriteCountX 23
+#define spriteCountY 16
 
 
 class GameApp
@@ -70,6 +72,7 @@ private:
 	GLuint UISheet;
 	GLuint fontTexture;
 	GLuint bgTexture;
+	GLuint gameTile;
 
 	GLuint playerCount;
 
@@ -99,19 +102,24 @@ private:
 	void makeGameLevel();
 	bool genPath(int, int, int);
 
-	void readMap(string map, unsigned char **tmpMap);
-	bool readHeader(ifstream&, unsigned char **tmpMap);
-	bool readLayerData(ifstream&, unsigned char **tmpMap);
-	bool readEntityData(ifstream&, unsigned char **tmpMap);
-	void placeEntity(string, float, float);
+	void readMap(string map, unsigned int **&tmpMap, int xOffset, int yOffset);
+	bool readHeader(ifstream&, unsigned int **&tmpMap);
+	bool readLayerData(ifstream&, unsigned int **&tmpMap);
+	bool readEntityData(ifstream&, unsigned int **&tmpMap, int xOffset, int yOffset);
+	void placeEntity(string, float, float, int xOffset, int yOffset);
 
 	void createMap();
-	void fillLargeArray(unsigned char** small, int xOffset, int yOffset);
+	void fillLargeArray(unsigned int** &small, int xOffset, int yOffset);
+
+	void renderGameLevel();
+	void vboRender();
 
 	int mapWidth;
 	int mapHeight;
 	int mapLayout[LAYOUT_X][LAYOUT_Y];
-	unsigned char trueMap[TRUE_Y][TRUE_X];
+	unsigned int trueMap[TRUE_Y][TRUE_X];
+	unsigned int **unwalkable;
+	unsigned int **tmp;
 	Vector startPoint;
 
 	Vector mapGoal;
