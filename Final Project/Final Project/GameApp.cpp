@@ -29,32 +29,32 @@ GameApp::GameApp() {
 
 	// keep in mind each tile inside the maplayout is a box of 50x50, so entire game level will be 250x250
 	// initialize mapLayout
-	//for (unsigned int i = 0; i < LAYOUT_X; ++i) {
-	//	for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-	//		mapLayout[j][i] = 0;
-	//	}
-	//}
-	//// for level generation
-	//mapStart.x = (std::rand() % (4));
-	//mapStart.y = (std::rand() % (4));
-	//mapGoal.x = (std::rand() % (4));
-	//mapGoal.y = (std::rand() % (4));
-	//// to ensure theres enough space between the start and end point
-	//while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 4) {
-	//	mapStart.x = (std::rand() % (4));
-	//	mapStart.y = (std::rand() % (4));
-	//	mapGoal.x = (std::rand() % (4));
-	//	mapGoal.y = (std::rand() % (4));
-	//}
-	//makeGameLevel();
-	//for (unsigned int i = 0; i < LAYOUT_X; ++i) {
-	//	for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-	//		std::cout << mapLayout[j][i] << " ";
-	//	}
-	//	std::cout << endl;
-	//}
+	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
+		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
+			mapLayout[j][i] = 0;
+		}
+	}
+	// for level generation
+	mapStart.x = (std::rand() % (4));
+	mapStart.y = (std::rand() % (4));
+	mapGoal.x = (std::rand() % (4));
+	mapGoal.y = (std::rand() % (4));
+	// to ensure theres enough space between the start and end point
+	while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 4) {
+		mapStart.x = (std::rand() % (4));
+		mapStart.y = (std::rand() % (4));
+		mapGoal.x = (std::rand() % (4));
+		mapGoal.y = (std::rand() % (4));
+	}
+	makeGameLevel();
+	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
+		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
+			std::cout << mapLayout[j][i] << " ";
+		}
+		std::cout << endl;
+	}
 
-	//createMap();
+	createMap();
 
 	drawLadder(16, startPoint.x, startPoint.y);
 	drawPlatformHorizontal(42, startPoint.x, startPoint.y - 0.5f);
