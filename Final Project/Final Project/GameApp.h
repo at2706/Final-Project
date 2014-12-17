@@ -9,7 +9,7 @@
 #define TRUE_Y 250
 #define WORLD_OFFSET_X 0
 #define WORLD_OFFSET_Y 0
-#define spriteCountX 23
+#define spriteCountX 24
 #define spriteCountY 16
 
 
@@ -39,6 +39,11 @@ private:
 	Mix_Music *introMusic;
 	Mix_Chunk *menuMove;
 	Mix_Chunk *jump;
+	Mix_Chunk *hurt;
+	Mix_Chunk *shootSound;
+	Mix_Chunk *healSound;
+	Mix_Chunk *reviveSound;
+	Mix_Chunk *pickupSound;
 
 	GLfloat cooldown = 0;
 	GLfloat reviveCooldown = 0;

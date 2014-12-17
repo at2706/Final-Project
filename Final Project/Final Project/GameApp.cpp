@@ -12,6 +12,11 @@ GameApp::GameApp() {
 	introMusic = Mix_LoadMUS("introMusic.mp3");
 	menuMove = Mix_LoadWAV("menuMove.wav");
 	jump = Mix_LoadWAV("jump.wav");
+	hurt = Mix_LoadWAV("hurt.wav");
+	shootSound = Mix_LoadWAV("shoot.wav");
+	healSound = Mix_LoadWAV("heal.ogg");
+	reviveSound = Mix_LoadWAV("revive.ogg");
+	pickupSound = Mix_LoadWAV("pickup.wav");
 	playerCount = 2;
 	
 	Mix_PlayMusic(introMusic, -1);
@@ -134,7 +139,11 @@ GameApp::~GameApp()
 	Mix_FreeMusic(introMusic);
 	Mix_FreeChunk(menuMove);
 	Mix_FreeChunk(jump);
-
+	Mix_FreeChunk(hurt);
+	Mix_FreeChunk(shootSound);
+	Mix_FreeChunk(healSound);
+	Mix_FreeChunk(reviveSound);
+	Mix_FreeChunk(pickupSound);
 
 	SDL_Quit();
 }
@@ -354,8 +363,10 @@ GLboolean GameApp::updateAndRender() {
 				players[0].hero->velocity.y = -1.0f;
 			}
 
-			if (keys[SDL_SCANCODE_SPACE] && players[0].hero->collision.bottom)
+			if (keys[SDL_SCANCODE_SPACE] && players[0].hero->collision.bottom){
 				players[0].hero->velocity.y = 4.0f;
+				Mix_PlayChannel(-1, jump, 0);
+			}
 
 			if (players[0].hero->collision.points[0] && keys[SDL_SCANCODE_R] && reviveCooldown > 0.5f){
 				players[0].target->modHealth(50);
