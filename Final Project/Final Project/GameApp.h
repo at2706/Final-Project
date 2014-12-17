@@ -89,16 +89,6 @@ private:
 	vector<Sprite*> *animHeroCrouch;
 	vector<Sprite*> *animHeroDead;
 
-
-
-	// for collision
-	/*void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
-	void doLevelCollisionY(Entity* temp);
-	void doLevelCollisionX(Entity* temp);
-	float checkPointForGridCollisionY(float x, float y);
-	float checkPointForGridCollisionX(float x, float y);
-	bool isSolid(int);*/
-
 	// for level generation
 	void makeGameLevel();
 	bool genPath(int, int, int);
@@ -111,9 +101,9 @@ private:
 
 	void createMap();
 	void fillLargeArray(unsigned int** &small, int xOffset, int yOffset);
-
+	void fillSmallArray();
 	void renderGameLevel();
-	void vboRender();
+	void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
 
 	int mapWidth;
 	int mapHeight;
@@ -121,6 +111,7 @@ private:
 	unsigned int trueMap[TRUE_Y][TRUE_X];
 	unsigned int **unwalkable;
 	unsigned int **tmp;
+	unsigned int smallMap[50][50];
 	Vector startPoint;
 
 	Vector mapGoal;

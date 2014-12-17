@@ -22,7 +22,6 @@ GameApp::GameApp() {
 	buildPauseMenu();
 	buildGameUI();
 
-
 	// keep in mind each tile inside the maplayout is a box of 50x50, so entire game level will be 250x250
 	// initialize mapLayout
 	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
@@ -51,10 +50,6 @@ GameApp::GameApp() {
 	}
 
 	createMap();
-
-	glGenBuffers(1, &myVertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, myVertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, TRUE_X * TRUE_Y * sizeof(float), trueMap,	GL_STATIC_DRAW);
 
 	drawLadder(16, startPoint.x, startPoint.y);
 	drawPlatformHorizontal(42, startPoint.x, startPoint.y - 0.5f);
@@ -117,7 +112,6 @@ GLvoid GameApp::init() {
 	glOrtho(-ASPECT_RATIO_X, ASPECT_RATIO_X, -ASPECT_RATIO_Y, ASPECT_RATIO_Y, -1.0f, 1.0f);
 	glMatrixMode(GL_MODELVIEW);
 	Entity::world = this;
-	glewInit();
 }
 
 GameApp::~GameApp()
@@ -130,7 +124,6 @@ GameApp::~GameApp()
 	Mix_FreeChunk(menuMove);
 	Mix_FreeChunk(jump);
 
-	glDeleteBuffers(1, &myVertexBuffer);
 
 	SDL_Quit();
 }
@@ -436,7 +429,7 @@ GLboolean GameApp::updateAndRender() {
 			}
 			else players[i].label->isVisible = false;
 		}
-
+		fillSmallArray();
 		break;
 	case STATE_GAME_PAUSE:
 		cooldown += elapsed;
@@ -497,8 +490,7 @@ GLvoid GameApp::Render() {
 		glMatrixMode(GL_MODELVIEW);
 		followPlayers(players);
 		glMultMatrixf(translateMatrix.ml);
-		//renderGameLevel();
-		vboRender();
+		renderGameLevel();
 		Entity::renderAll();
 		UIGame->render();
 		glMatrixMode(GL_PROJECTION);
@@ -1349,11 +1341,11 @@ void GameApp::renderGameLevel() {
 
 	vector<float> vertexData;
 	vector<float> texCoordData;
-	for (int y = 0; y < 250; y++) {
-		for (int x = 0; x < 250; x++) {
+	for (int y = 0; y < 50; y++) {
+		for (int x = 0; x < 50; x++) {
 			if (trueMap[y][x] != 404) {
-				float u = (float)(((int)trueMap[y][x]) % spriteCountX) / (float)spriteCountX;
-				float v = (float)(((int)trueMap[y][x]) / spriteCountX) / (float)spriteCountY;
+				float u = (float)(((int)smallMap[y][x]) % spriteCountX) / (float)spriteCountX;
+				float v = (float)(((int)smallMap[y][x]) / spriteCountX) / (float)spriteCountY;
 				float spriteWidth = 1.0f / (float)spriteCountX;
 				float spriteHeight = 1.0f / (float)spriteCountY;
 				vertexData.insert(vertexData.end(), {
@@ -1380,12 +1372,18 @@ void GameApp::renderGameLevel() {
 	glDisable(GL_TEXTURE_2D);
 }
 
-void GameApp::vboRender() {
-	glEnableClientState(GL_VERTEX_ARRAY);
+void GameApp::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) {
+	*gridX = (int)((worldX + (WORLD_OFFSET_X)) / TILE_SIZE);
+	*gridY = (int)((-worldY + (WORLD_OFFSET_Y)) / TILE_SIZE);
+}
 
-	glBindBuffer(GL_ARRAY_BUFFER, myVertexBuffer);
-	glVertexPointer(2, GL_FLOAT, 0, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glDrawArrays(GL_QUADS, 0, TRUE_X * TRUE_Y);
+void GameApp::fillSmallArray() {
+	int playerCoordX, playerCoordY;
+	worldToTileCoordinates(players[0].hero->position.x, players[0].hero->position.y, &playerCoordX, &playerCoordY);
+	for (int i = 0; i < 50; ++i) {
+		for (int j = 0; j < 50; ++j) {
+			if (playerCoordX + (i - 25) < 250 && playerCoordY + (j - 25) < 250 && playerCoordX + (i - 25) > -1 && playerCoordY + (j - 25) > -1)
+				smallMap[j][i] = trueMap[j - 25][i - 25];
+		}
+	}
 }
