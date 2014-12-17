@@ -1,7 +1,7 @@
-﻿Build started 12/16/2014 8:29:58 PM.
+﻿Build started 12/16/2014 9:35:36 PM.
      1>Project "C:\Users\Sui\Dropbox\Game Programming\Final-Project\Final-Project\Final Project\Final Project\Final Project.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\SDL2\include /IC:\SDL2_image\include /IC:\SDL2_mixer\include /IC:\glew\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Entity.cpp GameApp.cpp Player.cpp Sprite.cpp UIElement.cpp UIList.cpp UIText.cpp Weapon.cpp main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\SDL2\include /IC:\SDL2_image\include /IC:\SDL2_mixer\include /IC:\glew\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt GameApp.cpp
          GameApp.cpp
      1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\utilities.h(78): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
      1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(5): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
@@ -39,39 +39,20 @@
      1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(97): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
      1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(98): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
      1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(99): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(212): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(572): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(672): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(812): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(813): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(816): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-         Generating Code...
-         Compiling...
-         main.cpp
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\utilities.h(78): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         Weapon.cpp
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\utilities.h(78): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         UIText.cpp
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\utilities.h(78): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\uitext.cpp(40): warning C4244: 'argument' : conversion from 'GLfloat' to 'unsigned int', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\uitext.cpp(41): warning C4244: 'argument' : conversion from 'GLfloat' to 'unsigned int', possible loss of data
-         UIList.cpp
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\utilities.h(78): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         UIElement.cpp
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\utilities.h(78): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         Sprite.cpp
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\utilities.h(78): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\sprite.cpp(13): warning C4244: '=' : conversion from 'GLuint' to 'GLfloat', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\sprite.cpp(25): warning C4244: '=' : conversion from 'GLuint' to 'GLfloat', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\sprite.cpp(31): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         Player.cpp
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\utilities.h(78): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-         Entity.cpp
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\utilities.h(78): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\entity.cpp(148): warning C4244: '=' : conversion from 'float' to 'GLuint', possible loss of data
-         Generating Code...
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(104): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(105): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(106): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(107): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(108): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(109): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(223): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(588): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(688): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(836): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(837): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\sui\dropbox\game programming\final-project\final-project\final project\final project\gameapp.cpp(840): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Sui\Dropbox\Game Programming\Final-Project\Final-Project\Final Project\Debug\Final Project.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\SDL2\lib\x86 /LIBPATH:C:\SDL2_image\lib\x86 /LIBPATH:C:\SDL2_mixer\lib\x86 /LIBPATH:C:\glew\lib\release\Win32 SDL2.lib SDL2main.lib SDL2_image.lib OpenGL32.lib SDL2_mixer.lib glew32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Sui\Dropbox\Game Programming\Final-Project\Final-Project\Final Project\Debug\Final Project.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Sui\Dropbox\Game Programming\Final-Project\Final-Project\Final Project\Debug\Final Project.lib" /MACHINE:X86 Debug\Entity.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Sui\Dropbox\Game Programming\Final-Project\Final-Project\Final Project\Debug\Final Project.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\glew /LIBPATH:C:\SDL2\lib\x86 /LIBPATH:C:\SDL2_image\lib\x86 /LIBPATH:C:\SDL2_mixer\lib\x86 /LIBPATH:C:\glew\lib\release\Win32 SDL2.lib SDL2main.lib SDL2_image.lib OpenGL32.lib SDL2_mixer.lib glew32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Sui\Dropbox\Game Programming\Final-Project\Final-Project\Final Project\Debug\Final Project.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Sui\Dropbox\Game Programming\Final-Project\Final-Project\Final Project\Debug\Final Project.lib" /MACHINE:X86 Debug\Entity.obj
          Debug\GameApp.obj
          Debug\main.obj
          Debug\Matrix.obj
@@ -87,4 +68,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:07.91
+Time Elapsed 00:00:01.48

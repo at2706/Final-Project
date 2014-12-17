@@ -1238,8 +1238,8 @@ bool GameApp::readEntityData(ifstream& stream, unsigned int **&tmpMap, int xOffs
 
 void GameApp::placeEntity(string type, float placeX, float placeY, int xOffset, int yOffset) {
 	if (type == "Start")  {
-		startPoint.x = xOffset + placeX;
-		startPoint.y = yOffset + placeY;
+		startPoint.x = (xOffset / 16 * TILE_SIZE) + placeX;
+		startPoint.y = (yOffset / 16 * -TILE_SIZE) + placeY;
 	}
 }
 
@@ -1407,7 +1407,9 @@ void GameApp::fillSmallArray() {
 	for (int i = 0; i < 50; ++i) {
 		for (int j = 0; j < 50; ++j) {
 			if (playerCoordX + (i - 25) < 250 && playerCoordY + (j - 25) < 250 && playerCoordX + (i - 25) > -1 && playerCoordY + (j - 25) > -1)
-				smallMap[j][i] = trueMap[j - 25][i - 25];
+				smallMap[j][i] = trueMap[playerCoordY + (j - 25)][playerCoordX + (i - 25)];
+			else
+				smallMap[j][i] = 404;
 		}
 	}
 }

@@ -89,10 +89,7 @@ private:
 	vector<Sprite*> *animHeroJump;
 	vector<Sprite*> *animHeroCrouch;
 	vector<Sprite*> *animHeroDead;
-<<<<<<< HEAD
-=======
 	vector<Sprite*> *pickup;
-
 
 	// for collision
 	/*void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
@@ -101,7 +98,6 @@ private:
 	float checkPointForGridCollisionY(float x, float y);
 	float checkPointForGridCollisionX(float x, float y);
 	bool isSolid(int);*/
->>>>>>> origin/master
 
 	// for level generation
 	void makeGameLevel();
