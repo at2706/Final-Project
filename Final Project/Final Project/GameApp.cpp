@@ -72,7 +72,7 @@ GameApp::GameApp() {
 	animHeroIdle = new vector < Sprite* >;
 	animHeroIdle->insert(animHeroIdle->end(),
 	{	new Sprite(charSheet, 2048.0f, 1024.0f, 1019, 206, 67, 110),	//2		117
-		new Sprite(charSheet, 2048.0f, 1024.0f, 1017, 876, 68, 109),	//3		141
+		new Sprite(charSheet, 2048.0f, 1024.0f, 1017, 876, 67, 110),	//3		141
 		new Sprite(charSheet, 2048.0f, 1024.0f, 1087, 542, 67, 110),	//4		155
 		new Sprite(charSheet, 2048.0f, 1024.0f, 876, 0, 67, 110)		//5		156
 	});
@@ -98,6 +98,17 @@ GameApp::GameApp() {
 		new Sprite(charSheet, 2048.0f, 1024.0f, 1341, 488, 55, 83),		//1		51
 		new Sprite(charSheet, 2048.0f, 1024.0f, 1341, 750, 55, 83),		//2		53
 	});
+
+	pickup = new vector < Sprite* >;
+	pickup->insert(pickup->end(),
+	{ new Sprite(charSheet, 2048.0f, 1024.0f, 1654, 127, 34, 34),
+	new Sprite(charSheet, 2048.0f, 1024.0f, 1689, 127, 34, 34),
+	new Sprite(charSheet, 2048.0f, 1024.0f, 1724, 127, 34, 34),
+	new Sprite(charSheet, 2048.0f, 1024.0f, 1759, 127, 34, 34),
+	new Sprite(charSheet, 2048.0f, 1024.0f, 1798, 127, 34, 34),
+	new Sprite(charSheet, 2048.0f, 1024.0f, 1838, 127, 34, 34),
+	});
+
 }
 
 GLvoid GameApp::init() {
@@ -312,8 +323,8 @@ GLboolean GameApp::updateAndRender() {
 		cooldown += elapsed;
 		break;
 	case STATE_GAME_LEVEL:
-
-		if (!players[0].hero->flags.deathMark){
+		reviveCooldown += elapsed;
+		if (players[0].hero != nullptr && !players[0].hero->flags.deathMark){
 			if (players[0].hero->collision.points[0]){
 				players[0].reviveIndicator->setPosition(players[0].target->position.x - 0.08f, players[0].target->position.y + 0.08f);
 				players[0].reviveIndicator->isVisible = true;
@@ -346,7 +357,19 @@ GLboolean GameApp::updateAndRender() {
 			if (keys[SDL_SCANCODE_SPACE] && players[0].hero->collision.bottom)
 				players[0].hero->velocity.y = 4.0f;
 
-			if (keys[SDL_SCANCODE_F])
+			if (players[0].hero->collision.points[0] && keys[SDL_SCANCODE_R] && reviveCooldown > 0.5f){
+				players[0].target->modHealth(50);
+				if (players[0].target->health >= players[0].target->healthMax){
+					players[0].target->flags.deathMark = false;
+					players[0].target->animation = animHeroIdle;
+					lives--;
+					lifeIndicator->text = "x" + to_string(lives);
+				}
+
+				reviveCooldown = 0.0f;
+			}
+
+			else if (keys[SDL_SCANCODE_F])
 				players[0].hero->shoot();
 
 			if (keys[SDL_SCANCODE_C]){
@@ -354,11 +377,11 @@ GLboolean GameApp::updateAndRender() {
 				players[0].hero->flags.idle = true;
 			}
 
-			if (!players[0].hero->collision.bottom)
-				players[0].hero->animation = animHeroJump;
+			/*if (!players[0].hero->collision.bottom)
+				players[0].hero->animation = animHeroJump;*/
 		}
 
-		if (!players[1].hero->flags.deathMark){
+		if (players[1].hero != nullptr && !players[1].hero->flags.deathMark){
 			if (players[1].hero->collision.points[0]){
 				players[1].reviveIndicator->setPosition(players[1].target->position.x -0.08f, players[1].target->position.y + 0.08f);
 				players[1].reviveIndicator->isVisible = true;
@@ -423,7 +446,7 @@ GLboolean GameApp::updateAndRender() {
 		}*/
 
 		for (GLuint i = 0; i < playerCount; i++){
-			if (!players[i].hero->flags.deathMark){
+			if (players[i].hero != nullptr && !players[i].hero->flags.deathMark){
 				players[i].label->setPosition(players[i].hero->position.x - 0.01f, players[i].hero->position.y +0.175f);
 				players[i].label->isVisible = true;
 			}
@@ -447,8 +470,6 @@ GLboolean GameApp::updateAndRender() {
 }
 GLvoid GameApp::Update() {
 	time();
-
-	
 }
 
 GLvoid GameApp::time(){
@@ -476,18 +497,13 @@ GLvoid GameApp::Render() {
 	glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-
-	zoom = 1.0f;
 	switch (state){
 	case STATE_MAIN_MENU:
 		UImain->render();
 
 		break;
+
 	case STATE_GAME_LEVEL: {
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(-ASPECT_RATIO_X * zoom, ASPECT_RATIO_X * zoom, -ASPECT_RATIO_Y * zoom, ASPECT_RATIO_Y * zoom, -1.0f, 1.0f);
-		glMatrixMode(GL_MODELVIEW);
 		followPlayers(players);
 		glMultMatrixf(translateMatrix.ml);
 		renderGameLevel();
@@ -651,36 +667,37 @@ GLvoid GameApp::buildPauseMenu(){
 	t = new UIText("Resume");
 	t->spacing = -0.12f;
 	t->color = { 1, 1, 1, 1 };
-	pauseList->attach(t);
+pauseList->attach(t);
 
-	t = new UIText("Quit");
-	t->color = { 1, 1, 1, 1 };
-	pauseList->attach(t);
+t = new UIText("Quit");
+t->color = { 1, 1, 1, 1 };
+pauseList->attach(t);
 }
 GLvoid GameApp::buildGameUI(){
 	Sprite *s;
 	UIElement *e;
 	UIElement *e2;
-	UIText *t;
 	UIGame = new UIElement();
 	UIGame->fontTexture = fontTexture;
-	UIStatic = new UIElement();
-	s = new Sprite(UISheet, 512, 256, 0, 192, 190, 45);
-	e = new UIElement(s, -1.60f, 0.9f,0.31f, 0.5f);
-	e->fontTexture = fontTexture;
 
+	UIStatic = new UIElement();
+	UIStatic->fontTexture = fontTexture;
+	s = new Sprite(UISheet, 512, 256, 0, 192, 190, 45);
+	e = new UIElement(s, -1.60f, 0.78f, 0.31f, 0.5f);
+	UIStatic->attach(e);
 	s = new Sprite(charSheet, 2048.0f, 1024.0f, 1656, 0, 128, 128);
 	e2 = new UIElement(s, -0.75f);
-
-	t = new UIText("x" + to_string(lives));
-	t->color = { 1, 1, 1, 1 };
+	lifeIndicator = new UIText("x" + to_string(lives));
+	lifeIndicator->color = { 1, 1, 1, 1 };
 	e->attach(e2);
-	e->attach(t);
+	e->attach(lifeIndicator);
 
+	s = new Sprite(UISheet, 512, 256, 0, 192, 190, 45);
+	e = new UIElement(s, -1.50f, 0.9f, 0.7f, 0.5f);
 	UIStatic->attach(e);
-
+	scoreIndicator = new UIText("Score: 0", -0.82f);
+	e->attach(scoreIndicator);
 }
-
 
 bool sortPositionX(Entity *e1, Entity *e2){
 	return e1->position.x < e2->position.x;
@@ -696,7 +713,7 @@ GLvoid GameApp::followPlayers(Player *p){
 	for (GLuint i = 0; i < playerCount; i++){
 		p[i].positionLabel->isVisible = false;
 		heroes.push_back(p[i].hero);
-		if (!p[i].hero->flags.deathMark){
+		if (p[i].hero != nullptr && !p[i].hero->flags.deathMark){
 			alive++;
 		}
 	}
@@ -709,7 +726,7 @@ GLvoid GameApp::followPlayers(Player *p){
 		sort(heroes.begin(), heroes.end(), sortPositionX);
 		GLfloat distanceX = fabs(heroes.back()->position.x - heroes.front()->position.x);
 		cooldown += elapsed;
-		if (distanceX > 2.5f){
+		if (distanceX > 3.5f){
 			GLfloat distance1 = fabs(heroes.begin()[1]->position.x - heroes.front()->position.x);
 			GLfloat distance2 = fabs(heroes.back()->position.x - heroes.rbegin()[1]->position.x);
 			if (distance1 > distance2){
@@ -753,6 +770,13 @@ GLvoid GameApp::followPlayers(Player *p){
 			}
 		}
 	}
+	for (GLuint i = 0; i < playerCount; i++){
+		if (p[i].hero != nullptr &&
+			(p[i].hero->position.x > -translateMatrix.m[3][0] + ASPECT_RATIO_X || p[i].hero->position.x < -translateMatrix.m[3][0] - ASPECT_RATIO_X
+			|| p[i].hero->position.y > -translateMatrix.m[3][1] + ASPECT_RATIO_Y || p[i].hero->position.y < -translateMatrix.m[3][1] - ASPECT_RATIO_Y)){
+			outOfBounds.push_back(p[i].hero);
+		}
+	}
 
 	for (vector<Entity*>::iterator it = outOfBounds.begin(); it != outOfBounds.end(); ++it){
 		p[(*it)->value].positionLabel->isVisible = true;
@@ -766,7 +790,7 @@ GLvoid GameApp::followPlayers(Player *p){
 	}
 
 	for (GLuint i = 0; i < heroes.size(); i++){
-		if (!heroes[i]->flags.deathMark){
+		if (p[i].hero != nullptr && !heroes[i]->flags.deathMark){
 			avgX += heroes[i]->position.x;
 			avgY += heroes[i]->position.y;
 		}

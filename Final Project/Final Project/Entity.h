@@ -30,7 +30,7 @@ struct Collision{
 	GLboolean points[5];
 	GLfloat distance;
 };
-enum EntityType { DEFAULT, HERO, PLATFORM, LADDER, FLYER, PROJECTILE, CRAWLER, SHOOTER };
+enum EntityType { DEFAULT, HERO, PLATFORM, LADDER, FLYER, PROJECTILE, CRAWLER, SHOOTER, PICKUP };
 
 class Entity {
 public:

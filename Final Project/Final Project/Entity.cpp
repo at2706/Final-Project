@@ -104,6 +104,11 @@ GLvoid Entity::presets(EntityType t){
 		collision.enabled = true;
 		flags.healthBar = true;
 		break;
+	case PICKUP:
+		value = 300;
+		gravity.enabled = false;
+		collision.enabled = true;
+		break;
 	}
 }
 
@@ -268,8 +273,8 @@ GLvoid Entity::setPosition(GLfloat x, GLfloat y, GLfloat z){
 GLvoid Entity::shoot(){
 	if (weapon->cooldown > weapon->fireRate) {
 		Entity *bullet = new Entity(weapon->sprite, PROJECTILE, -0.2f, 0.5f);
-		GLfloat randomish = (0.05f * ((float)rand() / (float)RAND_MAX) - 0.025f);
-		bullet->setPosition(((sprite->size.x + 0.1f + (fabs(velocity.x) *0.05f)) * cos(rotation.y) / 2) + position.x, position.y + randomish);
+		//GLfloat randomish = (0.05f * ((float)rand() / (float)RAND_MAX) - 0.025f);
+		bullet->setPosition(((sprite->size.x + 0.1f + (fabs(velocity.x) *0.05f)) * cos(rotation.y) / 2) + position.x, position.y + 0.012f/* + randomish*/);
 		bullet->health = weapon->damage;
 		bullet->velocity.x = weapon->speed * cos(rotation.y);
 		weapon->cooldown = 0.0f;
@@ -349,8 +354,8 @@ GLvoid Entity::collisionCheckPoints(Entity *e){
 	switch (type){
 	case HERO:
 		if (!collision.points[0] && e->flags.deathMark && e->type == HERO){
-			GLfloat direction = (((sprite->size.x) / 2) + 0.02f) * cos(rotation.y) + position.x;
-			collision.points[0] = e->collidesWith(direction, position.y) || collidesWith(e);
+			GLfloat direction = (((sprite->size.x) / 2) + 0.1f) * cos(rotation.y) + position.x;
+			collision.points[0] = e->collidesWith(direction, position.y - (sprite->size.y / 2) + 0.01f) || collidesWith(e);
 			if (collision.points[0])
 				world->players[value].target = e;
 		}
@@ -496,7 +501,8 @@ GLvoid Entity::deathEffect(){
 		break;
 
 	default:
-		;
+		world->score += value;
+		world->scoreIndicator->text = "Score: " + to_string(world->score), -0.82f;
 	}
 }
 
@@ -526,13 +532,20 @@ GLvoid Entity::modHealth(GLfloat amount){
 	if (flags.moveable){
 		health += amount;
 		if (health < 0){
-			if (!flags.revivable)
-				suicide();
-			else {
-				flags.deathMark = true;
+			if (flags.revivable){
 				flags.idle = true;
 				velocity.x = 0.0f;
 				velocity.y = 0.0f;
+				if (world->lives <= 0){
+					suicide();
+					world->players[value].hero = nullptr;
+				}
+				else
+					flags.deathMark = true;
+			}
+			else {
+				suicide();
+
 			}
 			health = 0;
 			deathEffect();

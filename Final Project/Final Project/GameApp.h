@@ -28,7 +28,7 @@ public:
 protected:
 	Player players[4];
 	GLint score = 0;
-	GLint lives = 10;
+	GLint lives = 2;
 
 private:
 	SDL_Event event;
@@ -40,7 +40,8 @@ private:
 	Mix_Chunk *menuMove;
 	Mix_Chunk *jump;
 
-	GLfloat cooldown;
+	GLfloat cooldown = 0;
+	GLfloat reviveCooldown = 0;
 
 	GLvoid init();
 	GLvoid time();
@@ -56,13 +57,11 @@ private:
 
 	GameState state;
 	GLfloat timeLeftOver = 0.0f;
-	GLfloat elapsed;
-	GLfloat ticks;
-	GLfloat lastFrameTicks;
-	Vector gravity;
+	GLfloat elapsed = 0;
+	GLfloat ticks = 0;
+	GLfloat lastFrameTicks = 0;
 
 	Matrix translateMatrix;
-	GLfloat zoom;
 	GLfloat fadeTime;
 
 	GLuint myVertexBuffer;
@@ -82,12 +81,27 @@ private:
 	UIList *pauseList;
 	UIElement *UIStatic;
 	UIElement *UIGame;
+	UIText *lifeIndicator;
+	UIText *scoreIndicator;
 
 	vector<Sprite*> *animHeroIdle;
 	vector<Sprite*> *animHeroRun;
 	vector<Sprite*> *animHeroJump;
 	vector<Sprite*> *animHeroCrouch;
 	vector<Sprite*> *animHeroDead;
+<<<<<<< HEAD
+=======
+	vector<Sprite*> *pickup;
+
+
+	// for collision
+	/*void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY);
+	void doLevelCollisionY(Entity* temp);
+	void doLevelCollisionX(Entity* temp);
+	float checkPointForGridCollisionY(float x, float y);
+	float checkPointForGridCollisionX(float x, float y);
+	bool isSolid(int);*/
+>>>>>>> origin/master
 
 	// for level generation
 	void makeGameLevel();
