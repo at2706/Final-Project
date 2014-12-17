@@ -513,7 +513,6 @@ GLvoid GameApp::Render() {
 	switch (state){
 	case STATE_MAIN_MENU:
 		UImain->render();
-
 		break;
 
 	case STATE_GAME_LEVEL: {
@@ -537,6 +536,8 @@ GLvoid GameApp::Render() {
 	}
 	case STATE_GAME_PAUSE:
 		followPlayers(players);
+		glMultMatrixf(translateMatrix.ml);
+		renderGameLevel();
 		Entity::renderAll();
 		tint(0.5f);
 		UIpause->render();
@@ -1379,6 +1380,7 @@ void GameApp::renderGameLevel() {
 	glBindTexture(GL_TEXTURE_2D, gameTile);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glTranslatef((-TILE_SIZE / 2), (-TILE_SIZE / 2), 0.0f);
 
 	vector<float> vertexData;
 	vector<float> texCoordData;

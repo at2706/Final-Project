@@ -1,4 +1,4 @@
-﻿Build started 12/16/2014 11:56:43 PM.
+﻿Build started 12/17/2014 12:15:16 AM.
      1>Project "D:\Users\Andy\Google Drive\CS3113- Game Programming\Final-Project\Final Project\Final Project\Final Project.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\SDL2\include /IC:\SDL2_image\include /IC:\SDL2_mixer\include /IC:\glew\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt GameApp.cpp
@@ -38,11 +38,11 @@
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(113): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(114): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(232): warning C4018: '<' : signed/unsigned mismatch
-     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(601): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
-     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(701): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
-     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(853): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(602): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
+     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(702): warning C4244: 'argument' : conversion from 'float' to 'GLuint', possible loss of data
      1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(854): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(857): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(855): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>d:\users\andy\google drive\cs3113- game programming\final-project\final project\final project\gameapp.cpp(858): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Users\Andy\Google Drive\CS3113- Game Programming\Final-Project\Final Project\Debug\Final Project.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\glew /LIBPATH:C:\SDL2\lib\x86 /LIBPATH:C:\SDL2_image\lib\x86 /LIBPATH:C:\SDL2_mixer\lib\x86 /LIBPATH:C:\glew\lib\release\Win32 SDL2.lib SDL2main.lib SDL2_image.lib OpenGL32.lib SDL2_mixer.lib glew32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Users\Andy\Google Drive\CS3113- Game Programming\Final-Project\Final Project\Debug\Final Project.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Users\Andy\Google Drive\CS3113- Game Programming\Final-Project\Final Project\Debug\Final Project.lib" /MACHINE:X86 Debug\Entity.obj
          Debug\GameApp.obj
@@ -60,4 +60,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.38
+Time Elapsed 00:00:01.43
