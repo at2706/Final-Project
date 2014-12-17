@@ -5,7 +5,7 @@ tilewidth=16
 tileheight=16
 
 [tilesets]
-tileset=../../../../dirt-tiles.png,16,16,0,0
+tileset=../../Dropbox/Game Programming/dirt-tiles.png,16,16,0,0
 
 [layer]
 type=Tile Layer 1
@@ -60,4 +60,84 @@ data=
 -2147483586,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-2147483636,-2147483637,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 -2147483562,-2147483613,-2147483588,-2147483588,0,0,0,-2147483637,-2147483637,-2147483589,-2147483588,-2147483612,-2147483636,-2147483589,0,0,0,0,-2147483588,-2147483588,-2147483613,-2147483612,-2147483589,-2147483612,0,0,0,0,0,0,0,0,0,0,-2147483612,-2147483612,-2147483637,-2147483636,-2147483613,-2147483613,0,0,0,0,-2147483589,-2147483637,-2147483637,-2147483589,-2147483589,0,
 -2147483596,-2147483598,-2147483643,-2147483643,-2147483596,-2147483597,-2147483596,-2147483643,-2147483596,-2147483596,-2147483643,-2147483643,-2147483643,-2147483643,-2147483597,-2147483597,-2147483597,-2147483596,-2147483643,-2147483597,-2147483598,-2147483598,-2147483596,-2147483598,-2147483597,-2147483596,-2147483643,-2147483596,-2147483597,-2147483597,-2147483597,-2147483597,-2147483596,-2147483643,-2147483596,-2147483596,-2147483598,-2147483643,-2147483643,-2147483597,-2147483596,-2147483596,-2147483596,-2147483598,-2147483596,-2147483596,-2147483598,-2147483598,-2147483596,-2147483599
+
+[Object Layer]
+# Weapons
+type=Weapons
+location=62,97,0,0
+
+[Object Layer]
+# Weapons
+type=Weapons
+location=346,550,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=232,551,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=54,593,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=158,747,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=332,758,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=359,677,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=506,481,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=160,425,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=330,485,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=203,344,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=313,346,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=476,348,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=183,175,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=296,174,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=585,148,0,0
 

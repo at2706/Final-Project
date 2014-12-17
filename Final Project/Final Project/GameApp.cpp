@@ -1256,8 +1256,8 @@ bool GameApp::readEntityData(ifstream& stream, unsigned int **&tmpMap, int xOffs
 
 void GameApp::placeEntity(string type, float placeX, float placeY, int xOffset, int yOffset) {
 	if (type == "Start")  {
-		startPoint.x = (xOffset / 16 * TILE_SIZE) + placeX;
-		startPoint.y = (yOffset / 16 * -TILE_SIZE) + placeY;
+		startPoint.x = (xOffset * TILE_SIZE) + placeX;
+		startPoint.y = (yOffset * -TILE_SIZE) + placeY;
 	}
 }
 

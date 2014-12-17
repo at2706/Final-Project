@@ -5,7 +5,7 @@ tilewidth=16
 tileheight=16
 
 [tilesets]
-tileset=../../../../dirt-tiles.png,16,16,0,0
+tileset=../../Dropbox/Game Programming/dirt-tiles.png,16,16,0,0
 
 [layer]
 type=Tile Layer 1
@@ -60,4 +60,49 @@ data=
 0,0,0,0,0,0,0,0,0,0,0,-2147483581,0,0,0,0,0,0,0,-2147483581,0,0,0,0,0,0,0,0,0,0,-2147483581,0,0,0,0,0,0,0,0,-2147483581,0,0,0,0,-2147483556,0,0,0,0,62,
 0,0,0,0,0,0,0,0,0,0,0,-2147483581,0,0,0,0,0,0,0,-2147483581,0,0,0,0,0,0,0,0,0,0,-2147483581,0,0,0,0,0,0,0,0,-2147483581,0,0,0,0,-2147483556,0,0,0,0,62,
 0,0,0,0,0,0,0,0,0,0,0,-2147483581,0,0,0,0,0,0,0,-2147483581,0,0,0,0,0,0,0,0,0,0,-2147483581,0,0,0,0,0,0,0,0,-2147483581,0,0,0,0,-2147483556,0,0,0,0,86
+
+[Object Layer]
+# Weapons
+type=Weapons
+location=19,218,0,0
+
+[Object Layer]
+# Weapons
+type=Weapons
+location=611,566,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=331,324,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=635,311,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=621,60,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=292,95,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=523,630,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=332,585,0,0
+
+[Object Layer]
+# Enemies
+type=Enemies
+location=68,632,0,0
 
