@@ -273,11 +273,12 @@ GLvoid Entity::setPosition(GLfloat x, GLfloat y, GLfloat z){
 GLvoid Entity::shoot(){
 	if (weapon->cooldown > weapon->fireRate) {
 		Entity *bullet = new Entity(weapon->sprite, PROJECTILE, -0.2f, 0.5f);
-		//GLfloat randomish = (0.05f * ((float)rand() / (float)RAND_MAX) - 0.025f);
-		bullet->setPosition(((sprite->size.x + 0.1f + (fabs(velocity.x) *0.05f)) * cos(rotation.y) / 2) + position.x, position.y + 0.012f/* + randomish*/);
+		GLfloat randomish = (0.02f * ((float)rand() / (float)RAND_MAX) - 0.01f);
+		bullet->setPosition(((sprite->size.x * cos(rotation.y) + (velocity.x *0.15f)) / 2) + position.x, position.y + 0.012f + randomish);
 		bullet->health = weapon->damage;
 		bullet->velocity.x = weapon->speed * cos(rotation.y);
 		weapon->cooldown = 0.0f;
+		Mix_PlayChannel(-1, world->shootSound, 0);
 	}
 }
 GLvoid Entity::suicide(){
@@ -455,11 +456,13 @@ GLvoid Entity::collisionEffectX(Entity *e){
 			else setRotation(0.0f);
 			velocity.x = -cos(rotation.y) * 2;
 			modHealth(-10);
+			Mix_PlayChannel(-1, world->hurt, 0);
 		}
 		break;
 	case PROJECTILE:
-		if (type != PROJECTILE && type != LADDER && !flags.deathMark) {
+		if (type != PROJECTILE && type != LADDER && !flags.deathMark && e->timeAlive > 0.0001f) {
 			modHealth(-e->health);
+			Mix_PlayChannel(-1, world->hurt, 0);
 			e->suicide();
 		}
 		break;
@@ -478,6 +481,7 @@ GLvoid Entity::collisionEffectY(Entity *e){
 			velocity.y = 1.0f;
 			velocity.x = -cos(rotation.y);
 			modHealth(-10);
+			Mix_PlayChannel(-1, world->hurt, 0);
 		}
 		break;
 	case PROJECTILE:

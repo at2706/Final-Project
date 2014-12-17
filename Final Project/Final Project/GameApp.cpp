@@ -29,32 +29,32 @@ GameApp::GameApp() {
 
 	// keep in mind each tile inside the maplayout is a box of 50x50, so entire game level will be 250x250
 	// initialize mapLayout
-	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
-		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-			mapLayout[j][i] = 0;
-		}
-	}
-	// for level generation
-	mapStart.x = (std::rand() % (4));
-	mapStart.y = (std::rand() % (4));
-	mapGoal.x = (std::rand() % (4));
-	mapGoal.y = (std::rand() % (4));
-	// to ensure theres enough space between the start and end point
-	while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 4) {
-		mapStart.x = (std::rand() % (4));
-		mapStart.y = (std::rand() % (4));
-		mapGoal.x = (std::rand() % (4));
-		mapGoal.y = (std::rand() % (4));
-	}
-	makeGameLevel();
-	for (unsigned int i = 0; i < LAYOUT_X; ++i) {
-		for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
-			std::cout << mapLayout[j][i] << " ";
-		}
-		std::cout << endl;
-	}
+	//for (unsigned int i = 0; i < LAYOUT_X; ++i) {
+	//	for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
+	//		mapLayout[j][i] = 0;
+	//	}
+	//}
+	//// for level generation
+	//mapStart.x = (std::rand() % (4));
+	//mapStart.y = (std::rand() % (4));
+	//mapGoal.x = (std::rand() % (4));
+	//mapGoal.y = (std::rand() % (4));
+	//// to ensure theres enough space between the start and end point
+	//while (fabs(mapStart.x - mapGoal.x) + fabs(mapStart.y - mapGoal.y) < 4) {
+	//	mapStart.x = (std::rand() % (4));
+	//	mapStart.y = (std::rand() % (4));
+	//	mapGoal.x = (std::rand() % (4));
+	//	mapGoal.y = (std::rand() % (4));
+	//}
+	//makeGameLevel();
+	//for (unsigned int i = 0; i < LAYOUT_X; ++i) {
+	//	for (unsigned int j = 0; j < LAYOUT_Y; ++j) {
+	//		std::cout << mapLayout[j][i] << " ";
+	//	}
+	//	std::cout << endl;
+	//}
 
-	createMap();
+	//createMap();
 
 	drawLadder(16, startPoint.x, startPoint.y);
 	drawPlatformHorizontal(42, startPoint.x, startPoint.y - 0.5f);
@@ -370,11 +370,13 @@ GLboolean GameApp::updateAndRender() {
 
 			if (players[0].hero->collision.points[0] && keys[SDL_SCANCODE_R] && reviveCooldown > 0.5f){
 				players[0].target->modHealth(50);
+				Mix_PlayChannel(-1, healSound, 0);
 				if (players[0].target->health >= players[0].target->healthMax){
 					players[0].target->flags.deathMark = false;
 					players[0].target->animation = animHeroIdle;
 					lives--;
 					lifeIndicator->text = "x" + to_string(lives);
+					Mix_PlayChannel(-1, reviveSound, 0);
 				}
 
 				reviveCooldown = 0.0f;
@@ -580,7 +582,7 @@ GLvoid GameApp::initPlayer(int i){
 	s = new Sprite(tileSheet, 21, 16, 8);
 	Weapon *w = new Weapon(s);
 	w->fireRate = 0.1f;
-	w->speed = 6.0f;
+	w->speed = 4.0f;
 	w->damage = 5.0f;
 	e->weapon = w;
 
@@ -743,6 +745,7 @@ GLvoid GameApp::followPlayers(Player *p){
 			if (distance1 > distance2){
 				if (cooldown > 2){
 					heroes.front()->modHealth(-15);
+					Mix_PlayChannel(-1, hurt, 0);
 					cooldown = 0.0f;
 				}
 				outOfBounds.push_back(heroes.front());
@@ -751,6 +754,7 @@ GLvoid GameApp::followPlayers(Player *p){
 			else{
 				if (cooldown > 2){
 					heroes.back()->modHealth(-15);
+					Mix_PlayChannel(-1, hurt, 0);
 					cooldown = 0.0f;
 				}
 				outOfBounds.push_back(heroes.back());
@@ -766,6 +770,7 @@ GLvoid GameApp::followPlayers(Player *p){
 			if (distance1 > distance2){
 				if (cooldown > 2){
 					heroes.front()->modHealth(-15);
+					Mix_PlayChannel(-1, hurt, 0);
 					cooldown = 0.0f;
 				}
 				outOfBounds.push_back(heroes.front());
@@ -774,6 +779,7 @@ GLvoid GameApp::followPlayers(Player *p){
 			else{
 				if (cooldown > 2){
 					heroes.back()->modHealth(-15);
+					Mix_PlayChannel(-1, hurt, 0);
 					cooldown = 0.0f;
 				}
 				outOfBounds.push_back(heroes.back());
